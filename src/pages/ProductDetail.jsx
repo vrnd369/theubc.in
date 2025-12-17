@@ -24,7 +24,7 @@ export default function ProductDetail() {
     relatedProductImages: {}
   });
 
-  // Fetch product data from Firebase
+  // Fetch product data from Firebase - optimized for performance
   useEffect(() => {
     const fetchProduct = async () => {
       if (!id) {
@@ -74,6 +74,7 @@ export default function ProductDetail() {
           categoryId: productData.categoryId
         };
 
+        // Set product IMMEDIATELY - don't wait for images
         setProduct(transformedProduct);
 
         // Set default size if available
@@ -81,7 +82,7 @@ export default function ProductDetail() {
           setSelectedSize(transformedProduct.sizes[0]);
         }
 
-        // Resolve product images
+        // Resolve product images in background (non-blocking)
         const imagePromises = [];
         
         // Resolve main product image
@@ -118,10 +119,14 @@ export default function ProductDetail() {
           });
         }
 
-        // Fetch brand name and related products (same brand)
+        // Fetch brand name and related products in parallel (optimized)
         if (productData.brandId) {
           try {
-            const brands = await getBrands();
+            // Fetch brands and products in parallel for better performance
+            const [brands, allProducts] = await Promise.all([
+              getBrands(),
+              getProducts()
+            ]);
             // Try to find brand by both id and brandId
             const brand = brands.find(b => 
               (b.id === productData.brandId) || 
@@ -132,18 +137,13 @@ export default function ProductDetail() {
             if (brand) {
               setBrandName(brand.name);
               
-              // Try fetching products with brand identifier first
-              let related = await getProducts(brand.brandId || productData.brandId, null);
-              
-              // If no products found with brand identifier, try with document ID
-              if (related.length === 0) {
-                related = await getProducts(brand.id);
-              }
-              
-              // If still no products, try with productData.brandId directly
-              if (related.length === 0) {
-                related = await getProducts(productData.brandId, null);
-              }
+              // Use already fetched allProducts instead of making more requests
+              // Filter products by brand from the already fetched list
+              const related = allProducts.filter(p => 
+                (p.brandId === (brand.brandId || productData.brandId)) ||
+                (p.brandId === brand.id) ||
+                (p.brandId === productData.brandId)
+              );
               
               // Filter out current product and enabled products only
               const filtered = related
@@ -152,7 +152,7 @@ export default function ProductDetail() {
               
               setRelatedProducts(filtered);
               
-              // Resolve related product images
+              // Resolve related product images in background
               filtered.forEach((p, index) => {
                 if (p.image) {
                   imagePromises.push(

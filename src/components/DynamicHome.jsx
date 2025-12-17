@@ -14,8 +14,8 @@ export default function DynamicHome({ forceRefresh = 0 }) {
       const cached = localStorage.getItem('ubc_home_sections');
       if (cached) {
         const parsed = JSON.parse(cached);
-        // Check if cache is less than 5 minutes old
-        if (parsed.timestamp && Date.now() - parsed.timestamp < 300000) {
+        // Check if cache is less than 15 minutes old (extended for better performance)
+        if (parsed.timestamp && Date.now() - parsed.timestamp < 900000) {
           return parsed.data || [];
         }
       }

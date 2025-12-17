@@ -67,15 +67,16 @@ export default function Navbar({ previewHeaderConfig = null }) {
   const [enquiryButtonText, setEnquiryButtonText] = useState('Enquiry Form');
   const [enquiryButtonColor, setEnquiryButtonColor] = useState('#007bff');
 
-  // Fetch navigation from Firestore and resolve images
+  // Fetch navigation from Firestore and resolve images - optimized for performance
   const fetchNavigation = async (forceRefresh = false) => {
     try {
       const items = await getNavigationItems();
 
+      // Set navigation items IMMEDIATELY - don't wait for icons
       setNavigationItems(items);
       saveJSON(NAV_CACHE_KEY, items);
 
-      // Resolve all icons in navigation items
+      // Resolve icons in background (non-blocking) - don't await before setting items
       const iconPromises = [];
       const iconMap = {};
 
@@ -127,18 +128,23 @@ export default function Navbar({ previewHeaderConfig = null }) {
       };
 
       resolveIconsRecursive(items);
-      await Promise.all(iconPromises);
-      setResolvedIcons(iconMap);
       
-      // Cache the resolved icons
-      try {
-        localStorage.setItem('ubc_nav_icons', JSON.stringify({
-          data: iconMap,
-          timestamp: Date.now()
-        }));
-      } catch (e) {
-        // Ignore cache errors
-      }
+      // Resolve icons in background - update state when ready
+      Promise.all(iconPromises).then(() => {
+        setResolvedIcons(iconMap);
+        // Cache the resolved icons
+        try {
+          localStorage.setItem('ubc_nav_icons', JSON.stringify({
+            data: iconMap,
+            timestamp: Date.now()
+          }));
+        } catch (e) {
+          // Ignore cache errors
+        }
+      }).catch(() => {
+        // Even if some icons fail, update with what we have
+        setResolvedIcons(iconMap);
+      });
     } catch (error) {
       console.error("Error fetching navigation:", error);
       // Fallback to empty array if Firestore fails
@@ -185,8 +191,8 @@ export default function Navbar({ previewHeaderConfig = null }) {
 
     fetchHeaderConfig();
 
-    // Refresh header config periodically
-    const interval = setInterval(fetchHeaderConfig, 30000); // Every 30 seconds
+    // Refresh header config less frequently - every 5 minutes instead of 30 seconds
+    const interval = setInterval(fetchHeaderConfig, 300000); // Every 5 minutes
     return () => clearInterval(interval);
   }, [previewHeaderConfig]);
 
@@ -203,12 +209,12 @@ export default function Navbar({ previewHeaderConfig = null }) {
 
     fetchEnquiryFormConfig();
 
-    // Refresh enquiry form config periodically
-    const interval = setInterval(fetchEnquiryFormConfig, 30000); // Every 30 seconds
+    // Refresh enquiry form config less frequently - every 5 minutes instead of 30 seconds
+    const interval = setInterval(fetchEnquiryFormConfig, 300000); // Every 5 minutes
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch navigation config for enquiry button settings
+  // Fetch navigation config for enquiry button settings - optimized
   useEffect(() => {
     const fetchNavigationConfig = async () => {
       try {
@@ -226,55 +232,37 @@ export default function Navbar({ previewHeaderConfig = null }) {
 
     fetchNavigationConfig();
 
-    // Refresh navigation config periodically
-    const interval = setInterval(fetchNavigationConfig, 30000); // Every 30 seconds
+    // Refresh navigation config less frequently - every 5 minutes instead of 30 seconds
+    const interval = setInterval(fetchNavigationConfig, 300000); // Every 5 minutes
     return () => clearInterval(interval);
   }, []);
 
+  // Combined initialization and navigation fetch - optimized
   useEffect(() => {
-    // Ensure auto-generation is enabled on mount
+    // Ensure auto-generation is enabled on mount (non-blocking)
     ensureAutoGenerateEnabled().catch((err) => {
       console.error("Error ensuring auto-generation:", err);
     });
+    
+    // Fetch navigation on mount (uses cache immediately)
     fetchNavigation();
   }, []);
 
-  // Refresh navigation when window gains focus (user might have added categories in another tab)
+  // Refresh navigation only on window focus (debounced) - removed excessive refreshes
   useEffect(() => {
+    let focusTimeout;
     const handleFocus = () => {
-      fetchNavigation(true);
+      // Debounce focus refresh to avoid multiple rapid refreshes
+      clearTimeout(focusTimeout);
+      focusTimeout = setTimeout(() => {
+        fetchNavigation(true);
+      }, 1000); // Wait 1 second after focus before refreshing
     };
 
     window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, []);
-
-  // Refresh navigation periodically (every 10 seconds) to pick up new categories
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchNavigation(true);
-    }, 10000); // Refresh every 10 seconds
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Also refresh when user interacts with the page (clicks, keyboard, etc.)
-  useEffect(() => {
-    let refreshTimeout;
-    const handleUserActivity = () => {
-      clearTimeout(refreshTimeout);
-      refreshTimeout = setTimeout(() => {
-        fetchNavigation(true);
-      }, 2000); // Refresh 2 seconds after last user activity
-    };
-
-    window.addEventListener("click", handleUserActivity);
-    window.addEventListener("keydown", handleUserActivity);
-
     return () => {
-      window.removeEventListener("click", handleUserActivity);
-      window.removeEventListener("keydown", handleUserActivity);
-      clearTimeout(refreshTimeout);
+      window.removeEventListener("focus", handleFocus);
+      clearTimeout(focusTimeout);
     };
   }, []);
 
@@ -830,8 +818,16 @@ export default function Navbar({ previewHeaderConfig = null }) {
     .nav-links a.active { 
       color: ${headerConfig.linkColorActive} !important; 
       background-color: ${
-        headerConfig.linkActiveBackground || "#f0f1f6"
+        headerConfig.linkActiveBackground || "#e8eaf0"
       } !important; 
+      font-weight: 500 !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+      border: 1px solid rgba(25, 29, 35, 0.1) !important;
+      transform: scale(1.02) !important;
+    }
+    .nav-links a:active {
+      transform: scale(0.98) !important;
+      transition: transform 0.1s ease !important;
     }
     .nav-links a:hover { 
       background-color: ${headerConfig.linkHoverBackground} !important; 
@@ -846,6 +842,21 @@ export default function Navbar({ previewHeaderConfig = null }) {
     }
     .dropdown.active .dropdown-trigger, .dropdown-trigger.active { 
       color: ${headerConfig.linkColorActive} !important; 
+      font-weight: 500 !important;
+      background-color: ${
+        headerConfig.linkActiveBackground || "#e8eaf0"
+      } !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+      border: 1px solid rgba(25, 29, 35, 0.1) !important;
+    }
+    .dropdown.active {
+      background-color: ${
+        headerConfig.linkActiveBackground || "#e8eaf0"
+      } !important;
+    }
+    .dropdown:active .dropdown-trigger {
+      transform: scale(0.98) !important;
+      transition: transform 0.1s ease !important;
     }
     .dropdown:hover { 
       background-color: ${headerConfig.linkHoverBackground} !important; 
@@ -923,6 +934,10 @@ export default function Navbar({ previewHeaderConfig = null }) {
     .btn.cta:hover, .cta:hover { 
       background: ${headerConfig.ctaBackgroundHover} !important; 
       box-shadow: ${headerConfig.ctaShadow} !important; 
+    }
+    .btn.cta:active, .cta:active {
+      transform: translateY(0) scale(0.98) !important;
+      transition: all 0.1s ease !important;
     }
     .hamburger { 
       width: ${headerConfig.hamburgerSize || "28px"} !important; 

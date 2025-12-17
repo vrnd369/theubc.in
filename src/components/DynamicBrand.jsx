@@ -107,18 +107,18 @@ export default function DynamicBrand() {
 
   const loadCategories = async () => {
     try {
-      // First, get the brand to find the correct brandId format
+      // Fetch brands first to find the correct brandId format
       const brandsData = await getBrands();
       const brand = brandsData.find((b) => (b.brandId || b.id) === brandId);
 
       let categoriesData = [];
 
       if (brand) {
-        // Try with brand identifier first
+        // Try with brand identifier first (most common case)
         categoriesData = await getCategories(brand.brandId || brandId);
 
-        // If no categories found with brand identifier, try with document ID
-        if (categoriesData.length === 0) {
+        // If no categories found with brand identifier, try with document ID (fallback)
+        if (categoriesData.length === 0 && brand.id !== (brand.brandId || brandId)) {
           categoriesData = await getCategories(brand.id);
         }
       } else {

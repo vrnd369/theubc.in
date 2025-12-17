@@ -237,7 +237,7 @@ export default function HeroSection({ content, styles = {} }) {
   const iframeRef = useRef(null);
   const youtubePlayerRef = useRef(null);
   
-  // Resolve video URL (handles Firestore IDs, base64, and external URLs)
+  // Resolve video URL (handles Firestore IDs, base64, and external URLs) - optimized
   useEffect(() => {
     const resolveUrl = async () => {
       // Clean up previous blob URL if it exists
@@ -248,79 +248,82 @@ export default function HeroSection({ content, styles = {} }) {
       
       if (content?.videoUrl) {
         // Check if it's already a full URL (doesn't need resolution)
-        // This includes data URLs, HTTP/HTTPS URLs, and any external video platform URLs
         const isFullUrl = content.videoUrl.startsWith('data:') || 
                          content.videoUrl.startsWith('http://') || 
                          content.videoUrl.startsWith('https://') ||
                          isExternalVideoUrl(content.videoUrl);
         
         if (isFullUrl) {
-          // Already a full URL
-          // If it's a base64 data URL, convert to blob URL for better performance
-          if (content.videoUrl.startsWith('data:video/')) {
-            try {
-              const response = await fetch(content.videoUrl);
-              if (!response.ok) {
-                throw new Error(`Failed to fetch data URL: ${response.status}`);
-              }
-              const blob = await response.blob();
-              
-              // Verify blob is valid
-              if (blob.size === 0) {
-                throw new Error('Blob is empty');
-              }
-              
-              const blobUrlObj = URL.createObjectURL(blob);
-              blobUrlRef.current = blobUrlObj;
-              
-              // Wait a moment to ensure blob URL is ready
-              await new Promise(resolve => setTimeout(resolve, 50));
-              
-              setResolvedVideoUrl(blobUrlObj); // Use blob URL instead
-            } catch (error) {
-              setResolvedVideoUrl(content.videoUrl); // Fallback to data URL
-            }
-          } else {
-            setResolvedVideoUrl(content.videoUrl);
-          }
+          // Already a full URL - set immediately, convert blob in background
+          setResolvedVideoUrl(content.videoUrl);
           setIsResolvingVideo(false);
+          
+          // Convert base64 to blob in background (non-blocking)
+          if (content.videoUrl.startsWith('data:video/')) {
+            // Don't await - let it happen in background
+            fetch(content.videoUrl)
+              .then(response => {
+                if (response.ok) {
+                  return response.blob();
+                }
+                throw new Error('Failed to fetch');
+              })
+              .then(blob => {
+                if (blob.size > 0) {
+                  const blobUrlObj = URL.createObjectURL(blob);
+                  if (blobUrlRef.current) {
+                    URL.revokeObjectURL(blobUrlRef.current);
+                  }
+                  blobUrlRef.current = blobUrlObj;
+                  setResolvedVideoUrl(blobUrlObj);
+                }
+              })
+              .catch(() => {
+                // Keep using data URL if conversion fails
+              });
+          }
         } else {
           // It's a Firestore ID, need to resolve it
           setIsResolvingVideo(true);
           try {
             const url = await resolveVideoUrl(content.videoUrl);
             
-            if (url && url.startsWith('data:video/')) {
-              // Convert base64 data URL to blob URL for better performance
-              try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                  throw new Error(`Failed to fetch data URL: ${response.status}`);
-                }
-                const blob = await response.blob();
-                
-                // Verify blob is valid
-                if (blob.size === 0) {
-                  throw new Error('Blob is empty');
-                }
-                
-                const blobUrlObj = URL.createObjectURL(blob);
-                blobUrlRef.current = blobUrlObj;
-                
-                // Wait a moment to ensure blob URL is ready
-                await new Promise(resolve => setTimeout(resolve, 50));
-                
-                setResolvedVideoUrl(blobUrlObj); // Use blob URL instead
-              } catch (error) {
-                setResolvedVideoUrl(url); // Fallback to data URL
+            if (url) {
+              // Set URL immediately
+              setResolvedVideoUrl(url);
+              setIsResolvingVideo(false);
+              
+              // Convert base64 to blob in background if needed
+              if (url.startsWith('data:video/')) {
+                fetch(url)
+                  .then(response => {
+                    if (response.ok) {
+                      return response.blob();
+                    }
+                    throw new Error('Failed to fetch');
+                  })
+                  .then(blob => {
+                    if (blob.size > 0) {
+                      const blobUrlObj = URL.createObjectURL(blob);
+                      if (blobUrlRef.current) {
+                        URL.revokeObjectURL(blobUrlRef.current);
+                      }
+                      blobUrlRef.current = blobUrlObj;
+                      setResolvedVideoUrl(blobUrlObj);
+                    }
+                  })
+                  .catch(() => {
+                    // Keep using data URL if conversion fails
+                  });
               }
             } else {
-              setResolvedVideoUrl(url);
+              // If video resolution fails, use static fallback
+              setResolvedVideoUrl(heroVideo);
+              setIsResolvingVideo(false);
             }
           } catch (error) {
             // If video resolution fails, use static fallback
             setResolvedVideoUrl(heroVideo);
-          } finally {
             setIsResolvingVideo(false);
           }
         }
@@ -446,173 +449,62 @@ export default function HeroSection({ content, styles = {} }) {
     ...(styles?.secondaryButtonTextColor && { color: styles.secondaryButtonTextColor }),
   };
 
-  // Ensure video plays when ready and prevent pausing
+  // Ensure video plays when ready - optimized (reduced listeners and checks)
   useEffect(() => {
     if (!isDirectVideo || !videoRef.current || !videoUrl) return;
 
     const videoEl = videoRef.current;
-    let playInterval = null;
     let pauseCheckInterval = null;
-    let loadTimeout = null;
 
-    // Wait for video to be fully loaded before playing
-    const waitForFullLoad = () => {
-      return new Promise((resolve) => {
-        // If already fully loaded
-        if (videoEl.readyState >= 4) {
-          resolve();
-          return;
-        }
-
-        // Wait for canplaythrough (video can play without stopping)
-        const onCanPlayThrough = () => {
-          videoEl.removeEventListener('canplaythrough', onCanPlayThrough);
-          videoEl.removeEventListener('loadeddata', onLoadedData);
-          clearTimeout(loadTimeout);
-          resolve();
-        };
-
-        const onLoadedData = () => {
-          // If we have enough data, proceed
-          if (videoEl.readyState >= 3) {
-            videoEl.removeEventListener('canplaythrough', onCanPlayThrough);
-            videoEl.removeEventListener('loadeddata', onLoadedData);
-            clearTimeout(loadTimeout);
-            resolve();
-          }
-        };
-
-        videoEl.addEventListener('canplaythrough', onCanPlayThrough, { once: true });
-        videoEl.addEventListener('loadeddata', onLoadedData);
-
-        // Timeout after 10 seconds - proceed anyway
-        loadTimeout = setTimeout(() => {
-          videoEl.removeEventListener('canplaythrough', onCanPlayThrough);
-          videoEl.removeEventListener('loadeddata', onLoadedData);
-          resolve();
-        }, 10000);
-      });
-    };
-
-    const attemptPlay = async () => {
-      try {
-        // First, ensure video is fully loaded
-        await waitForFullLoad();
-
-        // Now try to play
-        if (videoEl.readyState >= 3) {
-          // Video has enough data to play
-          await videoEl.play();
-        } else {
-          // Wait a bit more for video to be ready
-          const playWhenReady = () => {
-            if (videoEl.readyState >= 3) {
+    // Simplified play attempt - don't wait for full load
+    const attemptPlay = () => {
+      if (videoEl.readyState >= 2) { // Have metadata at least
+        videoEl.play().catch(() => {
+          // Retry once after a short delay
+          setTimeout(() => {
+            if (videoEl.readyState >= 2) {
               videoEl.play().catch(() => {});
             }
-          };
-
-          videoEl.addEventListener('canplay', playWhenReady, { once: true });
-          videoEl.addEventListener('canplaythrough', playWhenReady, { once: true });
-        }
-      } catch (error) {
-        // Try again after a short delay
-        setTimeout(() => {
-          if (videoEl.readyState >= 3) {
-            videoEl.play().catch(() => {});
-          }
-        }, 500);
+          }, 300);
+        });
       }
     };
 
-    // Try to play when video URL changes or video element is ready
-    // Add a small delay to ensure blob URL is ready
-    const playTimer = setTimeout(() => {
+    // Try to play immediately if ready, otherwise wait for canplay
+    if (videoEl.readyState >= 2) {
       attemptPlay();
-    }, 100);
+    } else {
+      const handleCanPlay = () => {
+        attemptPlay();
+        videoEl.removeEventListener('canplay', handleCanPlay);
+      };
+      videoEl.addEventListener('canplay', handleCanPlay, { once: true });
+    }
 
-    // Monitor and prevent unwanted pausing
-    const handlePause = () => {
-      // Only resume if paused unintentionally (not by user or end of video)
-      if (videoEl.paused && !videoEl.ended) {
-        videoEl.play().catch(() => {});
-      }
-    };
-
-    // Check periodically if video is paused (browser power-saving, etc.)
+    // Reduced pause check interval - only check every 5 seconds instead of 2
     pauseCheckInterval = setInterval(() => {
-      if (videoEl && !videoEl.ended && videoEl.paused && videoEl.readyState >= 3) {
+      if (videoEl && !videoEl.ended && videoEl.paused && videoEl.readyState >= 2) {
         videoEl.play().catch(() => {});
       }
-    }, 2000); // Check every 2 seconds
+    }, 5000); // Check every 5 seconds (reduced frequency)
 
-    // Also listen for video events to ensure playback
-    const handleCanPlay = () => {
-      videoEl.play().catch(() => {});
-    };
-
-    const handleLoadedData = () => {
-      videoEl.play().catch(() => {});
-    };
-
-    const handlePlay = () => {
-      // Video playing
-    };
-
+    // Minimal event listeners - only essential ones
     const handleWaiting = () => {
-      // Ensure video resumes when buffering completes
+      // Resume when buffering completes
       const resumeWhenReady = () => {
-        if (videoEl.readyState >= 3 && videoEl.paused && !videoEl.ended) {
+        if (videoEl.readyState >= 2 && videoEl.paused && !videoEl.ended) {
           videoEl.play().catch(() => {});
         }
+        videoEl.removeEventListener('canplay', resumeWhenReady);
       };
-      
       videoEl.addEventListener('canplay', resumeWhenReady, { once: true });
-      videoEl.addEventListener('playing', resumeWhenReady, { once: true });
-    };
-    
-    const handleStalled = () => {
-      // Try to recover by reloading if stalled for too long
-      setTimeout(() => {
-        if (videoEl.networkState === 3 && videoEl.paused && !videoEl.ended) {
-          const currentTime = videoEl.currentTime;
-          videoEl.load();
-          videoEl.addEventListener('canplay', () => {
-            videoEl.currentTime = currentTime;
-            videoEl.play().catch(() => {});
-          }, { once: true });
-        }
-      }, 3000);
-    };
-    
-    const handleSuspend = () => {
-      // Resume loading after a delay
-      setTimeout(() => {
-        if (videoEl.readyState < 4) {
-          videoEl.load();
-        }
-      }, 1000);
     };
 
-    videoEl.addEventListener('canplay', handleCanPlay);
-    videoEl.addEventListener('loadeddata', handleLoadedData);
-    videoEl.addEventListener('play', handlePlay);
     videoEl.addEventListener('waiting', handleWaiting);
-    videoEl.addEventListener('pause', handlePause);
-    videoEl.addEventListener('stalled', handleStalled);
-    videoEl.addEventListener('suspend', handleSuspend);
 
     return () => {
-      clearTimeout(playTimer);
-      if (loadTimeout) clearTimeout(loadTimeout);
-      if (playInterval) clearInterval(playInterval);
       if (pauseCheckInterval) clearInterval(pauseCheckInterval);
-      videoEl.removeEventListener('canplay', handleCanPlay);
-      videoEl.removeEventListener('loadeddata', handleLoadedData);
-      videoEl.removeEventListener('play', handlePlay);
       videoEl.removeEventListener('waiting', handleWaiting);
-      videoEl.removeEventListener('pause', handlePause);
-      videoEl.removeEventListener('stalled', handleStalled);
-      videoEl.removeEventListener('suspend', handleSuspend);
     };
   }, [videoUrl, isDirectVideo]);
 
@@ -816,13 +708,8 @@ export default function HeroSection({ content, styles = {} }) {
     setIframeLoaded(false);
     setVideoPlaying(false);
 
-    // Defer iframe loading to allow page to render first
-    // Reduced delay to minimize black screen time
-    const loadTimer = setTimeout(() => {
-      setShouldLoadIframe(true);
-    }, 100); // Reduced delay for faster loading
-
-    return () => clearTimeout(loadTimer);
+    // Load iframe immediately (no delay) - thumbnail already shown
+    setShouldLoadIframe(true);
   }, [videoUrl, isYouTube, isVimeo, isExternalVideo]);
 
   return (
@@ -1133,7 +1020,7 @@ export default function HeroSection({ content, styles = {} }) {
               playsInline
               controls={false}
               className="hero-video dynamic-hero-video"
-              preload="auto"
+              preload="metadata"
               fetchPriority="high"
               onEnded={(e) => {
                 // Ensure video loops properly without pause
@@ -1213,51 +1100,17 @@ export default function HeroSection({ content, styles = {} }) {
                 videoEl.addEventListener('canplaythrough', resumeWhenReady, { once: true });
                 videoEl.addEventListener('playing', resumeWhenReady, { once: true });
               }}
-              onStalled={(e) => {
-                // Video download stalled - try to recover
-                const videoEl = e.target;
-                
-                // Try to reload the video source if it's been stalled for too long
-                setTimeout(() => {
-                  if (videoEl.networkState === 3 && videoEl.paused && !videoEl.ended) {
-                    const currentTime = videoEl.currentTime;
-                    videoEl.load();
-                    videoEl.addEventListener('canplay', () => {
-                      videoEl.currentTime = currentTime;
-                      videoEl.play().catch(() => {});
-                    }, { once: true });
-                  }
-                }, 2000);
-              }}
-              onSuspend={(e) => {
-                // Browser suspended video loading - ensure it resumes
-                const videoEl = e.target;
-                
-                // Resume loading when possible
-                const resumeLoading = () => {
-                  if (videoEl.paused && !videoEl.ended && videoEl.readyState < 4) {
-                    videoEl.load();
-                  }
-                };
-                
-                setTimeout(resumeLoading, 1000);
-              }}
               onProgress={(e) => {
-                // Track buffering progress and ensure continuous playback
+                // Minimal progress tracking - only resume if paused with enough buffer
                 const videoEl = e.target;
-                if (videoEl.buffered.length > 0 && videoEl.duration) {
-                  const bufferedEnd = videoEl.buffered.end(videoEl.buffered.length - 1);
-                  const bufferedPercent = (bufferedEnd / videoEl.duration) * 100;
-                  
-                  // If video is paused but has buffered data, try to play
-                  if (videoEl.paused && !videoEl.ended && bufferedPercent > 20 && videoEl.readyState >= 3) {
-                    videoEl.play().catch(() => {});
-                  }
-                  
-                  // If video is playing but buffering is low, preload more
-                  if (!videoEl.paused && bufferedPercent < 50 && videoEl.readyState < 4) {
-                    // Force browser to load more
-                    videoEl.load();
+                if (videoEl.paused && !videoEl.ended && videoEl.readyState >= 3) {
+                  if (videoEl.buffered.length > 0 && videoEl.duration) {
+                    const bufferedEnd = videoEl.buffered.end(videoEl.buffered.length - 1);
+                    const bufferedPercent = (bufferedEnd / videoEl.duration) * 100;
+                    // Only try to play if we have at least 30% buffered
+                    if (bufferedPercent > 30) {
+                      videoEl.play().catch(() => {});
+                    }
                   }
                 }
               }}

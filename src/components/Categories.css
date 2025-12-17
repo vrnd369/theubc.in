@@ -194,17 +194,43 @@
 
 /* Ensure product cards wrap and stay within viewport on categories/products pages */
 .categories-section .brand-prod-row {
-  flex-wrap: wrap;
-  row-gap: var(--gap, 16px);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
   overflow: visible;
   justify-content: flex-start;
 }
 
 .categories-section .brand-prod-card {
-  flex: 1 1 300px !important;
-  max-width: 360px !important;
-  min-width: 260px !important;
   width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Fix text overflow in product cards */
+.categories-section .brand-prod-text-container {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.categories-section .brand-prod-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.categories-section .brand-prod-blurb {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .brand-button-icon{
@@ -471,6 +497,11 @@
   }
   .grid-3{ grid-template-columns: repeat(2, minmax(0, 1fr)); } /* 2/row on tablet */
   .category-card-head{ min-height: 154px; }
+  /* 2 columns on tablet for product grid */
+  .categories-section .brand-prod-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
   /* Slightly scale down globally but keep uniformity */
   :root{
     --cat-title-size: 22px;
@@ -561,6 +592,12 @@
 
   .category-card-head {
     min-height: 195px;
+  }
+
+  /* 2 columns on tablet for product grid */
+  .categories-section .brand-prod-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 
   :root {
@@ -687,6 +724,11 @@
   }
   .grid-3{ grid-template-columns: 1fr; } /* 1/row on mobile */
   .category-card-head{ min-height: 162px; }
+  /* 1 column on mobile for product grid */
+  .categories-section .brand-prod-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
   .category-card-bar{
     flex-direction: column;
     align-items: flex-start;
@@ -819,5 +861,10 @@
   }
   .category-card-bar{
     padding: 18px 20px 20px;
+  }
+  /* 1 column on extra small screens for product grid */
+  .categories-section .brand-prod-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }

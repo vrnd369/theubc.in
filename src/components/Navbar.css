@@ -130,7 +130,7 @@
   padding-right: 12px;
   border-radius: 12px;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease, border 0.2s ease;
   white-space: nowrap;
   font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 400; /* Regular */
@@ -143,13 +143,22 @@
   box-sizing: border-box;
   height: auto;
   width: auto;
+  border: 1px solid transparent; /* Reserve space for border */
 }
 .nav-links a:hover {
   background: #f0f1f6;
 }
 .nav-links a.active {
-  background: #f0f1f6; /* Light grey pill background for active link */
-  color: rgba(25, 29, 35, 0.9); /* #191D23 with 90% opacity */
+  background: #e8eaf0 !important; /* More prominent grey background for active link */
+  color: rgba(25, 29, 35, 1) !important; /* Full opacity for better visibility */
+  font-weight: 500 !important; /* Slightly bolder text */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
+  border: 1px solid rgba(25, 29, 35, 0.1); /* Subtle border */
+  transform: scale(1.02); /* Slight scale to make it stand out */
+}
+.nav-links a:active {
+  transform: scale(0.98); /* Click feedback */
+  transition: transform 0.1s ease;
 }
 .nav-links .mobile-cta {
   display: none !important;
@@ -174,13 +183,27 @@
   box-sizing: border-box;
   height: auto;
   width: auto;
+  transition: all 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease, border 0.2s ease;
+  border: 1px solid transparent; /* Reserve space for border */
 }
 .dropdown:hover {
   background: #f0f1f6;
 }
 .dropdown.active .dropdown-trigger,
 .dropdown-trigger.active {
-  color: rgba(25, 29, 35, 0.9) !important; /* #191D23 with 90% opacity */
+  color: rgba(25, 29, 35, 1) !important; /* Full opacity for better visibility */
+  font-weight: 500 !important; /* Slightly bolder text */
+  background: #e8eaf0 !important; /* More prominent background */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important; /* Subtle shadow */
+  border: 1px solid rgba(25, 29, 35, 0.1) !important; /* Subtle border */
+  transform: scale(1.02) !important; /* Slight scale to make it stand out */
+}
+.dropdown.active {
+  background: #e8eaf0 !important; /* Background for active dropdown */
+}
+.dropdown:active .dropdown-trigger {
+  transform: scale(0.98); /* Click feedback */
+  transition: transform 0.1s ease;
 }
 .dropdown .menu {
   display: none;
@@ -248,6 +271,29 @@
 /* Category menu items (Products dropdown) */
 .categories-menu {
   min-width: 280px;
+  max-height: 500px; /* Limit height to enable scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Invisible scrollbar for categories menu - completely hidden but still functional */
+.categories-menu::-webkit-scrollbar {
+  width: 0px; /* Hide scrollbar completely */
+  background: transparent; /* Transparent background */
+}
+
+.categories-menu::-webkit-scrollbar-track {
+  background: transparent; /* Transparent track */
+}
+
+.categories-menu::-webkit-scrollbar-thumb {
+  background: transparent; /* Transparent thumb */
+}
+
+/* Firefox scrollbar styling - invisible */
+.categories-menu {
+  scrollbar-width: none; /* Hide scrollbar completely */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
 .category-menu-item {
@@ -539,6 +585,12 @@
   box-shadow: 0 8px 20px rgba(50, 55, 144, 0.4) !important;
   transition: all 0.25s ease;
 }
+.btn.cta:active,
+.cta:active {
+  transform: translateY(0) scale(0.98) !important; /* Click feedback - press down effect */
+  box-shadow: 0 4px 12px rgba(50, 55, 144, 0.3) !important;
+  transition: all 0.1s ease;
+}
 
 .btn.cta:hover::after,
 .cta:hover::after {
@@ -817,6 +869,28 @@
   .dropdown .menu.categories-menu {
     min-width: 260px !important;
     max-width: 320px !important;
+    max-height: 450px !important; /* Limit height for scrolling on tablet */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Invisible scrollbar for categories menu on tablet */
+  .dropdown .menu.categories-menu::-webkit-scrollbar {
+    width: 0px !important; /* Hide scrollbar completely */
+    background: transparent !important;
+  }
+  
+  .dropdown .menu.categories-menu::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+  
+  .dropdown .menu.categories-menu::-webkit-scrollbar-thumb {
+    background: transparent !important;
+  }
+  
+  .dropdown .menu.categories-menu {
+    scrollbar-width: none !important; /* Hide scrollbar completely */
+    -ms-overflow-style: none !important; /* IE and Edge */
   }
 
   .dropdown .menu a {
@@ -838,6 +912,28 @@
   /* Tablet category menu items */
   .categories-menu {
     min-width: 260px;
+    max-height: 450px; /* Limit height for scrolling */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+  }
+  
+  /* Invisible scrollbar for categories menu on tablet */
+  .categories-menu::-webkit-scrollbar {
+    width: 0px; /* Hide scrollbar completely */
+    background: transparent;
+  }
+  
+  .categories-menu::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .categories-menu::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+  
+  .categories-menu {
+    scrollbar-width: none; /* Hide scrollbar completely */
+    -ms-overflow-style: none; /* IE and Edge */
   }
 
   .category-menu-item {
