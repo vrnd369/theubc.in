@@ -501,18 +501,28 @@ export default function Navbar({ previewHeaderConfig = null }) {
               handleMouseLeave(dropdownId);
             }}
           >
-            {item.items?.map((subItem) =>
-              renderSubItem(subItem, dropdownId, isCategoriesMenu)
-            )}
-            {/* View All Products button - only show for Products dropdown */}
-            {isCategoriesMenu && (
-              <Link
-                to="/products"
-                className="btn cta view-all-products-btn"
-                onClick={closeMobileMenu}
-              >
-                View All Products
-              </Link>
+            {isCategoriesMenu ? (
+              <>
+                <div className="categories-scroll-container">
+                  {item.items?.map((subItem) =>
+                    renderSubItem(subItem, dropdownId, isCategoriesMenu)
+                  )}
+                </div>
+                {/* View All Products button - fixed and centered */}
+                <Link
+                  to="/products"
+                  className="btn cta view-all-products-btn"
+                  onClick={closeMobileMenu}
+                >
+                  View All Products
+                </Link>
+              </>
+            ) : (
+              <>
+                {item.items?.map((subItem) =>
+                  renderSubItem(subItem, dropdownId, isCategoriesMenu)
+                )}
+              </>
             )}
           </div>
         </div>
@@ -995,19 +1005,47 @@ export default function Navbar({ previewHeaderConfig = null }) {
     }
     .categories-menu { 
       display: flex !important;
-      flex-direction: row !important;
-      flex-wrap: wrap !important;
-      gap: 16px !important;
+      flex-direction: column !important;
+      flex-wrap: nowrap !important;
+      gap: 0 !important;
       left: 0 !important;
       right: 0 !important;
       margin: 0 auto !important;
       max-width: 1280px !important;
-      padding: 20px 24px !important;
+      padding: 20px 24px 16px 24px !important;
       padding-left: 24px !important;
       padding-right: 24px !important;
       box-sizing: border-box !important;
+      overflow: visible !important;
+    }
+    .categories-scroll-container {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      gap: 20px !important;
       overflow-x: auto !important;
       overflow-y: hidden !important;
+      scroll-behavior: smooth !important;
+      -webkit-overflow-scrolling: touch !important;
+      width: 100% !important;
+      padding-bottom: 8px !important;
+    }
+    .categories-scroll-container::-webkit-scrollbar {
+      width: 0px !important;
+      background: transparent !important;
+    }
+    .categories-scroll-container {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+    @media (min-width: 768px) {
+      .view-all-products-btn {
+        margin-top: 16px !important;
+        margin-bottom: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        align-self: center !important;
+      }
     }
     /* Tablet-specific overrides for dropdown positioning */
     @media (min-width: 768px) and (max-width: 1023px) {
@@ -1052,10 +1090,38 @@ export default function Navbar({ previewHeaderConfig = null }) {
       object-fit: contain !important;
       flex-shrink: 0 !important;
     }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .category-icon {
+        width: 150px !important;
+        height: 150px !important;
+        max-width: 150px !important;
+        max-height: 150px !important;
+      }
+    }
+    @media (min-width: 1024px) {
+      .category-icon {
+        width: 200px !important;
+        height: 200px !important;
+        max-width: 200px !important;
+        max-height: 200px !important;
+      }
+    }
     .category-menu-item {
       flex: 0 0 auto !important;
       min-width: 220px !important;
       width: auto !important;
+    }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .category-menu-item {
+        min-width: 260px !important;
+        min-height: 240px !important;
+      }
+    }
+    @media (min-width: 1024px) {
+      .category-menu-item {
+        min-width: 320px !important;
+        min-height: 300px !important;
+      }
     }
     .category-label {
       font-size: ${headerConfig.categoryLabelSize || "18px"} !important;
