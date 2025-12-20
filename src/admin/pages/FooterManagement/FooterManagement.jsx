@@ -26,12 +26,22 @@ export default function FooterManagement() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [navigationItems, setNavigationItems] = useState([]);
+  const [showCustomWeight, setShowCustomWeight] = useState(false);
+  const [customWeight, setCustomWeight] = useState("");
 
   useEffect(() => {
     loadConfig();
     loadNavigationItems();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Check if current weight is custom and show input if needed
+  useEffect(() => {
+    if (config?.slogan?.fontWeight && ![400, 500, 600, 700].includes(config.slogan.fontWeight)) {
+      setShowCustomWeight(true);
+      setCustomWeight(String(config.slogan.fontWeight));
+    }
+  }, [config]);
 
   const loadNavigationItems = async () => {
     try {
@@ -938,22 +948,78 @@ export default function FooterManagement() {
                       </small>
                       <select
                         className="admin-select"
-                        value={config.slogan?.fontWeight || 500}
-                        onChange={(e) =>
-                          updateConfig((prev) => ({
-                            ...prev,
-                            slogan: {
-                              ...(prev.slogan || {}),
-                              fontWeight: parseInt(e.target.value) || 500,
-                            },
-                          }))
+                        value={
+                          showCustomWeight || (config.slogan?.fontWeight && 
+                          ![400, 500, 600, 700].includes(config.slogan.fontWeight))
+                            ? "custom"
+                            : (config.slogan?.fontWeight || 500)
                         }
+                        onChange={(e) => {
+                          if (e.target.value === "custom") {
+                            setShowCustomWeight(true);
+                            setCustomWeight(config.slogan?.fontWeight?.toString() || "");
+                          } else {
+                            setShowCustomWeight(false);
+                            updateConfig((prev) => ({
+                              ...prev,
+                              slogan: {
+                                ...(prev.slogan || {}),
+                                fontWeight: parseInt(e.target.value) || 500,
+                              },
+                            }));
+                          }
+                        }}
                       >
                         <option value={400}>400 (Normal)</option>
                         <option value={500}>500 (Medium)</option>
                         <option value={600}>600 (Semi Bold)</option>
                         <option value={700}>700 (Bold)</option>
+                        <option value="custom">Custom</option>
                       </select>
+                      {showCustomWeight && (
+                        <div style={{ marginTop: "8px", display: "flex", gap: "6px", alignItems: "center" }}>
+                          <input
+                            type="number"
+                            value={customWeight}
+                            onChange={(e) => setCustomWeight(e.target.value)}
+                            onBlur={() => {
+                              if (customWeight) {
+                                updateConfig((prev) => ({
+                                  ...prev,
+                                  slogan: {
+                                    ...(prev.slogan || {}),
+                                    fontWeight: parseInt(customWeight) || 500,
+                                  },
+                                }));
+                              }
+                            }}
+                            placeholder="Enter custom weight (1-1000)"
+                            min="1"
+                            max="1000"
+                            className="admin-input"
+                            style={{ flex: 1 }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (customWeight) {
+                                updateConfig((prev) => ({
+                                  ...prev,
+                                  slogan: {
+                                    ...(prev.slogan || {}),
+                                    fontWeight: parseInt(customWeight) || 500,
+                                  },
+                                }));
+                                setShowCustomWeight(false);
+                              }
+                            }}
+                            className="admin-btn admin-btn-primary"
+                            style={{ fontSize: "12px", padding: "6px 12px", whiteSpace: "nowrap" }}
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      )}
                     </div>
                     <div className="form-group">
                       <label className="admin-label">Text Color</label>

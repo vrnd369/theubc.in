@@ -51,15 +51,17 @@
   border-radius: var(--admin-radius);
   padding: var(--admin-spacing-xl) var(--admin-spacing-lg);
   min-height: 200px;
-  overflow: visible;
+  overflow: visible !important;
   width: 100%;
-  margin-bottom: 100px; /* Extra space for dropdowns */
+  margin-bottom: 200px; /* Extra space for dropdowns */
+  z-index: 1;
 }
 
 .preview-wrapper {
   position: relative;
   z-index: 1000;
   width: 100%;
+  overflow: visible !important;
 }
 
 /* Ensure navbar displays properly in preview - override fixed positioning */
@@ -71,6 +73,7 @@
   width: 100%;
   max-width: 100%;
   inset: unset !important;
+  overflow: visible !important;
 }
 
 .navbar-preview-container .navbar-wrap .container {
@@ -86,6 +89,7 @@
   display: flex !important;
   visibility: visible !important;
   opacity: 1 !important;
+  overflow: visible !important;
 }
 
 /* Ensure nav links are visible */
@@ -95,21 +99,23 @@
   opacity: 1 !important;
   flex-wrap: wrap;
   gap: 15px;
+  overflow: visible !important;
+  position: relative !important;
 }
 
 /* Ensure dropdowns work in preview */
 .navbar-preview-container .dropdown {
   position: relative !important;
   display: inline-block !important;
+  overflow: visible !important;
 }
 
 .navbar-preview-container .dropdown .menu {
   position: absolute !important;
   top: calc(100% + 4px) !important;
-  left: 0 !important;
-  z-index: 1001 !important;
+  left: 50% !important;
+  z-index: 10001 !important;
   display: none;
-  flex-direction: column;
   background: #FFFFFF !important;
   border: 1px solid rgba(229,231,235,.7) !important;
   border-radius: 16px !important;
@@ -117,25 +123,67 @@
   min-width: 220px !important;
   box-shadow: 0 10px 40px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.08) !important;
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateX(-50%) translateY(-8px);
   transition: opacity .2s ease-out, transform .2s ease-out;
   pointer-events: none;
+  visibility: hidden;
 }
 
-/* Only show menu when explicitly opened via JavaScript state, not on hover */
+/* Categories menu in preview - horizontal grid layout */
+.navbar-preview-container .dropdown .menu.categories-menu {
+  display: none !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 16px !important;
+  width: calc(100vw - 48px) !important;
+  max-width: 1280px !important;
+  padding: 20px 24px !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  flex-direction: row !important;
+  box-sizing: border-box !important;
+}
+
+/* Show menu on hover or when explicitly opened */
+.navbar-preview-container .dropdown:hover .menu,
 .navbar-preview-container .dropdown.open .menu.open {
-  display: flex !important;
   opacity: 1 !important;
-  transform: translateY(0) !important;
+  transform: translateX(-50%) translateY(0) !important;
   pointer-events: auto !important;
   visibility: visible !important;
 }
-/* Hide menu if parent dropdown doesn't have .open class */
-.navbar-preview-container .dropdown:not(.open) .menu {
-  display: none !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  visibility: hidden !important;
+
+/* Show categories menu as grid */
+.navbar-preview-container .dropdown:hover .menu.categories-menu,
+.navbar-preview-container .dropdown.open .menu.categories-menu.open {
+  display: grid !important;
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+/* Show brands menu as flex column */
+.navbar-preview-container .dropdown:hover .menu.brands-menu,
+.navbar-preview-container .dropdown.open .menu.brands-menu.open {
+  display: flex !important;
+  flex-direction: column !important;
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+/* Also show menu when dropdown has .open class (for click-based opening) */
+.navbar-preview-container .dropdown.open .menu {
+  opacity: 1 !important;
+  transform: translateX(-50%) translateY(0) !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
+}
+
+.navbar-preview-container .dropdown.open .menu.categories-menu {
+  display: grid !important;
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+.navbar-preview-container .dropdown.open .menu.brands-menu {
+  display: flex !important;
+  flex-direction: column !important;
+  transform: translateX(-50%) translateY(0) !important;
 }
 
 /* Ensure submenus are visible */

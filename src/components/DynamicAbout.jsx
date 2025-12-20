@@ -1774,19 +1774,39 @@ export default function DynamicAbout({
                     </div>
                     <div className="news-ctas">
                       {section.content.viewAllButtonText && (
-                        <button
-                          className="btn btn-light"
-                          style={{
-                            backgroundColor:
-                              section.styles?.viewAllButtonBackgroundColor ||
-                              undefined,
-                            color:
-                              section.styles?.viewAllButtonTextColor ||
-                              undefined,
-                          }}
-                        >
-                          {section.content.viewAllButtonText}
-                        </button>
+                        section.content.viewAllButtonLink ? (
+                          <a
+                            href={section.content.viewAllButtonLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-light"
+                            style={{
+                              backgroundColor:
+                                section.styles?.viewAllButtonBackgroundColor ||
+                                undefined,
+                              color:
+                                section.styles?.viewAllButtonTextColor ||
+                                undefined,
+                              textDecoration: "none",
+                            }}
+                          >
+                            {section.content.viewAllButtonText}
+                          </a>
+                        ) : (
+                          <button
+                            className="btn btn-light"
+                            style={{
+                              backgroundColor:
+                                section.styles?.viewAllButtonBackgroundColor ||
+                                undefined,
+                              color:
+                                section.styles?.viewAllButtonTextColor ||
+                                undefined,
+                            }}
+                          >
+                            {section.content.viewAllButtonText}
+                          </button>
+                        )
                       )}
                       <div
                         className="news-arrows"

@@ -28,6 +28,8 @@ export default function InlineFontEditor({
   const [customFontName, setCustomFontName] = useState("");
   const [customFontValue, setCustomFontValue] = useState("");
   const [allFonts, setAllFonts] = useState(getAllFonts());
+  const [customWeight, setCustomWeight] = useState("");
+  const [showCustomWeight, setShowCustomWeight] = useState(false);
   const textareaRef = useRef(null);
 
   // Refresh fonts when custom fonts change
@@ -574,9 +576,14 @@ export default function InlineFontEditor({
                 ⚖️ Weight
               </label>
               <select
-                onChange={(e) =>
-                  e.target.value && insertWeightTag(e.target.value)
-                }
+                onChange={(e) => {
+                  if (e.target.value === "custom") {
+                    setShowCustomWeight(true);
+                  } else if (e.target.value) {
+                    setShowCustomWeight(false);
+                    insertWeightTag(e.target.value);
+                  }
+                }}
                 className="admin-select"
                 style={{
                   fontSize: "13px",
@@ -593,9 +600,61 @@ export default function InlineFontEditor({
                 <option value="400">400 - Normal</option>
                 <option value="600">600 - Semi Bold</option>
                 <option value="700">700 - Bold</option>
+                <option value="custom">Custom</option>
               </select>
+              {showCustomWeight && (
+                <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                  <input
+                    type="number"
+                    value={customWeight}
+                    onChange={(e) => setCustomWeight(e.target.value)}
+                    placeholder="e.g., 350, 450, 550"
+                    min="1"
+                    max="1000"
+                    className="admin-input"
+                    style={{
+                      fontSize: "13px",
+                      padding: "8px 12px",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: "6px",
+                      flex: 1,
+                    }}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter" && customWeight) {
+                        insertWeightTag(customWeight);
+                        setCustomWeight("");
+                        setShowCustomWeight(false);
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (customWeight) {
+                        insertWeightTag(customWeight);
+                        setCustomWeight("");
+                        setShowCustomWeight(false);
+                      }
+                    }}
+                    style={{
+                      padding: "8px 16px",
+                      background: "#3b82f6",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                      fontSize: "12px",
+                      fontWeight: "500",
+                      whiteSpace: "nowrap",
+                    }}
+                    title="Apply custom weight to selected text"
+                  >
+                    Apply
+                  </button>
+                </div>
+              )}
               <small style={{ fontSize: "10px", color: "#64748b" }}>
-                Choose font thickness
+                Choose font thickness or enter custom value (1-1000)
               </small>
             </div>
 

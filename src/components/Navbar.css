@@ -28,7 +28,7 @@
   padding-top: 0;
   padding-bottom: 0;
   width: 100%;
-  position: relative;
+  position: relative; /* Positioning context for categories menu */
   height: auto;
 }
 
@@ -186,6 +186,13 @@
   transition: all 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease, border 0.2s ease;
   border: 1px solid transparent; /* Reserve space for border */
 }
+
+/* Products dropdown - static positioning to allow menu to position relative to container (desktop only) */
+@media (min-width: 1024px) {
+  .dropdown:has(.categories-menu) {
+    position: static;
+  }
+}
 .dropdown:hover {
   background: #f0f1f6;
 }
@@ -210,7 +217,7 @@
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  background: #ffffff;
+  background: transparent;
   border: 1px solid rgba(229, 231, 235, 0.7);
   border-radius: 16px;
   padding: 12px 8px;
@@ -222,6 +229,12 @@
   transition: opacity 0.2s ease-out, transform 0.2s ease-out;
   pointer-events: none;
 }
+
+/* Apply navbar color to product dropdown (categories menu) */
+.dropdown .menu.categories-menu {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(229, 231, 235, 0.85) !important;
+}
 .dropdown:hover .menu,
 .dropdown .menu.open {
   display: flex;
@@ -230,6 +243,147 @@
   transform: translateY(0);
   pointer-events: auto;
 }
+
+/* Categories menu positioning - relative to container (desktop only) */
+@media (min-width: 1024px) {
+  .dropdown .menu.categories-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    max-width: 1400px;
+    padding: 32px 40px 40px 40px;
+    display: none; /* Hidden by default, shown only when .open class is present */
+    flex-direction: row;
+    gap: 20px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    min-width: auto;
+    width: calc(100% - 80px);
+    box-sizing: border-box;
+    top: 100%;
+    margin-top: 4px;
+    background: rgba(255, 255, 255, 0.85) !important;
+    border: 1px solid rgba(229, 231, 235, 0.85) !important;
+  }
+}
+
+/* Show categories menu when dropdown is open (desktop only) */
+@media (min-width: 1024px) {
+  .dropdown.open .menu.categories-menu,
+  .dropdown:hover .menu.categories-menu {
+    display: flex;
+  }
+}
+
+/* View All Products button in categories menu */
+.view-all-products-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  margin-left: auto;
+  margin-right: auto;
+  flex-shrink: 0;
+  color: #ffffff !important;
+  border-radius: 999px !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  font-family: Arial, sans-serif !important;
+  font-weight: 200 !important;
+  font-size: 14px !important;
+  line-height: 22.5px !important;
+  letter-spacing: -0.19px !important;
+}
+
+/* Add star hover effect to View All Products button (same as enquiry button) */
+.view-all-products-btn::after {
+  content: "★";
+  display: inline-block;
+  opacity: 0;
+  width: 0;
+  margin-left: 0;
+  transition: opacity 0.3s ease, width 0.3s ease, margin-left 0.3s ease;
+  font-size: 14px;
+  line-height: 22.5px;
+  color: #ffffff;
+  vertical-align: baseline;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.view-all-products-btn:hover {
+  background: #1C1F52 !important; /* Darker blue on hover */
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(50, 55, 144, 0.3) !important;
+  transition: all 0.25s ease;
+}
+
+/* Override dropdown menu link hover for the button */
+.dropdown .menu a.view-all-products-btn:hover,
+.nav-links .dropdown .menu a.view-all-products-btn:hover {
+  background: #1C1F52 !important;
+}
+
+.view-all-products-btn:hover::after {
+  opacity: 1;
+  width: 14px;
+  margin-left: 8px;
+}
+
+.view-all-products-btn:active {
+  transform: translateY(0) scale(0.98) !important; /* Click feedback - press down effect */
+  box-shadow: 0 4px 12px rgba(50, 55, 144, 0.3) !important;
+  transition: all 0.1s ease;
+  color: #ffffff !important;
+}
+
+/* Ensure text is white even when inside dropdown menu */
+.dropdown .menu .view-all-products-btn,
+.nav-links .dropdown .menu .view-all-products-btn {
+  color: #ffffff !important;
+  border-radius: 999px !important;
+  padding: 0 !important;
+}
+
+/* Override dropdown menu link styles for the button */
+.dropdown .menu a.view-all-products-btn,
+.nav-links .dropdown .menu a.view-all-products-btn {
+  border-radius: 999px !important;
+  padding: 0 !important;
+}
+
+@media (min-width: 1024px) {
+  .dropdown .menu.categories-menu {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  
+  .view-all-products-btn {
+    width: 170px;
+    min-width: 170px;
+    max-width: 170px;
+    height: 47px;
+    min-height: 47px;
+    max-height: 47px;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: 10px;
+    margin-bottom: 12px;
+    margin-left: auto;
+    margin-right: auto;
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
 .dropdown .menu a {
   padding: 10px;
   border-radius: 10px;
@@ -268,12 +422,27 @@
 }
 /* Subcategory icons (3x larger) - defined below in .submenu-item .brand-icon */
 
-/* Category menu items (Products dropdown) */
-.categories-menu {
-  min-width: 280px;
-  max-height: 500px; /* Limit height to enable scrolling */
-  overflow-y: auto; /* Enable vertical scrolling */
-  overflow-x: hidden; /* Prevent horizontal scroll */
+/* Category menu items (Products dropdown) - positioned relative to container (desktop only) */
+@media (min-width: 1024px) {
+  .categories-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    max-width: 1280px;
+    padding: 20px 24px;
+    top: 100%;
+    margin-top: 4px;
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    min-width: auto;
+    width: calc(100% - 48px);
+    box-sizing: border-box;
+  }
 }
 
 /* Invisible scrollbar for categories menu - completely hidden but still functional */
@@ -299,9 +468,9 @@
 .category-menu-item {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
-  padding: 16px 20px;
+  justify-content: center;
+  gap: 0;
+  padding: 24px;
   border-radius: 10px;
   color: #374151;
   text-decoration: none;
@@ -309,27 +478,48 @@
   position: relative;
   font-size: 15px;
   line-height: 1.4;
-  white-space: nowrap;
-  width: 100%;
+  white-space: normal;
+  flex: 0 0 auto;
+  min-width: 240px;
+  min-height: 220px;
   box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  .category-menu-item {
+    min-width: 260px;
+    min-height: 240px;
+    padding: 28px;
+  }
 }
 
 .category-menu-item-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 12px;
   height: 100%;
   width: 100%;
 }
 
 .category-icon {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   flex-shrink: 0;
   margin: 0;
   padding: 0;
   align-self: center;
+}
+
+@media (min-width: 1024px) {
+  .category-icon {
+    width: 140px;
+    height: 140px;
+  }
 }
 
 .category-menu-item:hover {
@@ -736,10 +926,11 @@
     max-width: 100%;
     width: 100%;
     box-sizing: border-box;
-    position: relative; /* Ensure dropdowns can position relative to container */
+    position: relative !important; /* Ensure dropdowns can position relative to container */
     overflow: visible !important; /* Allow dropdowns to extend beyond container */
     overflow-x: visible !important;
     overflow-y: visible !important;
+    z-index: 1; /* Ensure container is positioning context */
   }
 
   .navbar {
@@ -792,7 +983,7 @@
   }
 
   .nav-links {
-    gap: 4px;
+    gap: 8px; /* Increased gap to prevent dropdown overlap */
     flex-wrap: nowrap;
     flex: 1 1 auto;
     min-width: 0;
@@ -818,9 +1009,14 @@
     font-size: 12px;
     line-height: 18px;
     flex-shrink: 0;
-    position: relative !important; /* Ensure dropdown positioning works */
+    position: relative !important; /* Force relative positioning for all dropdowns on tablet */
     z-index: 1000 !important; /* Base z-index for dropdown container */
     overflow: visible !important; /* Ensure menu can extend beyond */
+  }
+  
+  /* Override any static positioning for dropdowns on tablet */
+  .dropdown:has(.categories-menu) {
+    position: relative !important; /* Force relative, not static */
   }
 
   .dropdown .menu {
@@ -828,7 +1024,7 @@
     padding: 10px 6px;
     margin-top: 6px;
     z-index: 10001 !important; /* Very high z-index to ensure dropdown menu is above all other elements */
-    position: absolute !important; /* Absolute positioning relative to dropdown */
+    position: absolute !important; /* Absolute positioning relative to parent dropdown, not nav-links */
     top: calc(100% + 4px) !important; /* Position below the trigger */
     left: 0 !important; /* Align with left edge of dropdown */
     right: auto !important;
@@ -836,10 +1032,15 @@
     opacity: 0 !important;
     transform: translateY(-8px) !important;
     pointer-events: none !important;
-    background: #ffffff !important;
+    background: transparent !important;
     border: 1px solid rgba(229, 231, 235, 0.7) !important;
     border-radius: 16px !important;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  }
+  
+  /* Ensure all menus position relative to their dropdown parent, not nav-links */
+  .nav-links .dropdown .menu {
+    position: absolute !important; /* Not static - position relative to dropdown */
   }
 
   /* Show dropdown on hover or when open - Tablet only */
@@ -859,19 +1060,97 @@
     opacity: 1 !important;
   }
 
-  /* Brands menu specific - ensure it's fully visible */
-  .dropdown .menu.brands-menu {
-    min-width: 220px !important;
-    max-width: 280px !important;
+  /* Brands menu specific - use mobile-style static positioning on tablet to prevent overlap */
+  .dropdown .menu.brands-menu,
+  .nav-links .dropdown .menu.brands-menu {
+    position: static !important; /* Use static like mobile to prevent overlap */
+    display: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-width: auto !important;
+    width: 100% !important;
+    background: transparent !important;
+    opacity: 1 !important;
+    transform: none !important;
+    border-radius: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    z-index: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+  }
+  
+  .dropdown .menu.brands-menu.open,
+  .dropdown.open .menu.brands-menu,
+  .nav-links .dropdown .menu.brands-menu.open {
+    display: flex !important;
+    flex-direction: column !important;
+    padding-left: 18px !important;
+    margin-top: 6px !important;
+    width: 100% !important;
+  }
+  
+  .dropdown .menu.brands-menu .brand-item,
+  .nav-links .dropdown .menu.brands-menu .brand-item {
+    padding: 11px 0 !important;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.3) !important;
+    width: 100% !important;
+    font-size: 15px !important;
+    transform: none !important;
+  }
+  
+  .dropdown .menu.brands-menu .brand-item:last-child,
+  .nav-links .dropdown .menu.brands-menu .brand-item:last-child {
+    border-bottom: none !important;
   }
 
-  /* Categories menu specific - ensure it's fully visible */
+  /* Categories menu specific - positioned relative to its own dropdown */
+  .nav-links .dropdown .menu.categories-menu,
   .dropdown .menu.categories-menu {
-    min-width: 260px !important;
-    max-width: 320px !important;
-    max-height: 450px !important; /* Limit height for scrolling on tablet */
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+    display: none !important; /* Hidden by default */
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 16px !important;
+    position: absolute !important; /* Position relative to parent dropdown */
+    left: 50% !important; /* Center horizontally */
+    right: auto !important;
+    transform: translateX(-50%) !important; /* Center horizontally */
+    max-width: 1280px !important;
+    padding: 20px 24px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    min-width: auto !important;
+    width: calc(100vw - 40px) !important; /* Full viewport width minus padding */
+    max-width: 1280px !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    border: 1px solid rgba(229, 231, 235, 0.85) !important;
+    box-sizing: border-box !important;
+    z-index: 10002 !important; /* Higher than brands menu to prevent overlap */
+    top: calc(100% + 4px) !important; /* Position below dropdown trigger */
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Ensure categories menu aligns with container boundaries while staying relative to dropdown */
+  .navbar-wrap .container .dropdown .menu.categories-menu,
+  .navbar-wrap .container .nav-links .dropdown .menu.categories-menu {
+    width: calc(100% - 40px) !important; /* Container width minus padding */
+    max-width: 1280px !important;
+  }
+  
+  /* Show categories menu when dropdown is open or hovered */
+  .dropdown.open .menu.categories-menu,
+  .dropdown:hover .menu.categories-menu {
+    display: flex !important;
+  }
+  
+  /* Ensure brands menu doesn't overlap with categories menu */
+  .dropdown:not(:has(.categories-menu)) .menu.brands-menu {
+    z-index: 10001 !important;
   }
   
   /* Invisible scrollbar for categories menu on tablet */
@@ -909,12 +1188,15 @@
     height: 26px;
   }
 
-  /* Tablet category menu items */
+  /* Tablet category menu items - horizontal layout */
   .categories-menu {
-    min-width: 260px;
-    max-height: 450px; /* Limit height for scrolling */
-    overflow-y: auto; /* Enable vertical scrolling */
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 16px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    min-width: auto !important;
   }
   
   /* Invisible scrollbar for categories menu on tablet */
@@ -937,9 +1219,25 @@
   }
 
   .category-menu-item {
-    padding: 14px 18px;
+    padding: 16px;
     font-size: 14px;
-    gap: 14px;
+    gap: 0;
+    flex: 0 0 auto !important;
+    min-width: 200px !important;
+    min-height: 180px !important;
+  }
+  
+  .category-menu-item-content {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  
+  .category-icon {
+    width: 100% !important;
+    max-width: 140px !important;
+    height: auto !important;
+    max-height: 140px !important;
   }
 
   .category-icon {
@@ -1153,7 +1451,7 @@
 
   .nav-links .dropdown .menu {
     position: static;
-    display: none;
+    display: none !important;
     box-shadow: none;
     border: none;
     padding: 0;
@@ -1165,9 +1463,18 @@
     transform: none;
     border-radius: 0;
   }
-
+  .nav-links .dropdown .menu.categories-menu {
+    display: none !important;
+  }
   .nav-links .dropdown .menu.open {
-    display: flex;
+    display: flex !important;
+    flex-direction: column;
+    padding-left: 18px;
+    margin-top: 6px;
+    width: 100%;
+  }
+  .nav-links .dropdown .menu.categories-menu.open {
+    display: flex !important;
     flex-direction: column;
     padding-left: 18px;
     margin-top: 6px;
@@ -1186,10 +1493,11 @@
   }
 
   .nav-links .dropdown .menu .category-menu-item {
-    padding: 14px 0;
+    padding: 16px 0;
     border-bottom: 1px solid rgba(229, 231, 235, 0.3);
     width: 100%;
     font-size: 15px;
+    min-height: 180px !important;
   }
 
   .nav-links .dropdown .menu .category-menu-item:last-child {
@@ -1197,12 +1505,43 @@
   }
 
   .nav-links .dropdown .menu .category-menu-item-content {
-    gap: 12px;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+
+  .nav-links .dropdown .menu .view-all-products-btn {
+    width: 154px;
+    min-width: 154px;
+    max-width: 154px;
+    height: 47px;
+    min-height: 47px;
+    max-height: 47px;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: 8px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 999px !important;
+  }
+
+  .nav-links .dropdown .menu .view-all-products-btn::after {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .nav-links .dropdown .menu .view-all-products-btn:hover::after {
+    width: 12px;
+    margin-left: 5px;
   }
 
   .nav-links .dropdown .menu .category-icon {
-    width: 80px;
-    height: 80px;
+    width: 100% !important;
+    max-width: 150px !important;
+    height: auto !important;
+    max-height: 150px !important;
   }
 
   .brand-item-with-submenu {
@@ -1280,6 +1619,15 @@
 
 /* Mobile sheet */
 @media (max-width: 768px) {
+  /* Ensure categories menu is hidden by default on mobile */
+  .nav-links .dropdown .menu.categories-menu {
+    display: none !important;
+  }
+  
+  /* Only show categories menu when explicitly opened */
+  .nav-links .dropdown.open .menu.categories-menu.open {
+    display: flex !important;
+  }
   html,
   body {
     width: 100%;
@@ -1424,7 +1772,7 @@
   }
   .nav-links .dropdown .menu {
     position: static;
-    display: none;
+    display: none !important;
     box-shadow: none;
     border: none;
     padding: 0;
@@ -1436,8 +1784,18 @@
     transform: none;
     border-radius: 0;
   }
+  .nav-links .dropdown .menu.categories-menu {
+    display: none !important;
+  }
   .nav-links .dropdown .menu.open {
-    display: flex;
+    display: flex !important;
+    flex-direction: column;
+    padding-left: 16px;
+    margin-top: 4px;
+    width: 100%;
+  }
+  .nav-links .dropdown .menu.categories-menu.open {
+    display: flex !important;
     flex-direction: column;
     padding-left: 16px;
     margin-top: 4px;
@@ -1465,13 +1823,39 @@
     border-bottom: none;
   }
 
+  .nav-links .dropdown .menu .category-menu-item {
+    min-height: 160px !important;
+    padding: 16px !important;
+  }
+  
   .nav-links .dropdown .menu .category-menu-item-content {
-    gap: 12px;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
   }
 
   .nav-links .dropdown .menu .category-icon {
-    width: 70px;
-    height: 70px;
+    width: 100% !important;
+    max-width: 120px !important;
+    height: auto !important;
+    max-height: 120px !important;
+  }
+
+  .nav-links .dropdown .menu .view-all-products-btn {
+    width: 154px;
+    min-width: 154px;
+    max-width: 154px;
+    height: 47px;
+    min-height: 47px;
+    max-height: 47px;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: 8px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 999px !important;
   }
 
   /* Mobile styles for nested dropdown */

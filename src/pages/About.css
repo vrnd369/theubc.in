@@ -5,6 +5,7 @@
   z-index: 1;
   background-color: transparent !important;
   background: transparent !important;
+  margin-top: 0;
 }
 
 /* Shared container */
@@ -42,10 +43,9 @@
   background: transparent !important;
 }
 .about-hero-image {
-  width: 100%;
-  height: auto; /* Auto height to show full image without cropping */
-  min-height: 500px;
-  max-height: 800px; /* Maximum height to prevent overly tall images */
+  width: 1720px;
+  max-width: 100%;
+  height: 520px;
   overflow: hidden;
   position: relative;
   background-color: transparent !important;
@@ -54,7 +54,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 16 / 9; /* Force landscape aspect ratio */
+  margin: 0 auto;
 }
 .about-hero-image::before,
 .about-hero-image::after {
@@ -65,10 +65,8 @@
 }
 .about-hero-image img {
   width: 100% !important;
-  height: 100% !important; /* Full height to fill container */
-  min-width: 100% !important;
-  max-width: 100% !important;
-  object-fit: cover !important; /* Cover to fill landscape container */
+  height: 100% !important;
+  object-fit: cover !important;
   object-position: center center !important;
   display: block !important;
   position: relative !important;
@@ -82,9 +80,7 @@
   filter: none !important;
   mix-blend-mode: normal !important;
   visibility: visible !important;
-  /* Ensure image fills landscape container */
   box-sizing: border-box !important;
-  aspect-ratio: 16 / 9; /* Maintain landscape aspect ratio */
 }
 /* Remove any potential overlay elements */
 .about-hero *:not(img) {
@@ -716,9 +712,9 @@ main .about-hero-image,
   letter-spacing: 0.27em; /* 27% */
   border-radius: 999px;
   width: 155px;
-  height: 33px;
+  height: 35px;
   padding: 0;
-  margin-bottom: 20px;
+  margin: 0 0 20px 0;
   box-sizing: border-box;
 }
 .leaders-star-icon {
@@ -732,6 +728,12 @@ main .about-hero-image,
   gap: 250px;
   align-items: start;
 }
+.infra-left {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 .infra-heading {
   font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   color: #111827; /* Neutral/900 */
@@ -741,8 +743,10 @@ main .about-hero-image,
   letter-spacing: -0.04em;
   margin: 8px 0 0;
   text-align: left;
-  width: 272px;
-  height: 88px;
+  width: 100%;
+  max-width: 272px;
+  height: auto;
+  min-height: 88px;
   box-sizing: border-box;
   white-space: normal;
   display: block;
@@ -1029,6 +1033,13 @@ main .about-hero-image,
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
+}
+a.btn-light {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .news-arrows {
   display: inline-flex !important;
@@ -1114,7 +1125,7 @@ main .about-hero-image,
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 .news-media {
-  width: 397px;
+  width: 100%;
   height: 291px;
   overflow: hidden;
   box-sizing: border-box;
@@ -1132,8 +1143,9 @@ main .about-hero-image,
   padding: 12px 16px 6px;
   margin: 0 0 24px 0;
   color: #fff;
-  width: 397px;
-  height: 70px;
+  width: 100%;
+  height: auto;
+  min-height: 70px;
   box-sizing: border-box;
 }
 .news-tags {
@@ -1159,14 +1171,14 @@ main .about-hero-image,
 
 @media (max-width: 1024px) {
   .about-hero-image {
+    width: 100%;
+    max-width: 100%;
     height: auto;
-    min-height: 400px;
-    max-height: 700px;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 1720 / 520;
   }
   .about-hero-image img {
+    width: 100% !important;
     height: 100% !important;
-    aspect-ratio: 16 / 9;
   }
   .about-leaders {
     padding: 72px 0;
@@ -1485,8 +1497,10 @@ main .about-hero-image,
   }
 
   .about-hero-image {
+    width: 100%;
+    max-width: 100%;
     height: auto;
-    min-height: 420px;
+    aspect-ratio: 1720 / 520;
   }
 
   .about-leaders {
@@ -1666,15 +1680,19 @@ main .about-hero-image,
 }
 
 @media (max-width: 768px) {
+  .about-page {
+    margin-top: 72px; /* Push entire page content down to account for fixed navbar */
+  }
+  
   .about-hero-image {
+    width: 100%;
+    max-width: 100%;
     height: auto;
-    min-height: 300px;
-    max-height: 600px;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 1720 / 520;
   }
   .about-hero-image img {
+    width: 100% !important;
     height: 100% !important;
-    aspect-ratio: 16 / 9;
   }
   .about-leaders {
     padding: 56px 0;
@@ -2201,17 +2219,21 @@ main .about-hero-image,
 }
 
 @media (max-width: 480px) {
+  .about-page {
+    margin-top: 72px; /* Push entire page content down to account for fixed navbar */
+  }
+  
   .about-hero-image {
+    width: 100%;
+    max-width: 100%;
     height: auto;
-    min-height: 250px;
-    max-height: 500px;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 1720 / 520;
   }
   .about-hero-image img {
+    width: 100% !important;
     height: 100% !important;
-    aspect-ratio: 16 / 9;
   }
-
+ 
   .about-leaders {
     padding: 48px 0;
   }

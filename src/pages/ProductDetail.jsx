@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import './ProductDetail.css';
 import SectionTag from '../components/SectionTag';
-import { getProduct, getProducts, getBrands } from '../admin/services/productService';
+import { getProduct, getProducts, getBrands, getCategories } from '../admin/services/productService';
 import { resolveImageUrl } from '../utils/imageUtils';
 import probgImage from '../assets/probg1.png';
 
@@ -12,6 +12,7 @@ export default function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [brandName, setBrandName] = useState('Products');
+  const [categoryName, setCategoryName] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
@@ -119,14 +120,15 @@ export default function ProductDetail() {
           });
         }
 
-        // Fetch brand name and related products in parallel (optimized)
+        // Fetch brand name, category info, and related products in parallel (optimized)
         if (productData.brandId) {
           try {
-            // Fetch brands and products in parallel for better performance
+            // Fetch brands, categories, and products in parallel for better performance
             const [brands, allProducts] = await Promise.all([
               getBrands(),
               getProducts()
             ]);
+            
             // Try to find brand by both id and brandId
             const brand = brands.find(b => 
               (b.id === productData.brandId) || 
@@ -137,23 +139,88 @@ export default function ProductDetail() {
             if (brand) {
               setBrandName(brand.name);
               
-              // Use already fetched allProducts instead of making more requests
-              // Filter products by brand from the already fetched list
-              const related = allProducts.filter(p => 
-                (p.brandId === (brand.brandId || productData.brandId)) ||
-                (p.brandId === brand.id) ||
-                (p.brandId === productData.brandId)
-              );
+              // Fetch categories to get category information
+              let categoryInfo = null;
+              if (productData.categoryId) {
+                try {
+                  const allCategories = await getCategories();
+                  categoryInfo = allCategories.find(c => c.id === productData.categoryId);
+                  if (categoryInfo) {
+                    setCategoryName(categoryInfo.chip || categoryInfo.title || 'Category');
+                  }
+                } catch (catErr) {
+                  console.error('Error fetching category:', catErr);
+                }
+              }
               
-              // Filter out current product and enabled products only
-              const filtered = related
-                .filter(p => p.id !== id && p.enabled !== false)
-                .slice(0, 8); // Show up to 8 products
+              // Filter products STRICTLY by same category only
+              let related = [];
               
-              setRelatedProducts(filtered);
+              if (productData.categoryId) {
+                // Normalize categoryId for comparison (trim whitespace, handle null/undefined)
+                const targetCategoryId = String(productData.categoryId).trim();
+                
+                // Only show products in the exact same category
+                related = allProducts.filter(p => {
+                  // Skip current product and disabled products
+                  if (p.id === id || p.enabled === false) {
+                    return false;
+                  }
+                  
+                  // Normalize product's categoryId for comparison
+                  const productCategoryId = p.categoryId ? String(p.categoryId).trim() : null;
+                  
+                  // Strict category matching - must match exactly
+                  const categoryMatch = productCategoryId === targetCategoryId;
+                  
+                  // Additional check: also match by category document ID if categoryId is stored differently
+                  // Some products might have category.id instead of categoryId
+                  const categoryIdMatch = p.category?.id ? 
+                    String(p.category.id).trim() === targetCategoryId : false;
+                  
+                  return categoryMatch || categoryIdMatch;
+                });
+                
+                // Limit to 8 products, but only show same category products
+                related = related.slice(0, 8);
+                
+                // Debug logging to help identify category matching issues
+                if (related.length === 0) {
+                  console.log('No related products found for category:', {
+                    productCategoryId: targetCategoryId,
+                    categoryName: categoryInfo?.chip || categoryInfo?.title,
+                    totalProducts: allProducts.length,
+                    productsWithCategoryId: allProducts.filter(p => p.categoryId).length,
+                    sampleProductCategoryIds: allProducts
+                      .filter(p => p.categoryId)
+                      .slice(0, 10)
+                      .map(p => ({ 
+                        id: p.id, 
+                        title: p.title, 
+                        categoryId: p.categoryId,
+                        categoryIdType: typeof p.categoryId,
+                        matches: String(p.categoryId || '').trim() === targetCategoryId
+                      }))
+                  });
+                } else {
+                  console.log('Found related products:', {
+                    count: related.length,
+                    categoryId: targetCategoryId,
+                    categoryName: categoryInfo?.chip || categoryInfo?.title,
+                    productTitles: related.map(p => p.title)
+                  });
+                }
+              } else {
+                // No categoryId available - don't show related products
+                // User wants category-only filtering
+                related = [];
+                console.log('Product has no categoryId, not showing related products');
+              }
+              
+              setRelatedProducts(related);
               
               // Resolve related product images in background
-              filtered.forEach((p, index) => {
+              related.forEach((p) => {
                 if (p.image) {
                   imagePromises.push(
                     resolveImageUrl(p.image).then(url => {
@@ -532,20 +599,37 @@ export default function ProductDetail() {
         </section>
       )}
 
-      {/* Explore Soil Kings Products */}
+      {/* Explore Related Products */}
       <section className="brand-products product-detail-products">
         <div className="container">
           <div className="prod-head">
             <div>
-              <Link
-                to="/products"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <h2 className="prod-title">
-                  Explore {brandName}
-                  <br /> Products
-                </h2>
-              </Link>
+              {categoryName ? (
+                <>
+                  <SectionTag label={`★ ${categoryName.toUpperCase()}`} />
+                  <h2 className="prod-title" style={{ marginTop: '0.5rem' }}>
+                    More from {categoryName}
+                  </h2>
+                  <p style={{ 
+                    marginTop: '0.5rem', 
+                    color: '#6B7280', 
+                    fontSize: '1rem',
+                    fontWeight: '400'
+                  }}>
+                    Explore other products in this category
+                  </p>
+                </>
+              ) : (
+                <Link
+                  to="/products"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  <h2 className="prod-title">
+                    Explore {brandName}
+                    <br /> Products
+                  </h2>
+                </Link>
+              )}
             </div>
 
             <div className="prod-arrows">

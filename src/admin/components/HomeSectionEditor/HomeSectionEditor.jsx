@@ -883,6 +883,143 @@ export default function HomeSectionEditor({
         handleStyleChange
       )}
 
+      {/* Button Section */}
+      <div className="form-section">
+        <h4 className="section-subtitle">Button Settings</h4>
+        
+        <div className="form-group">
+          <label className="admin-label">Button Text</label>
+          <input
+            type="text"
+            value={formData.content.button?.text || ""}
+            onChange={(e) =>
+              handleContentChange("button", {
+                ...formData.content.button,
+                text: e.target.value,
+              })
+            }
+            className="admin-input"
+            placeholder="Know More"
+          />
+          <small className="form-hint">
+            The text displayed on the button (e.g., "Know More", "Learn More", "Read More").
+          </small>
+        </div>
+
+        <div className="form-group">
+          <label className="admin-label">Button Link</label>
+          <input
+            type="text"
+            value={formData.content.button?.link || ""}
+            onChange={(e) =>
+              handleContentChange("button", {
+                ...formData.content.button,
+                link: e.target.value,
+              })
+            }
+            className="admin-input"
+            placeholder="/about"
+          />
+          <small className="form-hint">
+            The URL or path the button links to (e.g., "/about" for About Us page, "/contact" for Contact page, or external URLs like "https://example.com").
+          </small>
+        </div>
+
+        {/* Button Styling */}
+        <div className="form-group">
+          <label className="admin-label">Button Background Color</label>
+          <div className="form-row">
+            <input
+              type="color"
+              value={
+                formData.styles?.buttonBackgroundColor || "#323790"
+              }
+              onChange={(e) =>
+                handleStyleChange("buttonBackgroundColor", e.target.value)
+              }
+              style={{ height: "40px", width: "100px", cursor: "pointer" }}
+            />
+            <input
+              type="text"
+              value={formData.styles?.buttonBackgroundColor || ""}
+              onChange={(e) =>
+                handleStyleChange("buttonBackgroundColor", e.target.value)
+              }
+              className="admin-input"
+              placeholder="#323790"
+              style={{ flex: 1, marginLeft: "10px" }}
+            />
+          </div>
+          <small className="form-hint">
+            Set the background color of the button using the color picker or enter a hex code.
+          </small>
+        </div>
+
+        <div className="form-group">
+          <label className="admin-label">Button Text Color</label>
+          <div className="form-row">
+            <input
+              type="color"
+              value={formData.styles?.buttonTextColor || "#FFFFFF"}
+              onChange={(e) =>
+                handleStyleChange("buttonTextColor", e.target.value)
+              }
+              style={{ height: "40px", width: "100px", cursor: "pointer" }}
+            />
+            <input
+              type="text"
+              value={formData.styles?.buttonTextColor || ""}
+              onChange={(e) =>
+                handleStyleChange("buttonTextColor", e.target.value)
+              }
+              className="admin-input"
+              placeholder="#FFFFFF"
+              style={{ flex: 1, marginLeft: "10px" }}
+            />
+          </div>
+          <small className="form-hint">
+            Set the text color of the button. Ensure good contrast with the background color for readability.
+          </small>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label className="admin-label">Button Font Size (px)</label>
+            <input
+              type="number"
+              value={formData.styles?.buttonFontSize || ""}
+              onChange={(e) =>
+                handleStyleChange(
+                  "buttonFontSize",
+                  e.target.value ? parseInt(e.target.value) : null
+                )
+              }
+              className="admin-input"
+              placeholder="16"
+              min="10"
+              max="24"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="admin-label">Button Font Weight</label>
+            <select
+              value={formData.styles?.buttonFontWeight || ""}
+              onChange={(e) =>
+                handleStyleChange("buttonFontWeight", e.target.value || null)
+              }
+              className="admin-select"
+            >
+              <option value="">Default</option>
+              <option value="400">400 (Normal)</option>
+              <option value="500">500 (Medium)</option>
+              <option value="600">600 (Semi Bold)</option>
+              <option value="700">700 (Bold)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       {renderCommonStyling()}
     </>
   );

@@ -158,20 +158,23 @@ export const getNavigationConfig = async () => {
         autoGenerate: config.autoGenerate !== false, 
         enquiryButtonText: config.enquiryButtonText || 'Enquiry Form',
         enquiryButtonColor: config.enquiryButtonColor || '#007bff',
+        hoverEffectColor: config.hoverEffectColor || '#F7F7FB',
         ...config 
       };
     }
     return { 
       autoGenerate: true,
       enquiryButtonText: 'Enquiry Form',
-      enquiryButtonColor: '#007bff'
+      enquiryButtonColor: '#007bff',
+      hoverEffectColor: '#F7F7FB'
     };
   } catch (error) {
     console.error('Error fetching navigation config:', error);
     return { 
       autoGenerate: true,
       enquiryButtonText: 'Enquiry Form',
-      enquiryButtonColor: '#007bff'
+      enquiryButtonColor: '#007bff',
+      hoverEffectColor: '#F7F7FB'
     };
   }
 };

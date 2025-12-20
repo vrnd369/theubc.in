@@ -210,6 +210,37 @@ export default function ImageSelector({
   isIcon = false,
 }) {
   const [showModal, setShowModal] = useState(false);
+
+  // Lock body scroll when modal is open and hide Live Preview
+  useEffect(() => {
+    if (showModal) {
+      // Add class to body to hide Live Preview
+      document.body.classList.add('image-selector-modal-open');
+      
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      // Lock body scroll
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        // Remove class when modal closes
+        document.body.classList.remove('image-selector-modal-open');
+        
+        // Restore scroll position when modal closes
+        const scrollY = document.body.style.top;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        if (scrollY) {
+          window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        }
+      };
+    }
+  }, [showModal]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [compressing, setCompressing] = useState(false);

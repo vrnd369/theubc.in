@@ -30,7 +30,11 @@ export default function NavigationManagement() {
   const [configLoading, setConfigLoading] = useState(true);
   const [enquiryButtonText, setEnquiryButtonText] = useState('Enquiry Form');
   const [enquiryButtonColor, setEnquiryButtonColor] = useState('#007bff');
+  const [hoverEffectColor, setHoverEffectColor] = useState('#F7F7FB');
+  const [productDropdownHoverColor, setProductDropdownHoverColor] = useState('#F7F7FB');
   const [savingEnquiryButton, setSavingEnquiryButton] = useState(false);
+  const [savingHoverColor, setSavingHoverColor] = useState(false);
+  const [savingProductDropdownHoverColor, setSavingProductDropdownHoverColor] = useState(false);
   const editorContainerRef = useRef(null);
 
   useEffect(() => {
@@ -57,6 +61,8 @@ export default function NavigationManagement() {
       setAutoGenerate(config.autoGenerate !== false);
       setEnquiryButtonText(config.enquiryButtonText || 'Enquiry Form');
       setEnquiryButtonColor(config.enquiryButtonColor || '#007bff');
+      setHoverEffectColor(config.hoverEffectColor || '#F7F7FB');
+      setProductDropdownHoverColor(config.productDropdownHoverColor || '#F7F7FB');
     } catch (err) {
       console.error('Error fetching navigation config:', err);
     } finally {
@@ -96,6 +102,44 @@ export default function NavigationManagement() {
       alert('Error saving enquiry button settings. Please try again.');
     } finally {
       setSavingEnquiryButton(false);
+    }
+  };
+
+  const handleSaveHoverColor = async () => {
+    try {
+      setSavingHoverColor(true);
+      // Get current config to preserve other settings
+      const currentConfig = await getNavigationConfig();
+      await setNavigationConfig({
+        ...currentConfig,
+        hoverEffectColor: hoverEffectColor || '#F7F7FB'
+      });
+      alert('Hover effect color saved successfully!');
+      setRefreshNavbar(prev => prev + 1); // Refresh navbar preview
+    } catch (err) {
+      console.error('Error saving hover effect color:', err);
+      alert('Error saving hover effect color. Please try again.');
+    } finally {
+      setSavingHoverColor(false);
+    }
+  };
+
+  const handleSaveProductDropdownHoverColor = async () => {
+    try {
+      setSavingProductDropdownHoverColor(true);
+      // Get current config to preserve other settings
+      const currentConfig = await getNavigationConfig();
+      await setNavigationConfig({
+        ...currentConfig,
+        productDropdownHoverColor: productDropdownHoverColor || '#F7F7FB'
+      });
+      alert('Product dropdown hover color saved successfully!');
+      setRefreshNavbar(prev => prev + 1); // Refresh navbar preview
+    } catch (err) {
+      console.error('Error saving product dropdown hover color:', err);
+      alert('Error saving product dropdown hover color. Please try again.');
+    } finally {
+      setSavingProductDropdownHoverColor(false);
     }
   };
 
@@ -440,6 +484,120 @@ export default function NavigationManagement() {
                 className="admin-btn admin-btn-primary"
               >
                 {savingEnquiryButton ? 'Saving...' : 'Save Enquiry Button Settings'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Hover Effect Color Settings */}
+        <div className="admin-card" style={{ marginBottom: 'var(--admin-spacing-lg)' }}>
+          <div style={{ marginBottom: 'var(--admin-spacing-md)' }}>
+            <h2 className="admin-heading-3">Navigation Hover Effect Color</h2>
+            <p className="admin-text-sm admin-mt-xs" style={{ color: 'var(--admin-text-light)' }}>
+              Customize the background color that appears when hovering over the enquiry form button.
+            </p>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--admin-spacing-md)' }}>
+            <div>
+              <label className="admin-label">
+                Hover Effect Color
+              </label>
+              <div style={{ display: 'flex', gap: 'var(--admin-spacing-sm)', alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="color"
+                  value={hoverEffectColor}
+                  onChange={(e) => setHoverEffectColor(e.target.value)}
+                  className="admin-input"
+                  style={{ width: '60px', height: '40px', cursor: 'pointer', padding: '2px' }}
+                />
+                <input
+                  type="text"
+                  value={hoverEffectColor}
+                  onChange={(e) => setHoverEffectColor(e.target.value)}
+                  placeholder="#F7F7FB"
+                  className="admin-input"
+                  style={{ width: '120px' }}
+                />
+                <div
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    backgroundColor: hoverEffectColor,
+                    border: '1px solid var(--admin-border-color)',
+                    borderRadius: '4px',
+                    flexShrink: 0
+                  }}
+                  title="Preview"
+                />
+              </div>
+              <small className="form-hint" style={{ display: 'block', marginTop: '8px', color: 'var(--admin-text-light)' }}>
+                This color will be applied when users hover over the enquiry form button.
+              </small>
+            </div>
+            <div>
+              <button
+                onClick={handleSaveHoverColor}
+                disabled={savingHoverColor || configLoading}
+                className="admin-btn admin-btn-primary"
+              >
+                {savingHoverColor ? 'Saving...' : 'Save Hover Effect Color'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Product Dropdown Hover Effect Color Settings */}
+        <div className="admin-card" style={{ marginBottom: 'var(--admin-spacing-lg)' }}>
+          <div style={{ marginBottom: 'var(--admin-spacing-md)' }}>
+            <h2 className="admin-heading-3">Product Dropdown Hover Effect Color</h2>
+            <p className="admin-text-sm admin-mt-xs" style={{ color: 'var(--admin-text-light)' }}>
+              Customize the background color that appears when hovering over product dropdown category items.
+            </p>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--admin-spacing-md)' }}>
+            <div>
+              <label className="admin-label">
+                Product Dropdown Hover Color
+              </label>
+              <div style={{ display: 'flex', gap: 'var(--admin-spacing-sm)', alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="color"
+                  value={productDropdownHoverColor}
+                  onChange={(e) => setProductDropdownHoverColor(e.target.value)}
+                  className="admin-input"
+                  style={{ width: '60px', height: '40px', cursor: 'pointer', padding: '2px' }}
+                />
+                <input
+                  type="text"
+                  value={productDropdownHoverColor}
+                  onChange={(e) => setProductDropdownHoverColor(e.target.value)}
+                  placeholder="#F7F7FB"
+                  className="admin-input"
+                  style={{ width: '120px' }}
+                />
+                <div
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    backgroundColor: productDropdownHoverColor,
+                    border: '1px solid var(--admin-border-color)',
+                    borderRadius: '4px',
+                    flexShrink: 0
+                  }}
+                  title="Preview"
+                />
+              </div>
+              <small className="form-hint" style={{ display: 'block', marginTop: '8px', color: 'var(--admin-text-light)' }}>
+                This color will be applied when users hover over category items in the product dropdown menu.
+              </small>
+            </div>
+            <div>
+              <button
+                onClick={handleSaveProductDropdownHoverColor}
+                disabled={savingProductDropdownHoverColor || configLoading}
+                className="admin-btn admin-btn-primary"
+              >
+                {savingProductDropdownHoverColor ? 'Saving...' : 'Save Product Dropdown Hover Color'}
               </button>
             </div>
           </div>

@@ -1761,6 +1761,22 @@ const AboutSectionEditor = forwardRef(function AboutSectionEditor(
           />
         </div>
 
+        <div className="form-group">
+          <label className="admin-label">View All Button Link</label>
+          <small className="form-hint">
+            Enter the URL where the "View All" button should redirect (e.g., social media link, news page, etc.). Leave empty if you don't want the button to be clickable.
+          </small>
+          <input
+            type="url"
+            value={formData.content.viewAllButtonLink || ""}
+            onChange={(e) =>
+              handleContentChange("viewAllButtonLink", e.target.value)
+            }
+            className="admin-input"
+            placeholder="https://linkedin.com/company/yourcompany"
+          />
+        </div>
+
         <div className="form-section">
           <div className="section-header">
             <h4 className="section-subtitle">News Items</h4>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./Categories.css";
 import "../pages/Brands.css";
@@ -9,6 +9,15 @@ import {
   getProducts,
 } from "../admin/services/productService";
 import { resolveImageUrl } from "../utils/imageUtils";
+
+// Define the order of categories (starting with Grains)
+const categoryOrder = [
+  "Grains",
+  "Spices & Seasonings",
+  "Masala Powders",
+  "Appalam",
+  "Culinary Pastes"
+];
 
 // Helper to convert category chip to URL-friendly slug
 const chipToSlug = (chip) => {
@@ -41,6 +50,7 @@ export default function Categories({
   const navigate = useNavigate();
   const location = useLocation();
   const isProductsPage = location.pathname === "/products";
+  
   // Try to load from cache immediately
   const getCachedData = () => {
     try {
@@ -183,6 +193,29 @@ export default function Categories({
     );
   }, [brands, brandIconUrls]);
 
+  // Helper function to sort chips by predefined order
+  const sortChipsByOrder = useCallback((chips) => {
+    const sorted = chips.filter((chip) => chip === "All"); // Keep "All" first
+    const otherChips = chips.filter((chip) => chip !== "All");
+    
+    // Sort other chips by predefined order
+    const sortedOther = categoryOrder
+      .map((orderName) => 
+        otherChips.find((chip) => 
+          chip.toLowerCase().includes(orderName.toLowerCase()) || 
+          orderName.toLowerCase().includes(chip.toLowerCase())
+        )
+      )
+      .filter(Boolean); // Remove undefined
+    
+    // Add any chips not in the predefined order at the end (alphabetically)
+    const remaining = otherChips.filter(
+      (chip) => !sortedOther.includes(chip)
+    ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    
+    return [...sorted, ...sortedOther, ...remaining];
+  }, []);
+
   // Build chips by brand dynamically from categories
   // Categories store brandId as the document ID, so we match using document ID
   const chipsByBrand = useMemo(() => {
@@ -197,7 +230,7 @@ export default function Categories({
       ];
       // Use brandId (identifier) for the key so URLs work correctly
       const brandKey = brand.brandId || brand.id;
-      result[brandKey] = [...new Set(chips)]; // Remove duplicates
+      result[brandKey] = sortChipsByOrder([...new Set(chips)]); // Remove duplicates and sort
     });
 
     // Build "All" chips from all unique chips
@@ -205,10 +238,10 @@ export default function Categories({
       "All",
       ...new Set(categories.map((c) => c.chip).filter(Boolean)),
     ];
-    result["All"] = allChips;
+    result["All"] = sortChipsByOrder(allChips);
 
     return result;
-  }, [brands, categories]);
+  }, [brands, categories, sortChipsByOrder]);
 
   // Get category chips based on selected brand
   const chips = useMemo(() => {
@@ -250,7 +283,7 @@ export default function Categories({
   }, [selectedBrand, chips, active, loading, initialCategory]);
 
   // Get visible products (when active !== 'All', show products filtered by category)
-  // OR when both brand and category are "All", show all products
+  // OR when both brand and category are "All", show all products sorted by category name
   const visibleProducts = useMemo(() => {
     let filtered = products;
 
@@ -275,6 +308,40 @@ export default function Categories({
       if (brand) {
         filtered = filtered.filter((p) => p.brandId === brand.id);
       }
+    }
+
+    // When filter is "All" (active === "All"), sort products by predefined category order
+    if (active === "All") {
+      filtered = filtered.sort((a, b) => {
+        // Find categories for both products
+        const categoryA = categories.find((c) => c.id === a.categoryId);
+        const categoryB = categories.find((c) => c.id === b.categoryId);
+        
+        // Get category names (use chip, title, or id as fallback)
+        const nameA = categoryA?.chip || categoryA?.title || categoryA?.id || "";
+        const nameB = categoryB?.chip || categoryB?.title || categoryB?.id || "";
+        
+        // Get index in predefined order (if not found, put at end)
+        const indexA = categoryOrder.findIndex(
+          (orderName) => nameA.toLowerCase().includes(orderName.toLowerCase()) || 
+                        orderName.toLowerCase().includes(nameA.toLowerCase())
+        );
+        const indexB = categoryOrder.findIndex(
+          (orderName) => nameB.toLowerCase().includes(orderName.toLowerCase()) || 
+                        orderName.toLowerCase().includes(nameB.toLowerCase())
+        );
+        
+        // If both found in order, sort by order index
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+        // If only A found, A comes first
+        if (indexA !== -1) return -1;
+        // If only B found, B comes first
+        if (indexB !== -1) return 1;
+        // If neither found, sort alphabetically
+        return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
+      });
     }
 
     return filtered;
@@ -405,13 +472,57 @@ export default function Categories({
           <div className="products-list-section">
             {/* Show products based on filters */}
             <>
-                <h3 className="products-list-title">
-                  {active === "All" && selectedBrand === "All"
-                    ? "All Products"
-                    : active === "All" && selectedBrand !== "All"
-                    ? `Products - ${brands.find(b => (b.brandId || b.id) === selectedBrand)?.name || selectedBrand}`
-                    : `Products in ${active}`}
-                </h3>
+                {/* Category Header - Show when viewing a specific category */}
+                {active !== "All" && (() => {
+                  const activeCategory = categories.find((c) => c.chip === active);
+                  if (activeCategory) {
+                    return (
+                      <div className="category-header-section" style={{
+                        marginBottom: "2rem",
+                        paddingBottom: "1.5rem",
+                        borderBottom: "1px solid #e5e7eb"
+                      }}>
+                        <SectionTag label={`★ ${activeCategory.chip?.toUpperCase() || 'CATEGORY'}`} />
+                        <h2 className="category-page-title" style={{
+                          fontSize: "2rem",
+                          fontWeight: "700",
+                          marginTop: "0.5rem",
+                          marginBottom: activeCategory.subtitle ? "0.5rem" : "1.5rem",
+                          color: "#1a1a1a"
+                        }}>
+                          {activeCategory.title || activeCategory.chip || active}
+                        </h2>
+                        {activeCategory.subtitle && (
+                          <p className="category-page-subtitle" style={{
+                            fontSize: "1.125rem",
+                            color: "#6B7280",
+                            marginBottom: "1.5rem",
+                            lineHeight: "1.6"
+                          }}>
+                            {activeCategory.subtitle}
+                          </p>
+                        )}
+                        <p className="category-products-count" style={{
+                          fontSize: "0.875rem",
+                          color: "#9CA3AF",
+                          marginTop: "0.5rem"
+                        }}>
+                          {visibleProducts.length} {visibleProducts.length === 1 ? 'product' : 'products'} in this category
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+                
+                {/* Products Title - Show when not viewing a specific category */}
+                {active === "All" && (
+                  <h3 className="products-list-title">
+                    {selectedBrand === "All"
+                      ? "All Products"
+                      : `Products - ${brands.find(b => (b.brandId || b.id) === selectedBrand)?.name || selectedBrand}`}
+                  </h3>
+                )}
                 {visibleProducts.length > 0 ? (
                   <>
                   <div className="brand-prod-row">

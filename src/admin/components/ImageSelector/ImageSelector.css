@@ -75,22 +75,32 @@
   background: transparent;
 }
 
-/* Modal */
+/* Modal Backdrop */
 .image-selector-modal {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000;
+  z-index: 1001;
   padding: var(--admin-spacing-lg);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+  /* Prevent clicks from passing through */
+  pointer-events: auto;
+  /* Ensure backdrop covers everything and is scrollable */
+  overflow-y: auto;
+  /* Ensure backdrop is above form overlay (z-index: 1000) */
 }
 
+/* Modal Content Container */
 .image-selector-modal-content {
   background: var(--admin-bg-secondary);
   border-radius: var(--admin-radius-md);
@@ -99,9 +109,37 @@
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--admin-shadow-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.1);
   position: relative;
-  z-index: 10001;
+  z-index: 1002;
+  animation: slideUpScale 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Prevent backdrop clicks from closing when clicking content */
+  pointer-events: auto;
+  margin: auto;
+  /* Ensure content is above backdrop */
+  transform: translateZ(0);
+}
+
+/* Fade in animation for backdrop */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide up and scale animation for modal */
+@keyframes slideUpScale {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .modal-header {

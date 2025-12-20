@@ -91,10 +91,20 @@ export default function HeaderStyling() {
   const [error, setError] = useState(null);
   const [refreshNavbar, setRefreshNavbar] = useState(0);
   const [savingSections, setSavingSections] = useState({});
+  const [showCustomWeight, setShowCustomWeight] = useState(false);
+  const [customWeight, setCustomWeight] = useState("");
 
   useEffect(() => {
     loadConfig();
   }, []);
+
+  // Check if current weight is custom and show input if needed
+  useEffect(() => {
+    if (config?.fontWeight && !["300", "400", "500", "600", "700"].includes(String(config.fontWeight))) {
+      setShowCustomWeight(true);
+      setCustomWeight(String(config.fontWeight));
+    }
+  }, [config]);
 
   const loadConfig = async () => {
     try {
@@ -1881,15 +1891,61 @@ export default function HeaderStyling() {
                 <label className="admin-label">Font Weight</label>
                 <select
                   className="admin-select"
-                  value={config.fontWeight || "400"}
-                  onChange={(e) => updateConfig({ fontWeight: e.target.value })}
+                  value={
+                    showCustomWeight || (config.fontWeight && 
+                    !["300", "400", "500", "600", "700"].includes(config.fontWeight))
+                      ? "custom"
+                      : (config.fontWeight || "400")
+                  }
+                  onChange={(e) => {
+                    if (e.target.value === "custom") {
+                      setShowCustomWeight(true);
+                      setCustomWeight(config.fontWeight || "");
+                    } else {
+                      setShowCustomWeight(false);
+                      updateConfig({ fontWeight: e.target.value });
+                    }
+                  }}
                 >
                   <option value="300">Light (300)</option>
                   <option value="400">Regular (400)</option>
                   <option value="500">Medium (500)</option>
                   <option value="600">Semi-Bold (600)</option>
                   <option value="700">Bold (700)</option>
+                  <option value="custom">Custom</option>
                 </select>
+                {showCustomWeight && (
+                  <div style={{ marginTop: "8px", display: "flex", gap: "6px", alignItems: "center" }}>
+                    <input
+                      type="number"
+                      value={customWeight}
+                      onChange={(e) => setCustomWeight(e.target.value)}
+                      onBlur={() => {
+                        if (customWeight) {
+                          updateConfig({ fontWeight: customWeight });
+                        }
+                      }}
+                      placeholder="Enter custom weight (1-1000)"
+                      min="1"
+                      max="1000"
+                      className="admin-input"
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (customWeight) {
+                          updateConfig({ fontWeight: customWeight });
+                          setShowCustomWeight(false);
+                        }
+                      }}
+                      className="admin-btn admin-btn-primary"
+                      style={{ fontSize: "12px", padding: "6px 12px", whiteSpace: "nowrap" }}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                )}
                 <small className="form-hint">
                   <strong>How it works:</strong> Thickness/boldness of
                   navigation text. Higher numbers = bolder text.{" "}

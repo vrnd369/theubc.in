@@ -133,7 +133,7 @@ export default function App() {
             }
           />
           <Route
-            path="/brands/:brandId"
+            path="/brands/:brandSlug"
             element={
               <PublicLayout>
                 <DynamicBrand />

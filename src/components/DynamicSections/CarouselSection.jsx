@@ -58,6 +58,35 @@ const BrandCard = ({ item, index, totalItems }) => {
     loadImage();
   }, [item.image]);
 
+  // Determine the link URL - prioritize brandSlug if available, otherwise use link
+  // If link is /brands without a slug, keep it as /brands (listing page)
+  // If link is /brands/:slug, use it as-is
+  // If brandSlug is provided, construct /brands/:brandSlug
+  const getBrandLink = () => {
+    // If brandSlug is explicitly provided, use it
+    if (item.brandSlug) {
+      return `/brands/${item.brandSlug}`;
+    }
+    
+    // If link is already a brand page URL, use it as-is
+    if (item.link && item.link.startsWith('/brands/')) {
+      return item.link;
+    }
+    
+    // If link is /brands (listing page), use it as-is
+    if (item.link === '/brands') {
+      return item.link;
+    }
+    
+    // If link is provided but not a brand page, use it (could be custom link)
+    if (item.link) {
+      return item.link;
+    }
+    
+    // Default: no link
+    return "#";
+  };
+
   return (
     <div
       className={`brand-carousel-card ${isFirst ? "first-card" : ""}`}
@@ -96,7 +125,7 @@ const BrandCard = ({ item, index, totalItems }) => {
         {item.description && <p>{formatText(item.description)}</p>}
         {item.buttonText && (
           <Link
-            to={item.link || "#"}
+            to={getBrandLink()}
             className="brand-carousel-btn"
             style={{ backgroundColor: item.buttonColor || "#008562" }}
             data-button-color={item.buttonColor || "#008562"}

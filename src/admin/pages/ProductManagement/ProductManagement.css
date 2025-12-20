@@ -661,6 +661,18 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
   overflow: hidden;
   position: relative;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+/* Hide Live Preview when ImageSelector modal is open */
+body.image-selector-modal-open .product-form-preview,
+body.video-selector-modal-open .product-form-preview {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
 }
 
 .product-form-preview::before {
@@ -683,7 +695,7 @@
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-bottom: 1px solid #e2e8f0;
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
 
 .product-form-preview-header h3 {
@@ -719,6 +731,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  z-index: 0;
 }
 
 .product-form-preview-content:hover {

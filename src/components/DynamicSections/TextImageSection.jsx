@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../BrandsSection.css';
 import './DynamicSections.css';
 import { parseInlineFormatting } from '../../admin/components/BrandPageEditor/InlineFontEditor';
@@ -109,6 +110,37 @@ export default function TextImageSection({ content, styles = {} }) {
                   </React.Fragment>
                 ))}
               </p>
+            )}
+            {content?.button?.text && content?.button?.link && (
+              <Link
+                to={content.button.link}
+                className="promise-button"
+                style={{
+                  display: 'inline-block',
+                  marginTop: '24px',
+                  padding: '12px 24px',
+                  backgroundColor: styles?.buttonBackgroundColor || '#323790',
+                  color: styles?.buttonTextColor || '#FFFFFF',
+                  textDecoration: 'none',
+                  borderRadius: '8px',
+                  fontSize: styles?.buttonFontSize || '16px',
+                  fontWeight: styles?.buttonFontWeight || '500',
+                  fontFamily: styles?.buttonFontFamily || 'inherit',
+                  transition: 'all 0.3s ease',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.opacity = '0.9';
+                  e.target.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.opacity = '1';
+                  e.target.style.transform = 'translateY(0)';
+                }}
+              >
+                {content.button.text}
+              </Link>
             )}
           </div>
         </div>

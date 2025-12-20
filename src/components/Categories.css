@@ -21,10 +21,20 @@
   font-family: var(--gs);
 }
 
-.categories-section .container{ text-align: left; }
+.categories-section .container{ 
+  text-align: left; 
+  overflow: visible !important; /* Allow buttons to expand */
+}
+
+/* Ensure container doesn't clip category buttons */
+.categories-section .container .categories-buttons-wrapper {
+  overflow: visible !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
 
 .categories-section .tag{
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
   gap: 8px;
@@ -39,14 +49,35 @@
   color: #FFFFFF;
   opacity: 100%;
   background: #323790; /* Blue/500 */
-  width: 158px;
+  width: auto !important; /* Dynamic width - automatically expands based on content */
+  min-width: fit-content !important; /* Ensure minimum width fits content */
+  max-width: none !important; /* No maximum width constraint */
   height: 33px;
-  padding: 0;
+  padding: 0 14px !important; /* Add horizontal padding for better appearance */
   border-radius: 999px;
   border: none;
   box-sizing: border-box;
   text-align: center;
-  white-space: nowrap;
+  white-space: nowrap !important; /* Prevent text wrapping */
+  overflow: visible !important; /* Ensure text is not clipped */
+  text-overflow: clip !important; /* Show full text, no ellipsis */
+  flex-shrink: 0 !important; /* Prevent shrinking */
+}
+
+/* Ensure tag inner elements can expand */
+.categories-section .tag .tag-stars,
+.categories-section .tag .tag-text {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  flex-shrink: 0 !important;
+}
+
+.categories-section .tag .tag-text {
+  display: inline-block;
+  width: auto !important;
+  min-width: fit-content !important;
+  max-width: none !important;
 }
 
 .categories-section h2{
@@ -71,25 +102,70 @@
 
 /* ---- Categories Buttons ---- */
 .categories-buttons-wrapper{
-  display: flex;
+  display: flex !important;
   flex-direction: row; /* Horizontal flow */
   flex-wrap: wrap;
   gap: 8px; /* Gap: 8 units */
   align-items: flex-start; /* Top-left alignment */
   justify-content: flex-start;
-  width: fit-content; /* Hug width (1029) */
-  max-width: 1029px;
+  width: 100% !important; /* Full width to allow buttons to expand */
+  max-width: 100% !important; /* Remove fixed max-width constraint */
   min-height: 74px; /* Hug height (74) */
   padding: 8px; /* Padding: 8 units (horizontal and vertical) */
   margin-top: 8px;
   margin-bottom: 24px;
   box-sizing: border-box;
+  overflow: visible !important; /* Allow buttons to expand beyond wrapper if needed */
+}
+
+/* Ensure category buttons can expand fully */
+.categories-section .categories-buttons-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+
+.categories-section .category-button {
+  width: auto !important;
+  min-width: max-content !important;
+  max-width: none !important;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+}
+
+/* Ensure button text is fully visible and not clipped */
+.categories-section .category-button,
+.categories-section .category-button * {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+/* Force button to size based on content - highest specificity */
+button.category-button,
+button.category-button.active {
+  width: auto !important;
+  min-width: max-content !important;
+  max-width: none !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important; /* Don't flex, use content size */
+}
+
+/* Ensure no parent is constraining the button */
+.categories-section .container,
+.categories-section .container * {
+  min-width: 0; /* Allow shrinking, but buttons will use max-content */
+}
+
+.categories-section .categories-buttons-wrapper * {
+  min-width: 0; /* Allow flex items to shrink, but buttons use max-content */
 }
 
 .category-button{
   background: #FFFFFF; /* White background for inactive state */
   color: #737373; /* Neutral/500 - dark gray text */
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
   height: 58px;
@@ -102,11 +178,16 @@
   letter-spacing: -1.5px;
   border: 1px solid #E5E7EB; /* Light gray border for unselected state */
   box-sizing: border-box;
-  white-space: nowrap;
+  white-space: nowrap !important; /* Prevent text wrapping */
   cursor: pointer;
   transition: all 0.2s ease;
-  width: fit-content;
-  min-width: max-content; /* Compatible alternative to fit-content */
+  width: auto !important; /* Dynamic width - automatically expands based on content */
+  min-width: max-content !important; /* Ensure minimum width fits all content */
+  max-width: none !important; /* No maximum width constraint */
+  flex-shrink: 0 !important; /* Prevent flexbox from shrinking the button */
+  flex-grow: 0 !important; /* Prevent flexbox from growing the button */
+  overflow: visible !important; /* Ensure text is not clipped */
+  text-overflow: clip !important; /* Show full text, no ellipsis */
 }
 
 .category-button:hover{
@@ -414,13 +495,18 @@
 @media (max-width: 1024px){
   .categories-section{ padding: 72px 0; }
   .categories-section .tag{ 
-    width: 158px;
+    width: auto !important; /* Dynamic width - automatically expands based on content */
+    min-width: fit-content !important;
+    max-width: none !important;
     height: 33px;
-    padding: 0;
+    padding: 0 14px !important; /* Add horizontal padding */
     font-size: 10px;
     line-height: 21px;
     letter-spacing: 0.4em;
     margin-bottom: 24px;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
   }
   .categories-section h2{ 
     margin-bottom: 20px;
@@ -480,7 +566,7 @@
   
   .categories-buttons-wrapper{
     width: 100%;
-    max-width: 1029px;
+    max-width: 100%; /* Allow full width on tablet */
     height: auto;
     min-height: 74px;
     gap: 8px;
@@ -494,6 +580,13 @@
     line-height: 100%;
     letter-spacing: -1.5px;
     font-weight: 500;
+    width: auto !important; /* Dynamic width - automatically expands based on content */
+    min-width: max-content !important;
+    max-width: none !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
   }
   .grid-3{ grid-template-columns: repeat(2, minmax(0, 1fr)); } /* 2/row on tablet */
   .category-card-head{ min-height: 154px; }
@@ -526,11 +619,17 @@
   }
 
   .categories-section .tag {
-    width: 160px;
+    width: auto !important; /* Dynamic width - automatically expands based on content */
+    min-width: fit-content !important;
+    max-width: none !important;
     height: 32px;
+    padding: 0 14px !important; /* Add horizontal padding */
     font-size: 9.8px;
     line-height: 20.5px;
     margin-bottom: 22px;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
   }
 
   .categories-section h2 {
@@ -625,13 +724,18 @@
     margin-bottom: 20px;
   }
   .categories-section .tag{ 
-    width: 158px;
+    width: auto !important; /* Dynamic width - automatically expands based on content */
+    min-width: fit-content !important;
+    max-width: none !important;
     height: 33px;
-    padding: 0;
+    padding: 0 14px !important; /* Add horizontal padding */
     font-size: 10px;
     line-height: 21px;
     letter-spacing: 0.4em;
     margin-bottom: 20px;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
   }
   .categories-section h2{ 
     font-size: 32px; 
@@ -716,11 +820,17 @@
     line-height: 100%;
     letter-spacing: -1.5px;
     font-weight: 500;
-    flex-shrink: 0;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
     margin: 0;
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
+    width: auto !important; /* Dynamic width - automatically expands based on content */
+    min-width: max-content !important;
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
   }
   .grid-3{ grid-template-columns: 1fr; } /* 1/row on mobile */
   .category-card-head{ min-height: 162px; }
@@ -756,14 +866,19 @@
     margin-bottom: 40px;
   }
   .categories-section .tag{ 
-    width: 158px;
+    width: auto !important; /* Dynamic width - automatically expands based on content */
+    min-width: fit-content !important;
+    max-width: none !important;
     height: 33px;
-    padding: 0;
+    padding: 0 14px !important; /* Add horizontal padding */
     font-size: 10px;
     line-height: 21px;
     letter-spacing: 0.4em;
     margin-bottom: 16px;
     gap: 8px;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
   }
   .categories-section h2{ 
     font-size: 28px; 
@@ -853,11 +968,17 @@
     line-height: 100%;
     letter-spacing: -1.5px;
     font-weight: 500;
-    flex-shrink: 0;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
     margin: 0;
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
+    width: auto !important; /* Dynamic width - automatically expands based on content */
+    min-width: max-content !important;
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
   }
   .category-card-bar{
     padding: 18px 20px 20px;

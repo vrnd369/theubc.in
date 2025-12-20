@@ -66,6 +66,8 @@ export default function Navbar({ previewHeaderConfig = null }) {
   const [enquiryFormConfig, setEnquiryFormConfig] = useState(null);
   const [enquiryButtonText, setEnquiryButtonText] = useState('Enquiry Form');
   const [enquiryButtonColor, setEnquiryButtonColor] = useState('#007bff');
+  const [hoverEffectColor, setHoverEffectColor] = useState(null);
+  const [productDropdownHoverColor, setProductDropdownHoverColor] = useState(null);
 
   // Fetch navigation from Firestore and resolve images - optimized for performance
   const fetchNavigation = async (forceRefresh = false) => {
@@ -214,7 +216,7 @@ export default function Navbar({ previewHeaderConfig = null }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch navigation config for enquiry button settings - optimized
+  // Fetch navigation config for enquiry button settings and hover color - optimized
   useEffect(() => {
     const fetchNavigationConfig = async () => {
       try {
@@ -224,6 +226,12 @@ export default function Navbar({ previewHeaderConfig = null }) {
         }
         if (config.enquiryButtonColor) {
           setEnquiryButtonColor(config.enquiryButtonColor);
+        }
+        if (config.hoverEffectColor) {
+          setHoverEffectColor(config.hoverEffectColor);
+        }
+        if (config.productDropdownHoverColor) {
+          setProductDropdownHoverColor(config.productDropdownHoverColor);
         }
       } catch (error) {
         console.error("Error fetching navigation config:", error);
@@ -272,6 +280,31 @@ export default function Navbar({ previewHeaderConfig = null }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Close mobile menu when switching to desktop view
+  useEffect(() => {
+    const handleResize = () => {
+      // If we're on desktop (width > 1023px) and mobile menu is open, close it
+      if (window.innerWidth > 1023 && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+        setOpenDropdown(null);
+        setOpenSubmenu(null);
+      }
+    };
+
+    // Debounce resize events to avoid excessive calls
+    let resizeTimeout;
+    const debouncedResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(handleResize, 150);
+    };
+
+    window.addEventListener("resize", debouncedResize);
+    return () => {
+      window.removeEventListener("resize", debouncedResize);
+      clearTimeout(resizeTimeout);
+    };
+  }, [isMobileMenuOpen]);
+
   // close dropdown on outside click
   useEffect(() => {
     if (!openDropdown) return;
@@ -282,7 +315,15 @@ export default function Navbar({ previewHeaderConfig = null }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openDropdown]);
 
+  // Check if we're on mobile/tablet (where mouse events shouldn't trigger dropdowns)
+  const isMobileView = () => {
+    return window.innerWidth <= 1023;
+  };
+
   const handleMouseEnter = (name, e) => {
+    // Don't handle mouse events on mobile - only use click
+    if (isMobileView()) return;
+    
     // Clear any pending close timeout
     if (leaveTimeoutRef.current) {
       clearTimeout(leaveTimeoutRef.current);
@@ -293,6 +334,9 @@ export default function Navbar({ previewHeaderConfig = null }) {
     setOpenDropdown(name);
   };
   const handleMouseLeave = (name) => {
+    // Don't handle mouse events on mobile - only use click
+    if (isMobileView()) return;
+    
     // Add a small delay before closing to allow moving to the menu
     leaveTimeoutRef.current = setTimeout(() => {
       // Only close if this is still the open dropdown
@@ -309,7 +353,9 @@ export default function Navbar({ previewHeaderConfig = null }) {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen((v) => !v);
-    if (!isMobileMenuOpen) setOpenDropdown(null);
+    // Always close all dropdowns when toggling mobile menu
+    setOpenDropdown(null);
+    setOpenSubmenu(null);
   };
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
@@ -405,6 +451,8 @@ export default function Navbar({ previewHeaderConfig = null }) {
       const dropdownId =
         item.id || `dropdown-${item.label.toLowerCase().replace(/\s+/g, "-")}`;
       const isOpen = openDropdown === dropdownId;
+      const isCategoriesMenu = item.id === "nav-products";
+      
       return (
         <div
           key={dropdownId}
@@ -412,10 +460,14 @@ export default function Navbar({ previewHeaderConfig = null }) {
             isOpen ? "open" : ""
           }`}
           onMouseEnter={(e) => {
+            // Only handle mouse events on desktop
+            if (isMobileView()) return;
             e.stopPropagation();
             handleMouseEnter(dropdownId, e);
           }}
           onMouseLeave={(e) => {
+            // Only handle mouse events on desktop
+            if (isMobileView()) return;
             e.stopPropagation();
             handleMouseLeave(dropdownId);
           }}
@@ -424,13 +476,16 @@ export default function Navbar({ previewHeaderConfig = null }) {
             onClick={(e) => toggleDropdown(dropdownId, e)}
             className={`dropdown-trigger ${isActive ? "active" : ""}`}
           >
-            {item.label} ▾
+            {item.label}
+            <span className="dropdown-arrow">▼</span>
           </span>
           <div
             className={`menu ${
-              item.id === "nav-products" ? "categories-menu" : "brands-menu"
+              isCategoriesMenu ? "categories-menu" : "brands-menu"
             } ${isOpen ? "open" : ""}`}
             onMouseEnter={(e) => {
+              // Only handle mouse events on desktop
+              if (isMobileView()) return;
               e.stopPropagation();
               // Keep this dropdown open when hovering over its menu
               if (leaveTimeoutRef.current) {
@@ -440,18 +495,63 @@ export default function Navbar({ previewHeaderConfig = null }) {
               setOpenDropdown(dropdownId);
             }}
             onMouseLeave={(e) => {
+              // Only handle mouse events on desktop
+              if (isMobileView()) return;
               e.stopPropagation();
               handleMouseLeave(dropdownId);
             }}
           >
             {item.items?.map((subItem) =>
-              renderSubItem(subItem, dropdownId, item.id === "nav-products")
+              renderSubItem(subItem, dropdownId, isCategoriesMenu)
+            )}
+            {/* View All Products button - only show for Products dropdown */}
+            {isCategoriesMenu && (
+              <Link
+                to="/products"
+                className="btn cta view-all-products-btn"
+                onClick={closeMobileMenu}
+              >
+                View All Products
+              </Link>
             )}
           </div>
         </div>
       );
     }
     return null;
+  };
+
+  // Get category color based on category name/id
+  const getCategoryColor = (categoryLabel, categoryId) => {
+    const label = (categoryLabel || '').toLowerCase();
+    const id = (categoryId || '').toLowerCase();
+    
+    // Check for masalas
+    if (label.includes('masala') || id.includes('masala')) {
+      return '#DC2626'; // Red
+    }
+    // Check for rice
+    if (label.includes('rice') || id.includes('rice')) {
+      return '#0F766E'; // Dark Teal
+    }
+    // Check for appalam
+    if (label.includes('appalam') || label.includes('crisp') || id.includes('appalam')) {
+      return '#9333EA'; // Purple
+    }
+    // Check for spices
+    if (label.includes('spice') || id.includes('spice')) {
+      return '#92400E'; // Brown
+    }
+    // Check for grains
+    if (label.includes('grain') || id.includes('grain')) {
+      return '#92400E'; // Brown
+    }
+    // Check for pastes
+    if (label.includes('paste') || id.includes('paste')) {
+      return '#DC2626'; // Red (similar to masalas)
+    }
+    // Default color
+    return '#6B7280'; // Gray
   };
 
   const renderSubItem = (subItem, parentId, isCategories = false) => {
@@ -469,12 +569,14 @@ export default function Navbar({ previewHeaderConfig = null }) {
     if (subItem.type === "link") {
       // Render as category item if it's in Products dropdown
       if (isCategories) {
+        const categoryColor = getCategoryColor(subItem.label, subItem.id);
         return (
           <Link
             key={subItem.id}
             to={subItem.path}
             className="category-menu-item"
             onClick={closeMobileMenu}
+            style={{ backgroundColor: categoryColor }}
           >
             <div className="category-menu-item-content">
               {iconToUse && (
@@ -504,7 +606,7 @@ export default function Navbar({ previewHeaderConfig = null }) {
                   }}
                 />
               )}
-              <span>{subItem.label}</span>
+              <span className="category-label">{subItem.label}</span>
             </div>
           </Link>
         );
@@ -796,10 +898,13 @@ export default function Navbar({ previewHeaderConfig = null }) {
       } !important; 
       z-index: ${headerConfig.navbarZIndex || "100"} !important; 
     }
-    .navbar-wrap .container { 
-      max-width: ${headerConfig.containerMaxWidth || "1280px"} !important; 
-      padding-left: ${headerConfig.containerPadding || "24px"} !important; 
-      padding-right: ${headerConfig.containerPadding || "24px"} !important; 
+    /* Container styles - only apply to desktop/tablet, not mobile */
+    @media (min-width: 769px) {
+      .navbar-wrap .container { 
+        max-width: ${headerConfig.containerMaxWidth || "1280px"} !important; 
+        padding-left: ${headerConfig.containerPadding || "24px"} !important; 
+        padding-right: ${headerConfig.containerPadding || "24px"} !important; 
+      }
     }
     .nav-links { 
       font-family: ${headerConfig.fontFamily} !important; 
@@ -817,20 +922,14 @@ export default function Navbar({ previewHeaderConfig = null }) {
     }
     .nav-links a.active { 
       color: ${headerConfig.linkColorActive} !important; 
-      background-color: ${
-        headerConfig.linkActiveBackground || "#e8eaf0"
-      } !important; 
-      font-weight: 500 !important;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-      border: 1px solid rgba(25, 29, 35, 0.1) !important;
-      transform: scale(1.02) !important;
+      font-weight: 700 !important;
     }
     .nav-links a:active {
-      transform: scale(0.98) !important;
-      transition: transform 0.1s ease !important;
+      font-weight: 700 !important;
     }
     .nav-links a:hover { 
-      background-color: ${headerConfig.linkHoverBackground} !important; 
+      font-weight: 700 !important;
+      background: ${headerConfig.linkHoverBackground || "transparent"} !important;
     }
     .dropdown { 
       font-family: ${headerConfig.fontFamily} !important; 
@@ -842,24 +941,16 @@ export default function Navbar({ previewHeaderConfig = null }) {
     }
     .dropdown.active .dropdown-trigger, .dropdown-trigger.active { 
       color: ${headerConfig.linkColorActive} !important; 
-      font-weight: 500 !important;
-      background-color: ${
-        headerConfig.linkActiveBackground || "#e8eaf0"
-      } !important;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-      border: 1px solid rgba(25, 29, 35, 0.1) !important;
+      font-weight: 700 !important;
     }
     .dropdown.active {
-      background-color: ${
-        headerConfig.linkActiveBackground || "#e8eaf0"
-      } !important;
+      background-color: transparent !important;
     }
     .dropdown:active .dropdown-trigger {
-      transform: scale(0.98) !important;
-      transition: transform 0.1s ease !important;
+      font-weight: 700 !important;
     }
-    .dropdown:hover { 
-      background-color: ${headerConfig.linkHoverBackground} !important; 
+    .dropdown:hover .dropdown-trigger { 
+      font-weight: 700 !important; 
     }
     .dropdown .menu { 
       background: ${headerConfig.dropdownBackground} !important; 
@@ -871,6 +962,10 @@ export default function Navbar({ previewHeaderConfig = null }) {
       top: ${headerConfig.dropdownTopOffset || "calc(100% + 4px)"} !important; 
       z-index: ${headerConfig.dropdownZIndex || "1001"} !important; 
     }
+    .dropdown .menu.categories-menu { 
+      background: rgba(255, 255, 255, 0.85) !important; 
+      border-color: rgba(229, 231, 235, 0.85) !important; 
+    }
     .dropdown .menu a { 
       padding: ${headerConfig.dropdownItemPadding || "10px"} !important; 
       border-radius: ${
@@ -878,8 +973,15 @@ export default function Navbar({ previewHeaderConfig = null }) {
       } !important; 
       color: ${headerConfig.dropdownItemColor || "#374151"} !important; 
     }
+    .dropdown .menu a.view-all-products-btn { 
+      border-radius: 999px !important; 
+      padding: 0 !important; 
+    }
     .dropdown .menu a:hover { 
       background: ${headerConfig.dropdownItemHover} !important; 
+    }
+    .dropdown .menu a.view-all-products-btn:hover { 
+      background: #1C1F52 !important; 
     }
     .brands-menu .brand-item { 
       color: ${headerConfig.dropdownItemColor || "#374151"} !important; 
@@ -887,18 +989,88 @@ export default function Navbar({ previewHeaderConfig = null }) {
     .brands-menu .brand-item:hover { 
       background: ${headerConfig.dropdownItemHover} !important; 
     }
+    .dropdown .menu.brands-menu {
+      min-width: 150px !important;
+      max-width: 150px !important;
+    }
+    .categories-menu { 
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: wrap !important;
+      gap: 16px !important;
+      left: 0 !important;
+      right: 0 !important;
+      margin: 0 auto !important;
+      max-width: 1280px !important;
+      padding: 20px 24px !important;
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+      box-sizing: border-box !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+    }
+    /* Tablet-specific overrides for dropdown positioning */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .dropdown {
+        position: relative !important;
+      }
+      .dropdown:has(.categories-menu) {
+        position: relative !important;
+      }
+      .dropdown .menu {
+        position: absolute !important;
+        top: calc(100% + 4px) !important;
+      }
+      .dropdown .menu.categories-menu {
+        position: absolute !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        top: calc(100% + 4px) !important;
+      }
+    }
     .category-menu-item:hover { 
-      color: ${
-        headerConfig.dropdownCategoryHoverColor || "#1e3a8a"
-      } !important; 
+      transform: none !important;
+      box-shadow: none !important;
+      opacity: 1 !important;
+      border-radius: 16px !important;
+      ${productDropdownHoverColor ? `background: ${productDropdownHoverColor} !important;` : 'background: unset !important;'}
+    }
+    .category-menu-item-content:hover {
+      border-radius: 16px !important;
+      ${productDropdownHoverColor ? `background: ${productDropdownHoverColor} !important;` : 'background: transparent !important;'}
     }
     .brand-icon { 
       width: ${headerConfig.brandIconSize || "28px"} !important; 
       height: ${headerConfig.brandIconSize || "28px"} !important; 
     }
     .category-icon { 
-      width: ${headerConfig.categoryIconSize || "100px"} !important; 
-      height: ${headerConfig.categoryIconSize || "100px"} !important; 
+      width: 120px !important;
+      height: 120px !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      object-fit: contain !important;
+      flex-shrink: 0 !important;
+    }
+    .category-menu-item {
+      flex: 0 0 auto !important;
+      min-width: 220px !important;
+      width: auto !important;
+    }
+    .category-label {
+      font-size: ${headerConfig.categoryLabelSize || "18px"} !important;
+      color: #FFFFFF !important;
+      font-weight: 700 !important;
+      line-height: 1.3 !important;
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      display: block !important;
+      max-height: none !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      text-align: center !important;
+      width: 100% !important;
     }
     .submenu-item .brand-icon { 
       width: ${headerConfig.submenuIconSize || "120px"} !important; 
@@ -932,7 +1104,7 @@ export default function Navbar({ previewHeaderConfig = null }) {
       font-family: ${headerConfig.fontFamily} !important; 
     }
     .btn.cta:hover, .cta:hover { 
-      background: ${headerConfig.ctaBackgroundHover} !important; 
+      background: ${hoverEffectColor || headerConfig.ctaBackgroundHover} !important; 
       box-shadow: ${headerConfig.ctaShadow} !important; 
     }
     .btn.cta:active, .cta:active {

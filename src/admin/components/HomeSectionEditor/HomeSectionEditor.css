@@ -193,117 +193,6 @@
   border-top: 1px solid var(--admin-border);
 }
 
-/* Options Container Enhancement */
-.options-container {
-  margin-top: 16px;
-  padding: 20px;
-  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.options-container-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.options-textarea {
-  font-family: 'Courier New', monospace;
-  font-size: 14px;
-  line-height: 1.6;
-  padding: 12px;
-  border: 2px solid #cbd5e1;
-  border-radius: 6px;
-  background: #ffffff;
-  resize: both;
-  min-height: 200px;
-  max-height: 600px;
-  overflow-y: auto;
-  transition: all 0.2s ease;
-}
-
-.options-textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.options-preview {
-  padding: 16px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.options-preview-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.options-preview-icon {
-  font-size: 16px;
-}
-
-.options-preview-title {
-  font-weight: 600;
-  font-size: 13px;
-  color: #475569;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.options-preview-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 300px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.options-preview-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.options-preview-item:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-}
-
-.options-preview-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  background: #3b82f6;
-  color: #ffffff;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.options-preview-text {
-  flex: 1;
-  font-size: 14px;
-  color: #1e293b;
-  font-weight: 500;
-}
-
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
@@ -329,10 +218,6 @@
   .section-actions .admin-btn {
     flex: 1;
     min-width: 120px;
-  }
-
-  .options-container-wrapper {
-    flex-direction: column;
   }
 }
 

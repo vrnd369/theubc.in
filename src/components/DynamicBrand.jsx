@@ -16,7 +16,7 @@ import "../pages/Brands.css";
  * Optimized for fast rendering - loads content immediately, images in background
  */
 export default function DynamicBrand() {
-  const { brandId } = useParams();
+  const { brandSlug } = useParams();
   const navigate = useNavigate();
   const [pageData, setPageData] = useState(null);
   const [imageUrls, setImageUrls] = useState({});
@@ -45,8 +45,8 @@ export default function DynamicBrand() {
   }, []);
 
   useEffect(() => {
-    if (!brandId) {
-      setError("Brand ID is required");
+    if (!brandSlug) {
+      setError("Brand slug is required");
       setLoading(false);
       return;
     }
@@ -54,7 +54,7 @@ export default function DynamicBrand() {
     loadBrandPage();
     loadCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [brandId]);
+  }, [brandSlug]);
 
   useEffect(() => {
     // Block manual horizontal scroll (allow vertical scroll)
@@ -78,10 +78,11 @@ export default function DynamicBrand() {
       setLoading(true);
       setError(null);
 
-      const page = await getBrandPageByBrandId(brandId);
+      // brandSlug from URL is the brand identifier (e.g., "soil-king")
+      const page = await getBrandPageByBrandId(brandSlug);
 
       if (!page) {
-        setError(`Brand page not found for "${brandId}"`);
+        setError(`Brand page not found for "${brandSlug}"`);
         setLoading(false);
         return;
       }
@@ -107,23 +108,24 @@ export default function DynamicBrand() {
 
   const loadCategories = async () => {
     try {
-      // Fetch brands first to find the correct brandId format
+      // Fetch brands first to find the correct brand identifier format
+      // brandSlug from URL is the brand identifier (e.g., "soil-king")
       const brandsData = await getBrands();
-      const brand = brandsData.find((b) => (b.brandId || b.id) === brandId);
+      const brand = brandsData.find((b) => (b.brandId || b.id) === brandSlug);
 
       let categoriesData = [];
 
       if (brand) {
         // Try with brand identifier first (most common case)
-        categoriesData = await getCategories(brand.brandId || brandId);
+        categoriesData = await getCategories(brand.brandId || brandSlug);
 
         // If no categories found with brand identifier, try with document ID (fallback)
-        if (categoriesData.length === 0 && brand.id !== (brand.brandId || brandId)) {
+        if (categoriesData.length === 0 && brand.id !== (brand.brandId || brandSlug)) {
           categoriesData = await getCategories(brand.id);
         }
       } else {
-        // Fallback: try with brandId directly
-        categoriesData = await getCategories(brandId);
+        // Fallback: try with brandSlug directly
+        categoriesData = await getCategories(brandSlug);
       }
 
       // Filter enabled categories only
@@ -360,7 +362,7 @@ export default function DynamicBrand() {
               }}
             >
               {error ||
-                `We couldn't find a brand page for "${brandId}". The page may not exist or has been removed.`}
+                `We couldn't find a brand page for "${brandSlug}". The page may not exist or has been removed.`}
             </p>
 
             {/* Action Buttons */}
@@ -890,7 +892,7 @@ export default function DynamicBrand() {
                     imageUrls[`category-${index}`] || category.image || "";
                   const categoryHref =
                     category.href ||
-                    `/products?brand=${brandId}${
+                    `/products?brand=${brandSlug}${
                       category.categoryId
                         ? `&category=${category.categoryId}`
                         : ""

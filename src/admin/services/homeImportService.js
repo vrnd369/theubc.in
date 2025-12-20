@@ -54,9 +54,18 @@ export const importLiveWebsiteSections = async () => {
       paragraph1: 'The United Brothers Company has been a trusted name in the FMCG industry, offering pure and authentic products for homes nationwide.',
       paragraph2: 'Our purpose is to deliver essentials that you can rely on, created with a commitment to quality and a legacy of taste.',
       textAlignment: 'left',
-      image: '' // No image in current component
+      image: '', // No image in current component
+      button: {
+        text: 'Know More',
+        link: '/about'
+      }
     },
-    styles: {}
+    styles: {
+      buttonBackgroundColor: '#323790',
+      buttonTextColor: '#FFFFFF',
+      buttonFontSize: 16,
+      buttonFontWeight: '500'
+    }
   });
 
   // 3. Why Section (Feature Cards)

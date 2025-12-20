@@ -88,11 +88,22 @@ export const FontStyling = ({ prefix, label, styles, handleStyleChange }) => {
   const [customFontName, setCustomFontName] = useState("");
   const [customFontValue, setCustomFontValue] = useState("");
   const [allFonts, setAllFonts] = useState(getAllFonts());
+  const [showCustomWeight, setShowCustomWeight] = useState(false);
+  const [customWeight, setCustomWeight] = useState("");
 
   // Refresh fonts when component mounts or when custom fonts change
   useEffect(() => {
     setAllFonts(getAllFonts());
   }, [showAddFont]);
+
+  // Check if current weight is custom and show input if needed
+  useEffect(() => {
+    const currentWeight = styles?.[`${prefix}FontWeight`];
+    if (currentWeight && !["100", "200", "300", "400", "500", "600", "700", "800", "900"].includes(String(currentWeight))) {
+      setShowCustomWeight(true);
+      setCustomWeight(String(currentWeight));
+    }
+  }, [styles, prefix]);
 
   const handleAddCustomFont = () => {
     if (!customFontName.trim() || !customFontValue.trim()) {
@@ -373,10 +384,21 @@ export const FontStyling = ({ prefix, label, styles, handleStyleChange }) => {
         <div className="form-group">
           <label className="admin-label">Font Weight</label>
           <select
-            value={styles?.[`${prefix}FontWeight`] || ""}
-            onChange={(e) =>
-              handleStyleChange(`${prefix}FontWeight`, e.target.value || null)
+            value={
+              showCustomWeight || (styles?.[`${prefix}FontWeight`] && 
+              !["100", "200", "300", "400", "500", "600", "700", "800", "900"].includes(styles[`${prefix}FontWeight`]))
+                ? "custom"
+                : (styles?.[`${prefix}FontWeight`] || "")
             }
+            onChange={(e) => {
+              if (e.target.value === "custom") {
+                setShowCustomWeight(true);
+                setCustomWeight(styles?.[`${prefix}FontWeight`] || "");
+              } else {
+                setShowCustomWeight(false);
+                handleStyleChange(`${prefix}FontWeight`, e.target.value || null);
+              }
+            }}
             className="admin-select"
           >
             <option value="">Default</option>
@@ -389,7 +411,45 @@ export const FontStyling = ({ prefix, label, styles, handleStyleChange }) => {
             <option value="700">700 (Bold)</option>
             <option value="800">800 (Extra Bold)</option>
             <option value="900">900 (Black)</option>
+            <option value="custom">Custom</option>
           </select>
+          {showCustomWeight && (
+            <div style={{ marginTop: "8px", display: "flex", gap: "6px", alignItems: "center" }}>
+              <input
+                type="number"
+                value={customWeight}
+                onChange={(e) => setCustomWeight(e.target.value)}
+                onBlur={() => {
+                  if (customWeight) {
+                    handleStyleChange(`${prefix}FontWeight`, customWeight);
+                  }
+                }}
+                placeholder="Enter custom weight (1-1000)"
+                min="1"
+                max="1000"
+                className="admin-input"
+                style={{ flex: 1 }}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (customWeight) {
+                    handleStyleChange(`${prefix}FontWeight`, customWeight);
+                    setShowCustomWeight(false);
+                  }
+                }}
+                className="admin-btn admin-btn-primary"
+                style={{ fontSize: "12px", padding: "6px 12px", whiteSpace: "nowrap" }}
+              >
+                Apply
+              </button>
+            </div>
+          )}
+          {showCustomWeight && (
+            <small style={{ fontSize: "11px", color: "#64748b", display: "block", marginTop: "4px" }}>
+              Enter a custom font weight value between 1 and 1000
+            </small>
+          )}
         </div>
       </div>
 
