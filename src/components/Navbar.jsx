@@ -67,7 +67,6 @@ export default function Navbar({ previewHeaderConfig = null }) {
   const [enquiryButtonText, setEnquiryButtonText] = useState('Enquiry Form');
   const [enquiryButtonColor, setEnquiryButtonColor] = useState('#007bff');
   const [hoverEffectColor, setHoverEffectColor] = useState(null);
-  const [productDropdownHoverColor, setProductDropdownHoverColor] = useState(null);
 
   // Fetch navigation from Firestore and resolve images - optimized for performance
   const fetchNavigation = async (forceRefresh = false) => {
@@ -229,9 +228,6 @@ export default function Navbar({ previewHeaderConfig = null }) {
         }
         if (config.hoverEffectColor) {
           setHoverEffectColor(config.hoverEffectColor);
-        }
-        if (config.productDropdownHoverColor) {
-          setProductDropdownHoverColor(config.productDropdownHoverColor);
         }
       } catch (error) {
         console.error("Error fetching navigation config:", error);
@@ -452,6 +448,10 @@ export default function Navbar({ previewHeaderConfig = null }) {
         item.id || `dropdown-${item.label.toLowerCase().replace(/\s+/g, "-")}`;
       const isOpen = openDropdown === dropdownId;
       const isCategoriesMenu = item.id === "nav-products";
+      // Hide arrow on brand pages for "Our Brands" dropdown
+      const isBrandPage = location.pathname.startsWith("/brands");
+      const isOurBrandsDropdown = item.id === "nav-our-brands";
+      const shouldHideArrow = isBrandPage && isOurBrandsDropdown;
       
       return (
         <div
@@ -477,7 +477,7 @@ export default function Navbar({ previewHeaderConfig = null }) {
             className={`dropdown-trigger ${isActive ? "active" : ""}`}
           >
             {item.label}
-            <span className="dropdown-arrow">▼</span>
+            {!shouldHideArrow && <span className="dropdown-arrow"></span>}
           </span>
           <div
             className={`menu ${
@@ -531,36 +531,32 @@ export default function Navbar({ previewHeaderConfig = null }) {
     return null;
   };
 
-  // Get category color based on category name/id
+  // Get category color based on category name/id - each category gets a unique color
   const getCategoryColor = (categoryLabel, categoryId) => {
     const label = (categoryLabel || '').toLowerCase();
     const id = (categoryId || '').toLowerCase();
     
-    // Check for masalas
+    // Check for masala powders first (more specific, contains "masala")
     if (label.includes('masala') || id.includes('masala')) {
-      return '#DC2626'; // Red
+      return '#DC2626'; // Red - unique for Masala Powders
     }
-    // Check for rice
-    if (label.includes('rice') || id.includes('rice')) {
-      return '#0F766E'; // Dark Teal
+    // Check for spices & seasonings
+    if (label.includes('spice') || label.includes('seasoning') || id.includes('spice') || id.includes('seasoning')) {
+      return '#92400E'; // Brown - unique for Spices & Seasonings
+    }
+    // Check for grains (including rice)
+    if (label.includes('grain') || label.includes('rice') || id.includes('grain') || id.includes('rice')) {
+      return '#0F766E'; // Dark Teal - unique for Grains
     }
     // Check for appalam
-    if (label.includes('appalam') || label.includes('crisp') || id.includes('appalam')) {
-      return '#9333EA'; // Purple
+    if (label.includes('appalam') || label.includes('crisp') || id.includes('appalam') || id.includes('crisp')) {
+      return '#9333EA'; // Purple - unique for Appalam
     }
-    // Check for spices
-    if (label.includes('spice') || id.includes('spice')) {
-      return '#92400E'; // Brown
+    // Check for culinary pastes
+    if (label.includes('paste') || label.includes('culinary') || id.includes('paste') || id.includes('culinary')) {
+      return '#EA580C'; // Orange - unique for Culinary Pastes
     }
-    // Check for grains
-    if (label.includes('grain') || id.includes('grain')) {
-      return '#92400E'; // Brown
-    }
-    // Check for pastes
-    if (label.includes('paste') || id.includes('paste')) {
-      return '#DC2626'; // Red (similar to masalas)
-    }
-    // Default color
+    // Default color for any other categories
     return '#6B7280'; // Gray
   };
 
@@ -586,7 +582,7 @@ export default function Navbar({ previewHeaderConfig = null }) {
             to={subItem.path}
             className="category-menu-item"
             onClick={closeMobileMenu}
-            style={{ backgroundColor: categoryColor }}
+            style={{ "--cat-bg": categoryColor }}
           >
             <div className="category-menu-item-content">
               {iconToUse && (
@@ -930,16 +926,38 @@ export default function Navbar({ previewHeaderConfig = null }) {
       line-height: ${headerConfig.linkLineHeight || "21px"} !important; 
       letter-spacing: ${headerConfig.linkLetterSpacing || "0%"} !important; 
     }
-    .nav-links a.active { 
-      color: ${headerConfig.linkColorActive} !important; 
+    .nav-links a.active,
+    .nav-links a[class*="active"],
+    a.active.nav-link,
+    .nav-links .active { 
+      color: #000000 !important; 
       font-weight: 700 !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      transform: none !important;
+      outline: none !important;
     }
     .nav-links a:active {
+      color: #000000 !important;
       font-weight: 700 !important;
+      background: transparent !important;
+      transform: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
     }
     .nav-links a:hover { 
-      font-weight: 700 !important;
-      background: ${headerConfig.linkHoverBackground || "transparent"} !important;
+      background: transparent !important;
+      outline: none !important;
+    }
+    .nav-links a:focus,
+    .nav-links a:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
     }
     .dropdown { 
       font-family: ${headerConfig.fontFamily} !important; 
@@ -950,17 +968,48 @@ export default function Navbar({ previewHeaderConfig = null }) {
       border-radius: ${headerConfig.linkBorderRadius || "12px"} !important; 
     }
     .dropdown.active .dropdown-trigger, .dropdown-trigger.active { 
-      color: ${headerConfig.linkColorActive} !important; 
+      color: #000000 !important; 
       font-weight: 700 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+      transform: none !important;
+      outline: none !important;
     }
     .dropdown.active {
       background-color: transparent !important;
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
     }
     .dropdown:active .dropdown-trigger {
+      color: #000000 !important;
       font-weight: 700 !important;
+      background: transparent !important;
+      transform: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
     }
     .dropdown:hover .dropdown-trigger { 
-      font-weight: 700 !important; 
+      background: transparent !important;
+      outline: none !important;
+    }
+    .dropdown:hover {
+      background: transparent !important;
+      outline: none !important;
+    }
+    .dropdown:focus,
+    .dropdown:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+    .dropdown-trigger:focus,
+    .dropdown-trigger:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
     }
     .dropdown .menu { 
       background: ${headerConfig.dropdownBackground} !important; 
@@ -975,6 +1024,31 @@ export default function Navbar({ previewHeaderConfig = null }) {
     .dropdown .menu.categories-menu { 
       background: rgba(255, 255, 255, 0.85) !important; 
       border-color: rgba(229, 231, 235, 0.85) !important; 
+      transition: background-color 0.1s ease !important;
+    }
+    
+    /* Grey background on categories menu hover */
+    .dropdown .menu.categories-menu:hover {
+      background: #e5e7eb !important;
+    }
+    
+    /* Grey background on categories scroll container hover */
+    .categories-scroll-container:hover {
+      background-color: #e5e7eb !important;
+      border-radius: 16px !important;
+    }
+    /* Override padding for brands menu on desktop */
+    @media (min-width: 1024px) {
+      .dropdown .menu.brands-menu,
+      .dropdown:hover .menu.brands-menu,
+      .dropdown .menu.brands-menu.open,
+      .dropdown.open .menu.brands-menu {
+        padding: 4px 8px !important;
+      }
+      .brands-menu .brand-item,
+      .dropdown .menu.brands-menu .brand-item {
+        padding: 4px 12px !important;
+      }
     }
     .dropdown .menu a { 
       padding: ${headerConfig.dropdownItemPadding || "10px"} !important; 
@@ -987,17 +1061,30 @@ export default function Navbar({ previewHeaderConfig = null }) {
       border-radius: 999px !important; 
       padding: 0 !important; 
     }
-    .dropdown .menu a:hover { 
-      background: ${headerConfig.dropdownItemHover} !important; 
+    /* General hover rule - but exclude category-menu-item */
+    .dropdown .menu a:not(.category-menu-item):hover { 
+      background: transparent !important; 
+    }
+    /* Category menu items preserve their background color via CSS variable on hover */
+    .category-menu-item:hover {
+      background: var(--cat-bg, #6B7280) !important;
     }
     .dropdown .menu a.view-all-products-btn:hover { 
       background: #1C1F52 !important; 
+      transform: translateY(-2px) scale(1.1) !important;
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+      max-width: none !important;
+      width: auto !important;
+      overflow: visible !important;
+      z-index: 10 !important;
+      position: relative !important;
     }
     .brands-menu .brand-item { 
       color: ${headerConfig.dropdownItemColor || "#374151"} !important; 
     }
     .brands-menu .brand-item:hover { 
-      background: ${headerConfig.dropdownItemHover} !important; 
+      background: transparent !important; 
     }
     .dropdown .menu.brands-menu {
       min-width: 150px !important;
@@ -1022,7 +1109,7 @@ export default function Navbar({ previewHeaderConfig = null }) {
       display: flex !important;
       flex-direction: row !important;
       flex-wrap: nowrap !important;
-      gap: 20px !important;
+      gap: 15px !important;
       overflow-x: auto !important;
       overflow-y: hidden !important;
       scroll-behavior: smooth !important;
@@ -1067,16 +1154,34 @@ export default function Navbar({ previewHeaderConfig = null }) {
         top: calc(100% + 4px) !important;
       }
     }
-    .category-menu-item:hover { 
+    /* Category menu item hover - preserve background color via CSS variable */
+    .category-menu-item:hover,
+    a.category-menu-item:hover,
+    .dropdown .menu a.category-menu-item:hover,
+    .nav-links .dropdown .menu a.category-menu-item:hover { 
+      background: var(--cat-bg, #6B7280) !important;
       transform: none !important;
       box-shadow: none !important;
       opacity: 1 !important;
-      border-radius: 16px !important;
-      ${productDropdownHoverColor ? `background: ${productDropdownHoverColor} !important;` : 'background: unset !important;'}
+      border-radius: 28px !important;
+      color: #FFFFFF !important;
+    }
+    .category-menu-item-content {
+      border-radius: 28px !important;
     }
     .category-menu-item-content:hover {
+      border-radius: 28px !important;
+      transform: none !important;
+    }
+    .category-menu-item {
+      overflow: hidden !important;
+      background: var(--cat-bg, #6B7280) !important;
+    }
+    
+    /* Grey background on categories container hover */
+    .categories-scroll-container:hover {
+      background-color: #e5e7eb !important;
       border-radius: 16px !important;
-      ${productDropdownHoverColor ? `background: ${productDropdownHoverColor} !important;` : 'background: transparent !important;'}
     }
     .brand-icon { 
       width: ${headerConfig.brandIconSize || "28px"} !important; 
@@ -1089,6 +1194,7 @@ export default function Navbar({ previewHeaderConfig = null }) {
       max-height: 100% !important;
       object-fit: contain !important;
       flex-shrink: 0 !important;
+      border-radius: 24px !important;
     }
     @media (min-width: 768px) and (max-width: 1023px) {
       .category-icon {
@@ -1096,6 +1202,7 @@ export default function Navbar({ previewHeaderConfig = null }) {
         height: 150px !important;
         max-width: 150px !important;
         max-height: 150px !important;
+        border-radius: 24px !important;
       }
     }
     @media (min-width: 1024px) {
@@ -1104,23 +1211,30 @@ export default function Navbar({ previewHeaderConfig = null }) {
         height: 200px !important;
         max-width: 200px !important;
         max-height: 200px !important;
+        border-radius: 28px !important;
       }
     }
     .category-menu-item {
       flex: 0 0 auto !important;
       min-width: 220px !important;
       width: auto !important;
+      border-radius: 28px !important;
+      overflow: hidden !important;
     }
     @media (min-width: 768px) and (max-width: 1023px) {
-      .category-menu-item {
+.category-menu-item {
         min-width: 260px !important;
         min-height: 240px !important;
+        border-radius: 30px !important;
+        overflow: hidden !important;
       }
     }
     @media (min-width: 1024px) {
       .category-menu-item {
         min-width: 320px !important;
         min-height: 300px !important;
+        border-radius: 32px !important;
+        overflow: hidden !important;
       }
     }
     .category-label {
@@ -1172,6 +1286,14 @@ export default function Navbar({ previewHeaderConfig = null }) {
     .btn.cta:hover, .cta:hover { 
       background: ${hoverEffectColor || headerConfig.ctaBackgroundHover} !important; 
       box-shadow: ${headerConfig.ctaShadow} !important; 
+      transform: translateY(-2px) scale(1.1) !important;
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+      max-width: none !important;
+      width: auto !important;
+      overflow: visible !important;
+      z-index: 10 !important;
+      position: relative !important;
     }
     .btn.cta:active, .cta:active {
       transform: translateY(0) scale(0.98) !important;

@@ -1773,7 +1773,7 @@ export default function DynamicAbout({
                       )}
                     </div>
                     <div className="news-ctas">
-                      {section.content.viewAllButtonText && (
+                      {section.content.showViewAllButton === true && section.content.viewAllButtonText && (
                         section.content.viewAllButtonLink ? (
                           <a
                             href={section.content.viewAllButtonLink}
@@ -1992,7 +1992,30 @@ export default function DynamicAbout({
                             <h3 className="news-card-title">{item.title}</h3>
                             <div className="news-tags">
                               {item.tag && (
-                                <span className="pill">{item.tag}</span>
+                                item.instagramLink ? (
+                                  <a
+                                    href={item.instagramLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="pill"
+                                    style={{
+                                      textDecoration: "none",
+                                      cursor: "pointer",
+                                      display: "inline-block",
+                                      pointerEvents: "auto",
+                                      position: "relative",
+                                      zIndex: 10,
+                                    }}
+                                    onClick={(e) => {
+                                      // Ensure click works
+                                      e.stopPropagation();
+                                    }}
+                                  >
+                                    {item.tag}
+                                  </a>
+                                ) : (
+                                  <span className="pill">{item.tag}</span>
+                                )
                               )}
                             </div>
                           </article>

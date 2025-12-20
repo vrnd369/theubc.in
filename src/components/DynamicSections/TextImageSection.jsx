@@ -119,24 +119,28 @@ export default function TextImageSection({ content, styles = {} }) {
                   display: 'inline-block',
                   marginTop: '24px',
                   padding: '12px 24px',
-                  backgroundColor: styles?.buttonBackgroundColor || '#323790',
-                  color: styles?.buttonTextColor || '#FFFFFF',
+                  backgroundColor: '#F5F5F5',
+                  color: '#1A1A1A',
                   textDecoration: 'none',
-                  borderRadius: '8px',
+                  borderRadius: '12px',
                   fontSize: styles?.buttonFontSize || '16px',
                   fontWeight: styles?.buttonFontWeight || '500',
-                  fontFamily: styles?.buttonFontFamily || 'inherit',
+                  fontFamily: styles?.buttonFontFamily || "'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif",
                   transition: 'all 0.3s ease',
                   border: 'none',
                   cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1)',
+                  boxSizing: 'border-box',
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.opacity = '0.9';
+                  e.target.style.backgroundColor = '#E5E5E5';
                   e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.15)';
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.opacity = '1';
+                  e.target.style.backgroundColor = '#F5F5F5';
                   e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1)';
                 }}
               >
                 {content.button.text}

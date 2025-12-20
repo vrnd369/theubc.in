@@ -574,7 +574,7 @@ export default function Categories({
                       </div>
                       <div className="brand-prod-body">
                         <div className="brand-prod-header">
-                          <div className="brand-prod-text-container">
+                          <div className="brand-prod-title-row">
                             <h3
                               className="brand-prod-name"
                               style={{
@@ -589,40 +589,7 @@ export default function Categories({
                             >
                               {product.title}
                             </h3>
-                            {product.titleSub && (
-                              <p
-                                className="brand-prod-blurb"
-                                style={{
-                                  textAlign: product.titleSubAlign || "left",
-                                  fontSize: product.titleSubFontSize
-                                    ? `${product.titleSubFontSize}px`
-                                    : undefined,
-                                  width: product.titleSubWidth
-                                    ? `${product.titleSubWidth}px`
-                                    : undefined,
-                                }}
-                              >
-                                {product.titleSub}
-                              </p>
-                            )}
-                            {!product.titleSub && product.description && (
-                              <p
-                                className="brand-prod-blurb"
-                                style={{
-                                  textAlign: product.descriptionAlign || "left",
-                                  fontSize: product.descriptionFontSize
-                                    ? `${product.descriptionFontSize}px`
-                                    : undefined,
-                                  width: product.descriptionWidth
-                                    ? `${product.descriptionWidth}px`
-                                    : undefined,
-                                }}
-                              >
-                                {product.description}
-                              </p>
-                            )}
-                          </div>
-                          {(() => {
+                            {(() => {
                             // Use custom href if available, otherwise use product detail page
                             // Encode product ID to handle special characters
                             const productIdUrl =
@@ -696,6 +663,35 @@ export default function Categories({
                               </Link>
                             );
                           })()}
+                          </div>
+                          <div className="brand-prod-text-container">
+                            {product.titleSub && (
+                              <p
+                                className="brand-prod-blurb"
+                                style={{
+                                  textAlign: product.titleSubAlign || "left",
+                                  fontSize: product.titleSubFontSize
+                                    ? `${product.titleSubFontSize}px`
+                                    : undefined,
+                                }}
+                              >
+                                {product.titleSub}
+                              </p>
+                            )}
+                            {!product.titleSub && product.description && (
+                              <p
+                                className="brand-prod-blurb"
+                                style={{
+                                  textAlign: product.descriptionAlign || "left",
+                                  fontSize: product.descriptionFontSize
+                                    ? `${product.descriptionFontSize}px`
+                                    : undefined,
+                                }}
+                              >
+                                {product.description}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </article>

@@ -711,7 +711,7 @@ main .about-hero-image,
   line-height: 21px;
   letter-spacing: 0.27em; /* 27% */
   border-radius: 999px;
-  width: 155px;
+  width: 195px;
   height: 35px;
   padding: 0;
   margin: 0 0 20px 0;
@@ -835,7 +835,7 @@ main .about-hero-image,
   letter-spacing: 0.27em; /* 27% */
   text-transform: uppercase;
   border-radius: 999px;
-  width: 155px;
+  width: 195px;
   height: 33px;
   padding: 0;
   margin-bottom: 20px;
@@ -1150,16 +1150,52 @@ a.btn-light {
 }
 .news-tags {
   padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  box-sizing: border-box;
 }
+
 .pill {
-  display: inline-block;
-  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 16px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.24);
   background: #000000;
+  margin: 0;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Clickable pill buttons (tags with Instagram links) */
+.news-tags .pill,
+.news-tags a.pill {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
+  text-decoration: none;
+  color: #fff;
+}
+
+.news-tags a.pill:hover,
+.news-tags a.pill:focus {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-1px);
+  color: #fff !important;
+}
+
+.news-tags a.pill:active {
+  transform: translateY(0);
 }
 
 /* ---------- Responsive ---------- */
@@ -2712,6 +2748,11 @@ a.btn-light {
   .pill {
     font-size: 11px;
     padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    white-space: nowrap;
   }
 }
 

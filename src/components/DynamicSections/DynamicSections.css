@@ -355,3 +355,35 @@
   object-fit: cover !important;
   object-position: center center !important;
 }
+
+/* ========== PROMISE BUTTON - Modern Gray Button Style ========== */
+.promise-button {
+  display: inline-block !important;
+  margin-top: 24px !important;
+  padding: 12px 24px !important;
+  background-color: #F5F5F5 !important;
+  color: #1A1A1A !important;
+  text-decoration: none !important;
+  border-radius: 12px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif !important;
+  transition: all 0.3s ease !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  box-sizing: border-box !important;
+}
+
+.promise-button:hover {
+  background-color: #E5E5E5 !important;
+  color: #1A1A1A !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+  opacity: 1 !important;
+}
+
+.promise-button:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+}

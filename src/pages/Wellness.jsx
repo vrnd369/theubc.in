@@ -273,24 +273,26 @@ export default function Wellness() {
 
                   <div className="brand-prod-body">
                     <div className="brand-prod-header">
-                      <div className="brand-prod-text-container">
+                      <div className="brand-prod-title-row">
                         {category.title && (
                           <h3 className="brand-prod-name">
                             {category.title}
                           </h3>
                         )}
+                        <a 
+                          href={categoryHref} 
+                          className="chip-link"
+                        >
+                          Know More
+                        </a>
+                      </div>
+                      <div className="brand-prod-text-container">
                         {category.subtitle && (
                           <p className="brand-prod-blurb">
                             {category.subtitle}
                           </p>
                         )}
                       </div>
-                      <a 
-                        href={categoryHref} 
-                        className="chip-link"
-                      >
-                        Know More
-                      </a>
                     </div>
                   </div>
                 </article>

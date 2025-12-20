@@ -276,7 +276,7 @@ button.category-button.active {
 /* Ensure product cards wrap and stay within viewport on categories/products pages */
 .categories-section .brand-prod-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   overflow: visible;
   justify-content: flex-start;
@@ -289,9 +289,25 @@ button.category-button.active {
 }
 
 /* Fix text overflow in product cards */
+.categories-section .brand-prod-header {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+}
+
+.categories-section .brand-prod-title-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  gap: 16px !important;
+}
+
 .categories-section .brand-prod-text-container {
-  min-width: 0;
-  overflow: hidden;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: visible !important;
 }
 
 .categories-section .brand-prod-name {
@@ -305,13 +321,19 @@ button.category-button.active {
 }
 
 .categories-section .brand-prod-blurb {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  display: block !important;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  word-break: break-word !important;
+  white-space: normal !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  line-height: 1.5 !important;
+  min-height: auto !important;
+  height: auto !important;
+  max-height: none !important;
 }
 
 .brand-button-icon{

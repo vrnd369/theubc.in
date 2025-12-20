@@ -5,11 +5,11 @@ import { getBrands } from "../admin/services/productService";
 import { getCategories } from "../admin/services/productService";
 import { resolveImageUrl } from "../utils/imageUtils";
 import { parseInlineFormatting } from "../admin/components/BrandPageEditor/InlineFontEditor";
-import {
-  getDimensions,
-} from "../admin/components/BrandPageEditor/dimensionUtils";
-import { detectDevice } from "../admin/components/BrandPageEditor/deviceBreakpoints";
 import "../pages/Brands.css";
+
+/* Static hero background images - fallback for Soil King brand page */
+import br1 from "../assets/br1.png";
+import br2 from "../assets/br2.png";
 
 /**
  * Dynamic Brand component that fetches brand page data from Firebase
@@ -23,26 +23,7 @@ export default function DynamicBrand() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]); // Store actual categories from database
-  const [device, setDevice] = useState("desktop"); // Current device breakpoint
   const rowRef = useRef(null);
-
-  // Detect device breakpoint - Hardcoded to match Brands.css breakpoints
-  // Desktop: >= 1024px, Tablet: 768px - 1023px, Mobile: <= 767px
-  // Automatically applies correct dimensions based on screen size
-  useEffect(() => {
-    const updateDevice = () => {
-      const width = window.innerWidth;
-      // Use hardcoded breakpoint detection
-      setDevice(detectDevice(width));
-    };
-
-    // Set initial device
-    updateDevice();
-
-    // Update on resize
-    window.addEventListener("resize", updateDevice);
-    return () => window.removeEventListener("resize", updateDevice);
-  }, []);
 
   useEffect(() => {
     if (!brandSlug) {
@@ -421,15 +402,21 @@ export default function DynamicBrand() {
     );
   }
 
+  // Use static images as fallback for Soil King brand page (soil-king)
+  // This ensures the second carousel image (br2) displays correctly
+  const isSoilKing = brandSlug === "soil-king" || brandSlug === "soilking";
+  
   const heroBg1 =
-    imageUrls["hero-bg1"] || pageData.hero?.backgroundImage1 || "";
+    imageUrls["hero-bg1"] || 
+    (isSoilKing ? br1 : "") ||
+    pageData.hero?.backgroundImage1 || "";
   const heroBg2 =
-    imageUrls["hero-bg2"] || pageData.hero?.backgroundImage2 || "";
+    imageUrls["hero-bg2"] || 
+    (isSoilKing ? br2 : "") ||
+    pageData.hero?.backgroundImage2 || "";
   const styles = pageData.styles || {};
-  const dimensions = pageData.dimensions || {};
 
   // Dimensions are now hardcoded in CSS - only get font sizes for content styling
-  const heroDims = getDimensions(dimensions, "hero", device);
 
   return (
     <main className="brand-page">
@@ -460,10 +447,12 @@ export default function DynamicBrand() {
               className="brand-hero__fg-image"
               style={{
                 backgroundImage: `url("${heroBg2}")`,
-                width: styles.hero?.bgImage2Width
+                // Use static CSS dimensions for Soil King (matches static Brands.jsx)
+                // Only apply custom width/height if explicitly set and not Soil King
+                width: !isSoilKing && styles.hero?.bgImage2Width
                   ? `${styles.hero.bgImage2Width}%`
                   : undefined,
-                height: styles.hero?.bgImage2Height
+                height: !isSoilKing && styles.hero?.bgImage2Height
                   ? `${styles.hero.bgImage2Height}%`
                   : undefined,
               }}
@@ -477,25 +466,94 @@ export default function DynamicBrand() {
                 className="brand-hero__title"
                 style={{
                   textAlign: styles.hero?.titleAlign || "center",
-                  fontSize:
-                    heroDims.titleFontSize || undefined,
+                  // Remove inline fontSize to use CSS classes (matches static Brands.jsx)
                   maxWidth: styles.hero?.titleMaxWidth
                     ? `${styles.hero.titleMaxWidth}px`
                     : undefined,
                 }}
               >
-                {pageData.hero.title.split("\n").map((line, i, arr) => (
-                  <React.Fragment key={i}>
-                    {parseInlineFormatting(line)}
-                    {i < arr.length - 1 && <br />}
-                  </React.Fragment>
-                ))}
-                {pageData.hero.titleLine2 && (
-                  <>
-                    <br />
-                    {parseInlineFormatting(pageData.hero.titleLine2)}
-                  </>
-                )}
+                {(() => {
+                  // Helper function to wrap "in" and "with" with italic span for Soil King
+                  const processItalicWords = (text) => {
+                    if (!text) return text;
+                    // Use a simpler approach: replace "in" and "with" as whole words
+                    // Split by word boundaries and process each part
+                    const regex = /\b(in|with)\b/gi;
+                    const parts = [];
+                    let lastIndex = 0;
+                    let match;
+                    let keyCounter = 0;
+
+                    while ((match = regex.exec(text)) !== null) {
+                      // Add text before the match
+                      if (match.index > lastIndex) {
+                        parts.push(
+                          <React.Fragment key={`text-${keyCounter++}`}>
+                            {text.substring(lastIndex, match.index)}
+                          </React.Fragment>
+                        );
+                      }
+                      // Add the matched word with italic styling
+                      parts.push(
+                        <span key={`italic-${keyCounter++}`} className="brand-hero__italic">
+                          {match[0]}
+                        </span>
+                      );
+                      lastIndex = regex.lastIndex;
+                    }
+                    // Add remaining text after last match
+                    if (lastIndex < text.length) {
+                      parts.push(
+                        <React.Fragment key={`text-${keyCounter++}`}>
+                          {text.substring(lastIndex)}
+                        </React.Fragment>
+                      );
+                    }
+                    // If no matches found, return original text
+                    return parts.length > 0 ? parts : text;
+                  };
+
+                  // For Soil King, apply italic styling to "in" and "with" to match static version
+                  if (isSoilKing) {
+                    const titleLines = pageData.hero.title.split("\n");
+                    const titleLine2 = pageData.hero.titleLine2;
+
+                    return (
+                      <>
+                        {titleLines.map((line, i, arr) => (
+                          <React.Fragment key={`line-${i}`}>
+                            {processItalicWords(line)}
+                            {i < arr.length - 1 && <br />}
+                          </React.Fragment>
+                        ))}
+                        {titleLine2 && (
+                          <>
+                            <br />
+                            {processItalicWords(titleLine2)}
+                          </>
+                        )}
+                      </>
+                    );
+                  } else {
+                    // For other brands, use the original formatting
+                    return (
+                      <>
+                        {pageData.hero.title.split("\n").map((line, i, arr) => (
+                          <React.Fragment key={i}>
+                            {parseInlineFormatting(line)}
+                            {i < arr.length - 1 && <br />}
+                          </React.Fragment>
+                        ))}
+                        {pageData.hero.titleLine2 && (
+                          <>
+                            <br />
+                            {parseInlineFormatting(pageData.hero.titleLine2)}
+                          </>
+                        )}
+                      </>
+                    );
+                  }
+                })()}
               </h1>
             )}
             {pageData.hero.leadText && (
@@ -503,8 +561,7 @@ export default function DynamicBrand() {
                 className="brand-hero__lead"
                 style={{
                   textAlign: styles.hero?.leadTextAlign || "center",
-                  fontSize:
-                    heroDims.leadFontSize || undefined,
+                  // Remove inline fontSize to use CSS classes (matches static Brands.jsx)
                   maxWidth: styles.hero?.leadTextMaxWidth
                     ? `${styles.hero.leadTextMaxWidth}px`
                     : undefined,
@@ -582,7 +639,9 @@ export default function DynamicBrand() {
                   className="brand-title"
                   style={{
                     textAlign: styles.about?.titleAlign || "left",
-                    fontSize: styles.about?.titleFontSize
+                    // For Soil King, use CSS classes (matches static Brands.jsx)
+                    // Only apply custom fontSize if explicitly set
+                    fontSize: !isSoilKing && styles.about?.titleFontSize
                       ? `${styles.about.titleFontSize}px`
                       : undefined,
                     width: styles.about?.titleWidth
@@ -603,7 +662,9 @@ export default function DynamicBrand() {
                   <p
                     key={index}
                     style={{
-                      fontSize: styles.about?.paragraphFontSize
+                      // For Soil King, use CSS classes (matches static Brands.jsx)
+                      // Only apply custom fontSize if explicitly set
+                      fontSize: !isSoilKing && styles.about?.paragraphFontSize
                         ? `${styles.about.paragraphFontSize}px`
                         : undefined,
                       lineHeight:
@@ -662,7 +723,9 @@ export default function DynamicBrand() {
                   className="brand-title"
                   style={{
                     textAlign: styles.standFor?.titleAlign || "left",
-                    fontSize: styles.standFor?.titleFontSize
+                    // For Soil King, use CSS classes (matches static Brands.jsx)
+                    // Only apply custom fontSize if explicitly set
+                    fontSize: !isSoilKing && styles.standFor?.titleFontSize
                       ? `${styles.standFor.titleFontSize}px`
                       : undefined,
                     width: styles.standFor?.titleWidth
@@ -684,7 +747,9 @@ export default function DynamicBrand() {
                     key={index}
                     className={index > 0 ? "muted" : ""}
                     style={{
-                      fontSize: styles.standFor?.paragraphFontSize
+                      // For Soil King, use CSS classes (matches static Brands.jsx)
+                      // Only apply custom fontSize if explicitly set
+                      fontSize: !isSoilKing && styles.standFor?.paragraphFontSize
                         ? `${styles.standFor.paragraphFontSize}px`
                         : undefined,
                       lineHeight:
@@ -745,7 +810,9 @@ export default function DynamicBrand() {
                   className="brand-title"
                   style={{
                     textAlign: styles.why?.titleAlign || "left",
-                    fontSize: styles.why?.titleFontSize
+                    // For Soil King, use CSS classes (matches static Brands.jsx)
+                    // Only apply custom fontSize if explicitly set
+                    fontSize: !isSoilKing && styles.why?.titleFontSize
                       ? `${styles.why.titleFontSize}px`
                       : undefined,
                     width: styles.why?.titleWidth
@@ -766,7 +833,9 @@ export default function DynamicBrand() {
                   <p
                     key={index}
                     style={{
-                      fontSize: styles.why?.paragraphFontSize
+                      // For Soil King, use CSS classes (matches static Brands.jsx)
+                      // Only apply custom fontSize if explicitly set
+                      fontSize: !isSoilKing && styles.why?.paragraphFontSize
                         ? `${styles.why.paragraphFontSize}px`
                         : undefined,
                       lineHeight: styles.why?.paragraphLineHeight || undefined,
@@ -913,21 +982,23 @@ export default function DynamicBrand() {
 
                       <div className="brand-prod-body">
                         <div className="brand-prod-header">
-                          <div className="brand-prod-text-container">
+                          <div className="brand-prod-title-row">
                             {category.title && (
                               <h3 className="brand-prod-name">
                                 {category.title}
                               </h3>
                             )}
+                            <a href={categoryHref} className="chip-link">
+                              {pageData.products?.cta || "Know More"}
+                            </a>
+                          </div>
+                          <div className="brand-prod-text-container">
                             {category.subtitle && (
                               <p className="brand-prod-blurb">
                                 {category.subtitle}
                               </p>
                             )}
                           </div>
-                          <a href={categoryHref} className="chip-link">
-                            {pageData.products?.cta || "Know More"}
-                          </a>
                         </div>
                       </div>
                     </article>

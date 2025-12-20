@@ -310,6 +310,7 @@ export const importLiveAboutSections = async () => {
       badgeText: "★ NEWS",
       heading: "Media & News",
       subtitle: "From new launches to community initiatives, stay connected with everything happening at United Brothers Company.",
+      showViewAllButton: false,
       viewAllButtonText: "View all",
       news: [
         { id: "soil-king", image: newsSoilKingId, title: "Launch of Soil King Spices range now available pan-India", tag: "Announcements" },

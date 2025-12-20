@@ -1745,37 +1745,58 @@ const AboutSectionEditor = forwardRef(function AboutSectionEditor(
         </div>
 
         <div className="form-group">
-          <label className="admin-label">View All Button Text</label>
+          <label className="admin-label">
+            <input
+              type="checkbox"
+              checked={formData.content.showViewAllButton === true}
+              onChange={(e) =>
+                handleContentChange("showViewAllButton", e.target.checked)
+              }
+              style={{ marginRight: "8px" }}
+            />
+            Show View All Button
+          </label>
           <small className="form-hint">
-            Enter the text for the "View All" button that links to all news
-            items.
+            Toggle to show or hide the "View All" button in the media section. By default, the button is hidden.
           </small>
-          <input
-            type="text"
-            value={formData.content.viewAllButtonText || ""}
-            onChange={(e) =>
-              handleContentChange("viewAllButtonText", e.target.value)
-            }
-            className="admin-input"
-            placeholder="View all"
-          />
         </div>
 
-        <div className="form-group">
-          <label className="admin-label">View All Button Link</label>
-          <small className="form-hint">
-            Enter the URL where the "View All" button should redirect (e.g., social media link, news page, etc.). Leave empty if you don't want the button to be clickable.
-          </small>
-          <input
-            type="url"
-            value={formData.content.viewAllButtonLink || ""}
-            onChange={(e) =>
-              handleContentChange("viewAllButtonLink", e.target.value)
-            }
-            className="admin-input"
-            placeholder="https://linkedin.com/company/yourcompany"
-          />
-        </div>
+        {formData.content.showViewAllButton !== false && (
+          <>
+            <div className="form-group">
+              <label className="admin-label">View All Button Text</label>
+              <small className="form-hint">
+                Enter the text for the "View All" button that links to all news
+                items.
+              </small>
+              <input
+                type="text"
+                value={formData.content.viewAllButtonText || ""}
+                onChange={(e) =>
+                  handleContentChange("viewAllButtonText", e.target.value)
+                }
+                className="admin-input"
+                placeholder="View all"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="admin-label">View All Button Link</label>
+              <small className="form-hint">
+                Enter the URL where the "View All" button should redirect (e.g., social media link, news page, etc.). Leave empty if you don't want the button to be clickable.
+              </small>
+              <input
+                type="url"
+                value={formData.content.viewAllButtonLink || ""}
+                onChange={(e) =>
+                  handleContentChange("viewAllButtonLink", e.target.value)
+                }
+                className="admin-input"
+                placeholder="https://linkedin.com/company/yourcompany"
+              />
+            </div>
+          </>
+        )}
 
         <div className="form-section">
           <div className="section-header">
@@ -1788,6 +1809,7 @@ const AboutSectionEditor = forwardRef(function AboutSectionEditor(
                   image: "",
                   title: "",
                   tag: "",
+                  instagramLink: "",
                 })
               }
               className="admin-btn admin-btn-secondary"
@@ -1845,7 +1867,7 @@ const AboutSectionEditor = forwardRef(function AboutSectionEditor(
                 <label className="admin-label">Tag</label>
                 <small className="form-hint">
                   Enter a category tag for this news item (e.g.,
-                  "Announcements", "Product Launch", "Company News").
+                  "Announcements", "Product Launch", "Company News"). This will be displayed as a button.
                 </small>
                 <input
                   type="text"
@@ -1855,6 +1877,22 @@ const AboutSectionEditor = forwardRef(function AboutSectionEditor(
                   }
                   className="admin-input"
                   placeholder="Announcements"
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="admin-label">Instagram Link</label>
+                <small className="form-hint">
+                  Enter the Instagram URL for this tag button. The tag will be clickable and link to this Instagram URL.
+                </small>
+                <input
+                  type="url"
+                  value={item.instagramLink || ""}
+                  onChange={(e) =>
+                    handleArrayItemChange("news", index, "instagramLink", e.target.value)
+                  }
+                  className="admin-input"
+                  placeholder="https://instagram.com/p/..."
                 />
               </div>
             </div>

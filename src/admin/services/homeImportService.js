@@ -117,6 +117,7 @@ export const importLiveWebsiteSections = async () => {
       items: [
         {
           image: soilKingLogo,
+          brandName: 'SOIL KING',
           title: 'Our Legacy\nin Every Brand',
           description: 'With Soil King, we celebrate tradition and taste\n— delivering carefully crafted products that\nfamilies trust every day.',
           link: '/brands',
@@ -125,6 +126,7 @@ export const importLiveWebsiteSections = async () => {
         },
         {
           image: sunDropLogo,
+          brandName: 'SUN DROP',
           title: 'The Fresh Start\nYou Deserve',
           description: 'With Sun Drop, every product carries the\nwarmth of the sun and the richness of earth\n— created to uplift your meals and your day.',
           link: '/brands',

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import "../BrandsCarousel.css";
 import { resolveImageUrl } from "../../utils/imageUtils";
 import { parseInlineFormatting } from "../../admin/components/BrandPageEditor/InlineFontEditor";
+import { getBrands } from "../../admin/services/productService";
 
 // Helper function to convert \n to <br /> and apply inline formatting
 const formatText = (text) => {
@@ -41,7 +42,7 @@ const getBrandName = (item, index) => {
   return `BRAND ${index + 1}`;
 };
 
-const BrandCard = ({ item, index, totalItems }) => {
+const BrandCard = ({ item, index, totalItems, brandsList = [] }) => {
   const brandName = getBrandName(item, index);
   const isFirst = index === 0;
   const [imageUrl, setImageUrl] = useState("");
@@ -58,8 +59,45 @@ const BrandCard = ({ item, index, totalItems }) => {
     loadImage();
   }, [item.image]);
 
+  // Helper function to normalize brand name for matching
+  const normalizeBrandName = (name) => {
+    if (!name) return "";
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+  };
+
+  // Helper function to find brand by name
+  const findBrandByName = (name) => {
+    if (!name || brandsList.length === 0) return null;
+    
+    const normalizedName = normalizeBrandName(name);
+    
+    // Try exact match first
+    let brand = brandsList.find(
+      (b) =>
+        normalizeBrandName(b.name) === normalizedName ||
+        normalizeBrandName(b.brandId || b.id) === normalizedName
+    );
+    
+    // Try partial match (e.g., "SOIL KING" matches "soil-king")
+    if (!brand) {
+      brand = brandsList.find(
+        (b) =>
+          normalizeBrandName(b.name).includes(normalizedName) ||
+          normalizedName.includes(normalizeBrandName(b.name)) ||
+          normalizeBrandName(b.brandId || b.id).includes(normalizedName) ||
+          normalizedName.includes(normalizeBrandName(b.brandId || b.id))
+      );
+    }
+    
+    return brand;
+  };
+
   // Determine the link URL - prioritize brandSlug if available, otherwise use link
-  // If link is /brands without a slug, keep it as /brands (listing page)
+  // If link is /brands without a slug, try to find brand by name and link to brand page
   // If link is /brands/:slug, use it as-is
   // If brandSlug is provided, construct /brands/:brandSlug
   const getBrandLink = () => {
@@ -69,18 +107,34 @@ const BrandCard = ({ item, index, totalItems }) => {
     }
     
     // If link is already a brand page URL, use it as-is
-    if (item.link && item.link.startsWith('/brands/')) {
+    if (item.link && item.link.startsWith('/brands/') && item.link !== '/brands') {
       return item.link;
     }
     
-    // If link is /brands (listing page), use it as-is
-    if (item.link === '/brands') {
-      return item.link;
+    // If link is /brands (listing page) or empty, try to find brand by name
+    if (!item.link || item.link === '/brands') {
+      const brand = findBrandByName(brandName);
+      if (brand) {
+        // Use brandId (identifier like "soil-king") for the URL
+        const brandIdentifier = brand.brandId || brand.id;
+        return `/brands/${brandIdentifier}`;
+      }
+      // If no brand found and link was /brands, keep it as listing page
+      if (item.link === '/brands') {
+        return item.link;
+      }
     }
     
     // If link is provided but not a brand page, use it (could be custom link)
     if (item.link) {
       return item.link;
+    }
+    
+    // Default: try to find brand by name one more time
+    const brand = findBrandByName(brandName);
+    if (brand) {
+      const brandIdentifier = brand.brandId || brand.id;
+      return `/brands/${brandIdentifier}`;
     }
     
     // Default: no link
@@ -147,6 +201,20 @@ export default function CarouselSection({
   const items = content?.items || [];
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [brandsList, setBrandsList] = useState([]);
+
+  // Load brands list to match brand names with brand IDs
+  useEffect(() => {
+    const loadBrands = async () => {
+      try {
+        const brands = await getBrands();
+        setBrandsList(brands);
+      } catch (error) {
+        console.error("Error loading brands for carousel:", error);
+      }
+    };
+    loadBrands();
+  }, []);
 
   // Extract styles with defaults
   const backgroundColor = styles?.backgroundColor;
@@ -438,6 +506,7 @@ export default function CarouselSection({
                 item={item}
                 index={index}
                 totalItems={items.length}
+                brandsList={brandsList}
               />
             ))}
           </div>

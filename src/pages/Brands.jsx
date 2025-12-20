@@ -270,13 +270,15 @@ export default function Brand() {
 
                 <div className="brand-prod-body">
                   <div className="brand-prod-header">
-                    <div className="brand-prod-text-container">
+                    <div className="brand-prod-title-row">
                       <h3 className="brand-prod-name">{p.title}</h3>
+                      <a href={p.href} className="chip-link">
+                        {p.cta}
+                      </a>
+                    </div>
+                    <div className="brand-prod-text-container">
                       <p className="brand-prod-blurb">{p.blurb}</p>
                     </div>
-                    <a href={p.href} className="chip-link">
-                      {p.cta}
-                    </a>
                   </div>
                 </div>
               </article>
