@@ -6,6 +6,56 @@ import { getProduct, getProducts, getBrands, getCategories } from '../admin/serv
 import { resolveImageUrl } from '../utils/imageUtils';
 import probgImage from '../assets/probg1.png';
 
+// Static icon imports for USO section
+// These icons are used by default, with fallback to dashboard-uploaded icons
+// Default icons (Layer 1-4) are used as fallback
+// To add specific icons, place them in src/assets/ with these names:
+// - pillar-pure-natural.png
+// - pillar-aroma-locked.png
+// - pillar-no-preservatives.png
+// - pillar-no-colours.png
+// Then uncomment the imports below and update the getStaticIcon function
+import iconDefault1 from '../assets/Layer 1.png';
+import iconDefault2 from '../assets/Layer 2.png';
+import iconDefault3 from '../assets/Layer 3.png';
+import iconDefault4 from '../assets/Layer 4.png';
+
+// Uncomment these when you add the specific icon files to assets folder:
+// import iconPureNatural from '../assets/pillar-pure-natural.png';
+// import iconAromaLocked from '../assets/pillar-aroma-locked.png';
+// import iconNoPreservatives from '../assets/pillar-no-preservatives.png';
+// import iconNoColours from '../assets/pillar-no-colours.png';
+
+// Mapping function to get static icon based on pillar title
+const getStaticIcon = (pillarTitle, index) => {
+  // Default icons array
+  const defaultIcons = [iconDefault1, iconDefault2, iconDefault3, iconDefault4];
+  
+  if (!pillarTitle) {
+    // Fallback to default icons by index if no title
+    return defaultIcons[index] || null;
+  }
+
+  // Map common pillar titles to static icons
+  // Uncomment these when you add the specific icon files:
+  // const titleLower = pillarTitle.toLowerCase().trim();
+  // if (iconPureNatural && titleLower.includes('pure') && titleLower.includes('natural')) {
+  //   return iconPureNatural;
+  // }
+  // if (iconAromaLocked && titleLower.includes('aroma') && titleLower.includes('lock')) {
+  //   return iconAromaLocked;
+  // }
+  // if (iconNoPreservatives && titleLower.includes('preservative')) {
+  //   return iconNoPreservatives;
+  // }
+  // if (iconNoColours && (titleLower.includes('colour') || titleLower.includes('color'))) {
+  //   return iconNoColours;
+  // }
+  
+  // Fallback to default icons by index
+  return defaultIcons[index] || null;
+};
+
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -104,21 +154,9 @@ export default function ProductDetail() {
           );
         }
         
-        // Resolve pillar icons
-        if (transformedProduct.pillars && transformedProduct.pillars.length > 0) {
-          transformedProduct.pillars.forEach((pillar, index) => {
-            if (pillar.icon) {
-              imagePromises.push(
-                resolveImageUrl(pillar.icon).then(url => {
-                  setResolvedImages(prev => ({
-                    ...prev,
-                    pillarIcons: { ...prev.pillarIcons, [index]: url }
-                  }));
-                }).catch(err => console.error(`Error resolving pillar ${index} icon:`, err))
-              );
-            }
-          });
-        }
+        // Note: Pillar icons now use static assets from src/assets
+        // Dashboard-uploaded icons will be used as fallback if static icons don't exist
+        // No need to resolve pillar icons from Firebase anymore
 
         // Fetch brand name, category info, and related products in parallel (optimized)
         if (productData.brandId) {
@@ -572,26 +610,32 @@ export default function ProductDetail() {
 
               <div className="pillars-right">
                 <div className="pillars-grid-items">
-                  {product.pillars.map((pillar, index) => (
-                    <div key={index} className="pillar-item">
-                      {(resolvedImages.pillarIcons[index] || pillar.icon) && (
-                        <div className="pillar-icon">
-                          <img 
-                            src={resolvedImages.pillarIcons[index] || pillar.icon} 
-                            alt={pillar.title || `Pillar ${index + 1}`} 
-                          />
-                        </div>
-                      )}
-                      {pillar.title && (
-                        <h3 className="pillar-title">{pillar.title}</h3>
-                      )}
-                      {pillar.description && (
-                        <p className="pillar-description" dangerouslySetInnerHTML={{
-                          __html: pillar.description.replace(/<br\s*\/?>/gi, '<br />')
-                        }} />
-                      )}
-                    </div>
-                  ))}
+                  {product.pillars.map((pillar, index) => {
+                    // Get static icon first, fallback to dashboard-uploaded icon
+                    const staticIcon = getStaticIcon(pillar.title, index);
+                    const iconSrc = staticIcon || (resolvedImages.pillarIcons[index] || pillar.icon);
+                    
+                    return (
+                      <div key={index} className="pillar-item">
+                        {iconSrc && (
+                          <div className="pillar-icon">
+                            <img 
+                              src={iconSrc} 
+                              alt={pillar.title || `Pillar ${index + 1}`} 
+                            />
+                          </div>
+                        )}
+                        {pillar.title && (
+                          <h3 className="pillar-title">{pillar.title}</h3>
+                        )}
+                        {pillar.description && (
+                          <p className="pillar-description" dangerouslySetInnerHTML={{
+                            __html: pillar.description.replace(/<br\s*\/?>/gi, '<br />')
+                          }} />
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
