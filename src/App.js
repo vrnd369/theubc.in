@@ -13,6 +13,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Contact from "./pages/Contact";
 import Careers from "./pages/Careers";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Cookies from "./pages/Cookies";
 import Dashboard from "./admin/pages/Dashboard/Dashboard";
 import NavigationManagement from "./admin/pages/NavigationManagement/NavigationManagement";
 import HomeManagement from "./admin/pages/HomeManagement/HomeManagement";
@@ -28,6 +29,8 @@ import DataMigration from "./admin/pages/DataMigration/DataMigration";
 import EnquiryFormManagement from "./admin/pages/EnquiryFormManagement/EnquiryFormManagement";
 import UserManagement from "./admin/pages/UserManagement/UserManagement";
 import AuditLogs from "./admin/pages/AuditLogs/AuditLogs";
+import PrivacyPolicyManagement from "./admin/pages/PrivacyPolicyManagement/PrivacyPolicyManagement";
+import CookiesPolicyManagement from "./admin/pages/CookiesPolicyManagement/CookiesPolicyManagement";
 import DynamicBrand from "./components/DynamicBrand";
 import Login from "./admin/pages/Auth/Login";
 import Unauthorized from "./admin/pages/Auth/Unauthorized";
@@ -188,6 +191,14 @@ export default function App() {
               </PublicLayout>
             }
           />
+          <Route
+            path="/cookies"
+            element={
+              <PublicLayout>
+                <Cookies />
+              </PublicLayout>
+            }
+          />
         </Routes>
         </AuthProvider>
       </ErrorBoundary>
@@ -315,6 +326,22 @@ function renderAdminRoutes({ basePath, allowedRoles }) {
         element={
           <ProtectedRoute allowedRoles={allowedRoles}>
             <AuditLogs />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={`${basePath}/privacy-policy`}
+        element={
+          <ProtectedRoute allowedRoles={allowedRoles}>
+            <PrivacyPolicyManagement />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={`${basePath}/cookies-policy`}
+        element={
+          <ProtectedRoute allowedRoles={allowedRoles}>
+            <CookiesPolicyManagement />
           </ProtectedRoute>
         }
       />

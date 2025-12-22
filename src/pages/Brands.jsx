@@ -18,7 +18,7 @@ const PRODUCTS = [
     title: "Masalas",
     blurb: "Authentic blends for every dish",
     cta: "Know More",
-    href: "/products?brand=soil-king",
+    href: "/products?brand=soil-king&category=masala-powders",
   },
   {
     id: "rice",
@@ -26,7 +26,7 @@ const PRODUCTS = [
     title: "Rice",
     blurb: "Fragrant grains, rich in tradition",
     cta: "Know More",
-    href: "/products?brand=soil-king",
+    href: "/products?brand=soil-king&category=grains",
   },
   {
     id: "appalams",
@@ -34,7 +34,7 @@ const PRODUCTS = [
     title: "Appalams & Crisps",
     blurb: "Crispy delights for every meal",
     cta: "Know More",
-    href: "/products?brand=soil-king",
+    href: "/products?brand=soil-king&category=appalam",
   },
   {
     id: "atta",
@@ -42,7 +42,7 @@ const PRODUCTS = [
     title: "Flours & Atta",
     blurb: "Daily staples for wholesome meals",
     cta: "Know More",
-    href: "/products?brand=soil-king",
+    href: "/products?brand=soil-king&category=grains",
   },
 ];
 

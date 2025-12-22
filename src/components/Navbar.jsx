@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../assets/Logo ubc.png";
 import {
@@ -10,57 +10,22 @@ import {
 import { resolveImageUrl } from "../utils/imageUtils";
 import { getHeaderConfig } from "../admin/services/headerService";
 import { getEnquiryFormConfig } from "../admin/services/enquiryFormService";
-
-const NAV_CACHE_KEY = "ubc_nav_items";
-const HEADER_CACHE_KEY = "ubc_header_config";
-const LOGO_CACHE_KEY = "ubc_header_logo_resolved";
-
-const loadJSON = (key) => {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : null;
-  } catch (e) {
-    return null;
-  }
-};
-
-const saveJSON = (key, value) => {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (e) {
-    /* ignore */
-  }
-};
+import { cacheUtils } from "../utils/localStorageUtils";
 
 export default function Navbar({ previewHeaderConfig = null }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isScrolled, setIsScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState(null);
-  const [navigationItems, setNavigationItems] = useState(() => loadJSON(NAV_CACHE_KEY) || []);
+  const [navigationItems, setNavigationItems] = useState(() => cacheUtils.loadNavItems());
   
-  // Load cached icons immediately
-  const getCachedIcons = () => {
-    try {
-      const cached = localStorage.getItem('ubc_nav_icons');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        // Check if cache is less than 5 minutes old
-        if (parsed.timestamp && Date.now() - parsed.timestamp < 300000) {
-          return parsed.data || {};
-        }
-      }
-    } catch (e) {
-      // Ignore cache errors
-    }
-    return {};
-  };
-  
-  const [resolvedIcons, setResolvedIcons] = useState(getCachedIcons());
-  const [headerConfig, setHeaderConfig] = useState(() => loadJSON(HEADER_CACHE_KEY));
-  const [resolvedLogo, setResolvedLogo] = useState(() => loadJSON(LOGO_CACHE_KEY));
+  // Load cached icons immediately (with expiration check)
+  const [resolvedIcons, setResolvedIcons] = useState(() => cacheUtils.loadNavIcons());
+  const [headerConfig, setHeaderConfig] = useState(() => cacheUtils.loadHeaderConfig());
+  const [resolvedLogo, setResolvedLogo] = useState(() => cacheUtils.loadLogo());
   const leaveTimeoutRef = useRef(null);
   const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
   const [enquiryFormConfig, setEnquiryFormConfig] = useState(null);
@@ -75,7 +40,7 @@ export default function Navbar({ previewHeaderConfig = null }) {
 
       // Set navigation items IMMEDIATELY - don't wait for icons
       setNavigationItems(items);
-      saveJSON(NAV_CACHE_KEY, items);
+      cacheUtils.saveNavItems(items);
 
       // Resolve icons in background (non-blocking) - don't await before setting items
       const iconPromises = [];
@@ -133,15 +98,8 @@ export default function Navbar({ previewHeaderConfig = null }) {
       // Resolve icons in background - update state when ready
       Promise.all(iconPromises).then(() => {
         setResolvedIcons(iconMap);
-        // Cache the resolved icons
-        try {
-          localStorage.setItem('ubc_nav_icons', JSON.stringify({
-            data: iconMap,
-            timestamp: Date.now()
-          }));
-        } catch (e) {
-          // Ignore cache errors
-        }
+        // Cache the resolved icons with expiration
+        cacheUtils.saveNavIcons(iconMap);
       }).catch(() => {
         // Even if some icons fail, update with what we have
         setResolvedIcons(iconMap);
@@ -174,19 +132,29 @@ export default function Navbar({ previewHeaderConfig = null }) {
       try {
         const config = await getHeaderConfig();
         setHeaderConfig(config);
-        saveJSON(HEADER_CACHE_KEY, config);
+        cacheUtils.saveHeaderConfig(config);
 
         // Resolve logo if configured
         if (config.logo) {
           const logoUrl = await resolveImageUrl(config.logo);
           setResolvedLogo(logoUrl);
-          saveJSON(LOGO_CACHE_KEY, logoUrl);
+          cacheUtils.saveLogo(logoUrl);
         } else {
           setResolvedLogo(null);
-          saveJSON(LOGO_CACHE_KEY, null);
+          cacheUtils.saveLogo(null);
         }
       } catch (error) {
-        console.error("Error fetching header config:", error);
+        console.warn("Error fetching header config, using cached/default:", error);
+        // Try to use cached config if available
+        const cachedConfig = cacheUtils.loadHeaderConfig();
+        if (cachedConfig) {
+          setHeaderConfig(cachedConfig);
+          const cachedLogo = cacheUtils.loadLogo();
+          if (cachedLogo) {
+            setResolvedLogo(cachedLogo);
+          }
+        }
+        // If no cache, defaults will be used (already set in state)
       }
     };
 
@@ -403,21 +371,126 @@ export default function Navbar({ previewHeaderConfig = null }) {
     };
   }, []);
 
+  // Handle wheel events on categories scroll container to enable horizontal scrolling with vertical mouse wheel
+  useEffect(() => {
+    const handleWheel = (e) => {
+      const container = e.currentTarget;
+      // Only handle if there's vertical scroll (deltaY) and the container can scroll horizontally
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        // Prevent default vertical scrolling
+        e.preventDefault();
+        // Convert vertical scroll to horizontal scroll
+        container.scrollLeft += e.deltaY;
+      }
+    };
+
+    // Use a small timeout to ensure DOM is updated after state changes
+    const timeoutId = setTimeout(() => {
+      // Find all categories scroll containers and add event listeners
+      const containers = document.querySelectorAll('.categories-scroll-container');
+      containers.forEach((container) => {
+        container.addEventListener('wheel', handleWheel, { passive: false });
+      });
+    }, 0);
+
+    return () => {
+      clearTimeout(timeoutId);
+      // Clean up: find all containers and remove listeners
+      const containers = document.querySelectorAll('.categories-scroll-container');
+      containers.forEach((container) => {
+        container.removeEventListener('wheel', handleWheel);
+      });
+    };
+  }, [openDropdown, navigationItems]); // Re-run when dropdown opens or navigation items change
+
+  // Helper function to parse query parameters from a path string
+  const parseQueryParams = (pathString) => {
+    const params = {};
+    if (pathString && pathString.includes('?')) {
+      const queryString = pathString.split('?')[1];
+      queryString.split('&').forEach(param => {
+        const [key, value] = param.split('=');
+        if (key && value) {
+          params[key] = decodeURIComponent(value);
+        }
+      });
+    }
+    return params;
+  };
+
   // Check if current route matches a navigation item
   const isItemActive = (item) => {
     if (item.type === "dropdown") {
       return item.items?.some((subItem) => {
         if (subItem.type === "submenu") {
-          return subItem.subItems?.some(
-            (subSubItem) =>
-              location.pathname === subSubItem.path ||
-              location.pathname.startsWith(subSubItem.path)
-          );
+          return subItem.subItems?.some((subSubItem) => {
+            if (!subSubItem.path) return false;
+            
+            // Extract pathname from subSubItem.path (remove query params)
+            const itemPathname = subSubItem.path.split('?')[0];
+            
+            // Check pathname match
+            const pathnameMatch = 
+              location.pathname === itemPathname ||
+              (itemPathname !== "/" && location.pathname.startsWith(itemPathname));
+            
+            // If pathname matches and subSubItem has query params, check them
+            if (pathnameMatch && subSubItem.path.includes('?')) {
+              const itemParams = parseQueryParams(subSubItem.path);
+              const currentCategory = searchParams.get('category');
+              const currentBrand = searchParams.get('brand');
+              
+              // Check if category matches
+              if (itemParams.category) {
+                if (currentCategory !== itemParams.category) {
+                  return false;
+                }
+              }
+              
+              // Check if brand matches (if specified in item)
+              if (itemParams.brand) {
+                if (currentBrand !== itemParams.brand) {
+                  return false;
+                }
+              }
+            }
+            
+            return pathnameMatch;
+          });
         }
-        return (
-          location.pathname === subItem.path ||
-          location.pathname.startsWith(subItem.path)
-        );
+        
+        if (!subItem.path) return false;
+        
+        // Extract pathname from subItem.path (remove query params)
+        const itemPathname = subItem.path.split('?')[0];
+        
+        // Check pathname match
+        const pathnameMatch = 
+          location.pathname === itemPathname ||
+          (itemPathname !== "/" && location.pathname.startsWith(itemPathname));
+        
+        // If pathname matches and subItem has query params, check them
+        if (pathnameMatch && subItem.path.includes('?')) {
+          const itemParams = parseQueryParams(subItem.path);
+          const currentCategory = searchParams.get('category');
+          const currentBrand = searchParams.get('brand');
+          
+          // Check if category matches
+          if (itemParams.category) {
+            if (currentCategory !== itemParams.category) {
+              return false;
+            }
+          }
+          
+          // Check if brand matches (if specified in item)
+          if (itemParams.brand) {
+            if (currentBrand !== itemParams.brand) {
+              return false;
+            }
+          }
+        }
+        
+        return pathnameMatch;
       });
     }
     return (
@@ -451,7 +524,10 @@ export default function Navbar({ previewHeaderConfig = null }) {
       // Hide arrow on brand pages for "Our Brands" dropdown
       const isBrandPage = location.pathname.startsWith("/brands");
       const isOurBrandsDropdown = item.id === "nav-our-brands";
-      const shouldHideArrow = isBrandPage && isOurBrandsDropdown;
+      // Hide arrow on products page for "Products" dropdown
+      const isProductsPage = location.pathname === "/products";
+      const isProductsDropdown = item.id === "nav-products";
+      const shouldHideArrow = (isBrandPage && isOurBrandsDropdown) || (isProductsPage && isProductsDropdown);
       
       return (
         <div
@@ -1089,6 +1165,8 @@ export default function Navbar({ previewHeaderConfig = null }) {
     .dropdown .menu.brands-menu {
       min-width: 150px !important;
       max-width: 150px !important;
+      background: #ffffff !important;
+      border-color: rgba(229, 231, 235, 0.85) !important;
     }
     .categories-menu { 
       display: flex !important;
@@ -1326,11 +1404,6 @@ export default function Navbar({ previewHeaderConfig = null }) {
         headerConfig.mobileMenuShadow || "0 0 40px rgba(0, 0, 0, 0.1)"
       } !important; 
       z-index: ${headerConfig.mobileNavZIndex || "1000"} !important; 
-    }
-    .nav-links a, .nav-links .dropdown { 
-      border-bottom-color: ${
-        headerConfig.mobileMenuBorderColor || "rgba(229, 231, 235, 0.5)"
-      } !important; 
     }
     .brand { 
       height: ${headerConfig.logoHeight || "36px"} !important; 

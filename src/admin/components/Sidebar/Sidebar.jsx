@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Sidebar.css";
 import { useAuth } from "../../auth/useAuth";
-import { MODULES, ROLE_PERMISSIONS } from "../../auth/roleConfig";
+import { MODULES, ROLE_PERMISSIONS, ROLE } from "../../auth/roleConfig";
+import { getModuleVisibility } from "../../services/moduleVisibilityService";
 
 export default function Sidebar({
   currentPage,
@@ -14,6 +15,22 @@ export default function Sidebar({
   const location = useLocation();
   const { user } = useAuth();
   const role = user?.role;
+  const [moduleVisibility, setModuleVisibility] = useState({});
+
+  // Load module visibility settings
+  useEffect(() => {
+    const loadVisibility = async () => {
+      try {
+        const visibility = await getModuleVisibility();
+        setModuleVisibility(visibility);
+      } catch (error) {
+        console.error("Error loading module visibility:", error);
+        // Default to all visible on error (will be handled by getDefaultVisibility)
+        setModuleVisibility({});
+      }
+    };
+    loadVisibility();
+  }, []);
 
   const allMenuItems = useMemo(
     () => [
@@ -85,6 +102,18 @@ export default function Sidebar({
         icon: "📝",
       },
       {
+        id: MODULES.PRIVACY_POLICY,
+        label: "Privacy Policy",
+        path: `${basePath}/privacy-policy`,
+        icon: "🔒",
+      },
+      {
+        id: MODULES.COOKIES_POLICY,
+        label: "Cookies Policy",
+        path: `${basePath}/cookies-policy`,
+        icon: "🍪",
+      },
+      {
         id: MODULES.MIGRATION,
         label: "Data Migration",
         path: `${basePath}/migration`,
@@ -107,7 +136,32 @@ export default function Sidebar({
   );
 
   const allowedIds = ROLE_PERMISSIONS[role]?.allowedModules || [];
-  const menuItems = allMenuItems.filter((item) => allowedIds.includes(item.id));
+  const menuItems = allMenuItems.filter((item) => {
+    // Check role permissions first
+    if (!allowedIds.includes(item.id)) {
+      return false;
+    }
+    
+    // Dashboard should always be visible
+    if (item.id === MODULES.DASHBOARD) {
+      return true;
+    }
+    
+    // For super admin, check module visibility settings for all modules
+    if (role === ROLE.SUPER_ADMIN) {
+      // Check if module visibility is set, default to true if not set
+      return moduleVisibility[item.id] !== false;
+    }
+    
+    // For other roles, check module visibility if set, otherwise use role permissions
+    // Non-super admin roles: respect visibility settings if they exist
+    if (moduleVisibility.hasOwnProperty(item.id)) {
+      return moduleVisibility[item.id] !== false;
+    }
+    
+    // Default: show if in allowed modules
+    return true;
+  });
 
   const isActive = (path) => {
     if (path === basePath) {

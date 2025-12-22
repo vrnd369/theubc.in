@@ -34,27 +34,40 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   margin-left: 0;
   margin-right: auto;
   margin-bottom: 28px;
   font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 500; /* Medium */
-  font-size: 10px;
-  line-height: 21px;
+  font-size: 14px;
+  line-height: 1.5;
   letter-spacing: 0.27em; /* 27% */
   color: #ffffff; /* White text */
   background: #1E3A8A; /* Blue/900 background */
   width: auto;
-  min-width: 131px;
-  height: 33px;
-  padding: 0 14px;
+  min-width: 180px;
+  height: 45px;
+  padding: 0 20px;
   border-radius: 999px;
   box-sizing: border-box;
   white-space: nowrap;
 }
 
-.tag .privacy-tag-star,
+.tag .privacy-tag-star {
+  color: #ffffff; /* White star */
+  font-size: 18px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tag .privacy-tag-text {
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0.27em;
+}
+
 .tag::first-letter {
   color: #ffffff; /* White star */
 }
@@ -185,11 +198,20 @@
   }
 
   .tag {
-    font-size: 9.8px;
-    line-height: 20.5px;
-    min-width: 135px;
-    height: 32px;
-    padding: 0 15px;
+    font-size: 13px;
+    line-height: 1.5;
+    min-width: 175px;
+    height: 42px;
+    padding: 0 18px;
+    gap: 9px;
+  }
+
+  .tag .privacy-tag-star {
+    font-size: 16px;
+  }
+
+  .tag .privacy-tag-text {
+    font-size: 13px;
   }
 
   .privacy-policy-heading {
@@ -231,6 +253,22 @@
     padding: 100px 0 60px;
   }
 
+  .tag {
+    font-size: 12px;
+    min-width: 160px;
+    height: 40px;
+    padding: 0 16px;
+    gap: 8px;
+  }
+
+  .tag .privacy-tag-star {
+    font-size: 15px;
+  }
+
+  .tag .privacy-tag-text {
+    font-size: 12px;
+  }
+
   .privacy-policy-heading {
     font-size: 36px;
   }
@@ -248,6 +286,22 @@
 @media (max-width: 480px) {
   .privacy-policy-page {
     padding: 80px 0 40px;
+  }
+
+  .tag {
+    font-size: 11px;
+    min-width: 145px;
+    height: 38px;
+    padding: 0 14px;
+    gap: 7px;
+  }
+
+  .tag .privacy-tag-star {
+    font-size: 14px;
+  }
+
+  .tag .privacy-tag-text {
+    font-size: 11px;
   }
 
   .privacy-policy-heading {

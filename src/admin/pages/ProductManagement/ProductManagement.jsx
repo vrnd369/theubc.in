@@ -296,6 +296,33 @@ export default function ProductManagement() {
     setSuccess(null);
   };
 
+  const handleToggleEnable = async (item, enabled) => {
+    const itemType = activeTab === "brands" ? "brand" : activeTab === "categories" ? "category" : "product";
+    try {
+      setError(null);
+      const itemName = item.name || item.title || item.brandId || item.categoryId || item.id;
+      
+      if (activeTab === "brands") {
+        await updateBrand(item.id, { enabled });
+        await logUpdate("products", `Brand: ${itemName}`, item.id);
+      } else if (activeTab === "categories") {
+        await updateCategory(item.id, { enabled });
+        await logUpdate("products", `Category: ${itemName}`, item.id);
+      } else if (activeTab === "products") {
+        await updateProduct(item.id, { enabled });
+        await logUpdate("products", `Product: ${itemName}`, item.id);
+      }
+      
+      await loadData();
+      setSuccess(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} ${enabled ? 'shown' : 'hidden'} successfully!`);
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (error) {
+      console.error("Error toggling enable:", error);
+      setError(`Failed to ${enabled ? 'show' : 'hide'} ${itemType}. Please try again.`);
+      setTimeout(() => setError(null), 5000);
+    }
+  };
+
   const handleImport = async () => {
     if (
       !window.confirm(
@@ -518,6 +545,7 @@ export default function ProductManagement() {
                     items={brands}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onToggleEnable={handleToggleEnable}
                     canDelete={canDelete}
                   />
                 )}
@@ -527,6 +555,7 @@ export default function ProductManagement() {
                     brands={brands}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onToggleEnable={handleToggleEnable}
                     canDelete={canDelete}
                     search={categorySearch}
                     onSearchChange={setCategorySearch}
@@ -543,6 +572,7 @@ export default function ProductManagement() {
                     categories={categories}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onToggleEnable={handleToggleEnable}
                     canDelete={canDelete}
                     onRefresh={loadData}
                   />
@@ -570,7 +600,7 @@ export default function ProductManagement() {
 }
 
 // Brand List Component
-function BrandList({ items, onEdit, onDelete, canDelete }) {
+function BrandList({ items, onEdit, onDelete, onToggleEnable, canDelete }) {
   const [resolvedImages, setResolvedImages] = useState({});
   const [imageErrors, setImageErrors] = useState({});
 
@@ -693,6 +723,15 @@ function BrandList({ items, onEdit, onDelete, canDelete }) {
             </div>
             <div className="product-card-actions">
               <button
+                onClick={() => onToggleEnable(item, !(item.enabled !== false))}
+                className={`admin-btn ${
+                  item.enabled !== false ? "admin-btn-secondary" : "admin-btn-success"
+                } product-action-btn`}
+                title={item.enabled !== false ? "Hide from website" : "Show on website"}
+              >
+                {item.enabled !== false ? "👁️‍🗨️ Hide" : "👁️ Show"}
+              </button>
+              <button
                 onClick={() => onEdit(item)}
                 className="admin-btn admin-btn-secondary product-action-btn"
               >
@@ -720,6 +759,7 @@ function CategoryList({
   brands,
   onEdit,
   onDelete,
+  onToggleEnable,
   canDelete,
   search,
   onSearchChange,
@@ -1069,6 +1109,15 @@ function CategoryList({
                 </div>
                 <div className="product-card-actions">
                   <button
+                    onClick={() => onToggleEnable(item, !(item.enabled !== false))}
+                    className={`admin-btn ${
+                      item.enabled !== false ? "admin-btn-secondary" : "admin-btn-success"
+                    } product-action-btn`}
+                    title={item.enabled !== false ? "Hide from website" : "Show on website"}
+                  >
+                    {item.enabled !== false ? "👁️‍🗨️ Hide" : "👁️ Show"}
+                  </button>
+                  <button
                     onClick={() => onEdit(item)}
                     className="admin-btn admin-btn-secondary product-action-btn"
                   >
@@ -1100,6 +1149,7 @@ function ProductList({
   categories,
   onEdit,
   onDelete,
+  onToggleEnable,
   canDelete,
   onRefresh,
 }) {
@@ -1340,6 +1390,15 @@ function ProductList({
                 </div>
               </div>
               <div className="product-card-actions">
+                <button
+                  onClick={() => onToggleEnable(item, !(item.enabled !== false))}
+                  className={`admin-btn ${
+                    item.enabled !== false ? "admin-btn-secondary" : "admin-btn-success"
+                  } product-action-btn`}
+                  title={item.enabled !== false ? "Hide from website" : "Show on website"}
+                >
+                  {item.enabled !== false ? "👁️‍🗨️ Hide" : "👁️ Show"}
+                </button>
                 <button
                   onClick={() => onEdit(item)}
                   className="admin-btn admin-btn-secondary product-action-btn"

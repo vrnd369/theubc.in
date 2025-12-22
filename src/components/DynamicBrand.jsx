@@ -959,12 +959,22 @@ export default function DynamicBrand() {
                 categories.map((category, index) => {
                   const categoryImage =
                     imageUrls[`category-${index}`] || category.image || "";
+                  // Build a URL-friendly category slug using chip/title/slug, falling back to id
+                  const toSlug = (value) =>
+                    value
+                      ? value.toString().toLowerCase().replace(/\s+/g, "-").replace(/&/g, "")
+                      : "";
+                  const rawSlug =
+                    category.slug ||
+                    category.chip ||
+                    category.title ||
+                    category.categoryId ||
+                    category.id;
+                  const categorySlug = toSlug(rawSlug);
                   const categoryHref =
                     category.href ||
                     `/products?brand=${brandSlug}${
-                      category.categoryId
-                        ? `&category=${category.categoryId}`
-                        : ""
+                      categorySlug ? `&category=${categorySlug}` : ""
                     }`;
                   return (
                     <article

@@ -125,18 +125,34 @@ service cloud.firestore {
       allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
     }
 
+    // Privacy Policy - public can read, admins can write
+    match /privacyPolicy/{document=**} {
+      allow read: if true; // Public read access for website visitors
+      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+    }
+
+    // Cookies Policy - public can read, admins can write
+    match /cookiesPolicy/{document=**} {
+      allow read: if true; // Public read access for website visitors
+      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+    }
+
     // Form submissions - public can write (submit forms), admins can read/update/delete
+    // TEMPORARY: Allowing read access for custom auth system
+    // TODO: Change to allow read: if isAuthenticated() after Firebase Auth integration
     match /formSubmissions/{document=**} {
-      allow read: if isAuthenticated(); // Only authenticated users can read
+      allow read: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
       allow create: if true; // Public can submit forms
-      allow update, delete: if isAuthenticated(); // Only authenticated users can update/delete
+      allow update, delete: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
     }
 
     // Form submission files - public can write (upload files), admins can read/delete
+    // TEMPORARY: Allowing read access for custom auth system
+    // TODO: Change to allow read: if isAuthenticated() after Firebase Auth integration
     match /formSubmissionFiles/{document=**} {
-      allow read: if isAuthenticated(); // Only authenticated users can read
+      allow read: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
       allow create: if true; // Public can upload files with form submissions
-      allow update, delete: if isAuthenticated(); // Only authenticated users can update/delete
+      allow update, delete: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
     }
 
     // Enquiry form - public can read (form config) and write (submit enquiries), admins can manage
@@ -157,6 +173,13 @@ service cloud.firestore {
     // TEMPORARY: Allowing access for custom auth system
     match /auditLogs/{document=**} {
       allow read: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+    }
+
+    // Module visibility - public can read (for sidebar), admins can write
+    // TEMPORARY: Allowing writes without Firebase Auth for custom auth system
+    match /moduleVisibility/{document=**} {
+      allow read: if true; // Public read access (needed for sidebar to check visibility)
       allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
     }
     

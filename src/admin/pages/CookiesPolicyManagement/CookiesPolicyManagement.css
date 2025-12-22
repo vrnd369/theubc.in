@@ -1,0 +1,454 @@
+/* Cookies Policy Management - Enhanced Styles */
+
+.cookies-policy-management {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+.cookies-policy-management .admin-page-header {
+  margin-bottom: 32px;
+  padding: 28px 32px;
+  background: linear-gradient(135deg, #323790 0%, #1C1F52 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  color: white;
+}
+
+.cookies-policy-management .admin-page-header h1 {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.cookies-policy-management .admin-page-header p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Card Styles */
+.cookies-policy-management .admin-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+  margin-bottom: 24px;
+}
+
+.cookies-policy-management .admin-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.cookies-policy-management .admin-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 2px solid #f3f4f6;
+  background: linear-gradient(to right, #f9fafb, #ffffff);
+}
+
+.cookies-policy-management .admin-card-header h2 {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cookies-policy-management .admin-card-header h2::before {
+  content: '';
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(135deg, #323790, #1C1F52);
+  border-radius: 2px;
+}
+
+.cookies-policy-management .admin-card-body {
+  padding: 24px;
+}
+
+/* Form Group Styles */
+.cookies-policy-management .admin-form-group {
+  margin-bottom: 24px;
+}
+
+.cookies-policy-management .admin-form-group:last-child {
+  margin-bottom: 0;
+}
+
+.cookies-policy-management .admin-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  letter-spacing: 0.01em;
+}
+
+.cookies-policy-management .admin-input,
+.cookies-policy-management .admin-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #1f2937;
+  background-color: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.cookies-policy-management .admin-input:focus,
+.cookies-policy-management .admin-textarea:focus {
+  outline: none;
+  border-color: #323790;
+  box-shadow: 0 0 0 3px rgba(50, 55, 144, 0.1);
+  background-color: #ffffff;
+}
+
+.cookies-policy-management .admin-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* Section Editor Styles */
+.section-editor {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  background: #ffffff;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-editor::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #323790, #1C1F52);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.section-editor:hover {
+  border-color: #323790;
+  box-shadow: 0 4px 6px -1px rgba(50, 55, 144, 0.1), 0 2px 4px -1px rgba(50, 55, 144, 0.06);
+}
+
+.section-editor:hover::before {
+  opacity: 1;
+}
+
+.section-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.section-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-btn-icon {
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: #4b5563;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.admin-btn-icon:hover:not(:disabled) {
+  background: linear-gradient(135deg, #323790, #1C1F52);
+  color: white;
+  border-color: #323790;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(50, 55, 144, 0.2);
+}
+
+.admin-btn-icon:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.admin-btn-icon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+/* Button Styles */
+.cookies-policy-management .admin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.cookies-policy-management .admin-btn-primary {
+  background: linear-gradient(135deg, #323790, #1C1F52);
+  color: white;
+}
+
+.cookies-policy-management .admin-btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1C1F52, #0f1125);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(50, 55, 144, 0.4);
+}
+
+.cookies-policy-management .admin-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.cookies-policy-management .admin-btn-secondary {
+  background: #ffffff;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+}
+
+.cookies-policy-management .admin-btn-secondary:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #323790;
+  color: #323790;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.cookies-policy-management .admin-btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.cookies-policy-management .admin-btn-danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.cookies-policy-management .admin-btn-sm {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+}
+
+/* List Item Editor */
+.list-item-editor {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.list-item-editor:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.admin-input-group {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.admin-input-group .admin-textarea {
+  flex: 1;
+  min-height: 80px;
+}
+
+/* Subsection Editor */
+.subsection-editor {
+  border-left: 4px solid #323790;
+  padding: 20px;
+  margin: 16px 0 16px 20px;
+  background: linear-gradient(to right, #f9fafb, #ffffff);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.subsection-editor:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-left-color: #1C1F52;
+}
+
+.subsection-editor .admin-heading-3 {
+  color: #323790;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Actions Bar */
+.admin-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 32px;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-top: 3px solid #f3f4f6;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+/* Alert Styles */
+.cookies-policy-management .admin-alert {
+  padding: 16px 20px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cookies-policy-management .admin-alert-success {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  border: 2px solid #10b981;
+  color: #065f46;
+}
+
+.cookies-policy-management .admin-alert-error {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  border: 2px solid #ef4444;
+  color: #991b1b;
+}
+
+/* Loading State */
+.cookies-policy-management .admin-loading {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1.125rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Error State */
+.cookies-policy-management .admin-error {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1.125rem;
+  color: #ef4444;
+  font-weight: 500;
+  background: #fee2e2;
+  border-radius: 12px;
+  border: 2px solid #ef4444;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .cookies-policy-management {
+    padding: 16px;
+  }
+
+  .cookies-policy-management .admin-page-header {
+    padding: 20px;
+  }
+
+  .cookies-policy-management .admin-page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .section-editor {
+    padding: 16px;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .admin-actions .admin-btn {
+    width: 100%;
+  }
+
+  .section-editor-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+}
+
+/* Scrollbar Styling */
+.cookies-policy-management ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.cookies-policy-management ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.cookies-policy-management ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.cookies-policy-management ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

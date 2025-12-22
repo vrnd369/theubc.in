@@ -32,6 +32,8 @@ The Firestore security rules have been updated to **require Firebase Authenticat
 - `careersPage` - Careers page content
 - `header` - Header styling
 - `footer` - Footer content
+- `privacyPolicy` - Privacy Policy page content
+- `cookiesPolicy` - Cookies Policy page content
 
 ### Form Collections (Read: Authenticated, Write: Public can create)
 - `formSubmissions` - Form submissions (public can submit, admins can read/manage)

@@ -435,6 +435,32 @@
   line-height: 1.5;
 }
 
+.login-copyright {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 1rem 0 0 0;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.login-copyright-link {
+  color: #323790;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.login-copyright-link:hover {
+  color: #1C1F52;
+  text-decoration: underline;
+}
+
+.login-copyright-link:focus {
+  outline: 2px solid #323790;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 /* Responsive Design */
 @media (max-width: 640px) {
   .login-card {

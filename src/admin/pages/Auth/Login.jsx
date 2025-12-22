@@ -5,7 +5,10 @@ import { ROLE_BASE_PATH } from "../../auth/roleConfig";
 import { authenticateAdminUser } from "../../services/userService";
 import "../../styles/admin-global.css";
 import "./Login.css";
-import logo from "../../../assets/Logo ubc.png";
+// WikiWakyWoo Logo - Update this import if you have a local logo file
+// Example: import wikiWakyWooLogo from "../../../assets/wikiwakywoo-logo.png";
+// For now using URL - replace with local import if logo file is available
+const wikiWakyWooLogo = "https://www.wikiwakywoo.com/logo.png";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -86,7 +89,18 @@ export default function Login() {
 
       <div className="login-card admin-card">
         <div className="login-logo-container">
-          <img src={logo} alt="UBC Logo" className="login-logo" />
+          <img src={wikiWakyWooLogo} alt="WikiWakyWoo Logo" className="login-logo" onError={(e) => {
+            // Fallback to text if image fails to load
+            e.target.style.display = 'none';
+            const parent = e.target.parentElement;
+            if (!parent.querySelector('.logo-fallback')) {
+              const fallback = document.createElement('div');
+              fallback.className = 'logo-fallback';
+              fallback.textContent = 'WikiWakyWoo';
+              fallback.style.cssText = 'font-size: 24px; font-weight: 700; color: #323790;';
+              parent.appendChild(fallback);
+            }
+          }} />
         </div>
         
         <div className="login-header">
@@ -197,6 +211,18 @@ export default function Login() {
           </div>
           <p className="login-footer-text">
             Your session is protected with industry-standard encryption
+          </p>
+          <p className="login-copyright">
+            © {new Date().getFullYear()}{' '}
+            <a 
+              href="https://www.wikiwakywoo.com/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="login-copyright-link"
+            >
+              WikiWakyWoo
+            </a>{' '}
+            CMS. All rights reserved.
           </p>
         </div>
       </div>

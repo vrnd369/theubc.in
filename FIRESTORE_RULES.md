@@ -89,6 +89,16 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    // Allow read/write access to privacyPolicy collection (for Privacy Policy CMS)
+    match /privacyPolicy/{document=**} {
+      allow read, write: if true;
+    }
+
+    // Allow read/write access to cookiesPolicy collection (for Cookies Policy CMS)
+    match /cookiesPolicy/{document=**} {
+      allow read, write: if true;
+    }
+
     // Allow read/write access to formSubmissions collection
     // Public can write (submit forms), admins can read/update/delete
     match /formSubmissions/{document=**} {

@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { getPrivacyPolicy } from '../admin/services/privacyPolicyService';
-import './PrivacyPolicy.css';
+import { getCookiesPolicy } from '../admin/services/cookiesPolicyService';
+import './PrivacyPolicy.css'; // Reuse the same styles
 
-export default function PrivacyPolicy() {
+export default function Cookies() {
   const [policy, setPolicy] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = 'Privacy Policy - UBC | United Brothers Company';
+    document.title = 'Cookies Policy - UBC | United Brothers Company';
     loadPolicy();
   }, []);
 
   const loadPolicy = async () => {
     try {
-      const data = await getPrivacyPolicy();
+      const data = await getCookiesPolicy();
       setPolicy(data);
     } catch (error) {
-      console.error('Error loading privacy policy:', error);
+      console.error('Error loading cookies policy:', error);
     } finally {
       setLoading(false);
     }
@@ -39,7 +39,7 @@ export default function PrivacyPolicy() {
       <main className="privacy-policy-page">
         <div className="container">
           <div className="privacy-policy-content">
-            <div style={{ textAlign: 'center', padding: '40px' }}>Failed to load privacy policy.</div>
+            <div style={{ textAlign: 'center', padding: '40px' }}>Failed to load cookies policy.</div>
           </div>
         </div>
       </main>
@@ -52,7 +52,7 @@ export default function PrivacyPolicy() {
         <div className="privacy-policy-content">
           <span className="tag">
             <span className="privacy-tag-star">{policy.tagStar || '★'}</span>
-            <span className="privacy-tag-text">{policy.tagText || 'PRIVACY POLICY'}</span>
+            <span className="privacy-tag-text">{policy.tagText || 'COOKIES POLICY'}</span>
           </span>
 
           <div className="privacy-policy-text">
@@ -70,6 +70,26 @@ export default function PrivacyPolicy() {
                     </ul>
                   )}
                   {section.additionalContent && <p>{section.additionalContent}</p>}
+                  {section.subsections && section.subsections.length > 0 && (
+                    <>
+                      {section.subsections
+                        .sort((a, b) => (a.order || 0) - (b.order || 0))
+                        .map((subsection, subIndex) => (
+                          <div key={subsection.id || subIndex}>
+                            <h3>{subsection.title}</h3>
+                            {subsection.content && <p>{subsection.content}</p>}
+                            {subsection.listItems && subsection.listItems.length > 0 && (
+                              <ul>
+                                {subsection.listItems.map((item, itemIndex) => (
+                                  <li key={itemIndex} dangerouslySetInnerHTML={{ __html: item.text }} />
+                                ))}
+                              </ul>
+                            )}
+                            {subsection.additionalContent && <p>{subsection.additionalContent}</p>}
+                          </div>
+                        ))}
+                    </>
+                  )}
                   {section.contactInfo && (
                     <div className="privacy-contact-info">
                       {section.contactInfo.email && (
@@ -81,6 +101,18 @@ export default function PrivacyPolicy() {
                       {section.contactInfo.address && (
                         <p><strong>Address:</strong> {section.contactInfo.address}</p>
                       )}
+                      {section.contactInfo.contactPageLink && (
+                        <p>
+                          You can also visit our{' '}
+                          <a 
+                            href={section.contactInfo.contactPageLink} 
+                            style={{ color: '#323790', textDecoration: 'underline' }}
+                          >
+                            contact page
+                          </a>{' '}
+                          for more ways to reach us.
+                        </p>
+                      )}
                     </div>
                   )}
                 </section>
@@ -91,3 +123,4 @@ export default function PrivacyPolicy() {
     </main>
   );
 }
+

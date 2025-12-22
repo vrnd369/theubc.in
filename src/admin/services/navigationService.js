@@ -16,6 +16,7 @@ import { db } from '../../firebase/config';
 import { validateAndCompressDocument } from '../../utils/firestoreCompression';
 import { getBrands, getCategories } from './productService';
 import { isExistingUser, markUserAsExisting } from '../../utils/userCache';
+import { MODULES } from '../auth/roleConfig';
 
 const NAVIGATION_COLLECTION = 'navigation';
 const NAVIGATION_CONFIG_DOC = 'navigation-config';
@@ -32,6 +33,12 @@ const chipToSlug = (chip) => {
  */
 export const generateNavigationFromProducts = async () => {
   try {
+    // Check module visibility settings
+    const { getModuleVisibility } = await import('./moduleVisibilityService');
+    const moduleVisibility = await getModuleVisibility();
+    const isProductsVisible = moduleVisibility[MODULES.PRODUCTS] !== false;
+    const isBrandPagesVisible = moduleVisibility[MODULES.BRAND_PAGES] !== false;
+
     const [brands, categories] = await Promise.all([
       getBrands(),
       getCategories()
@@ -59,8 +66,8 @@ export const generateNavigationFromProducts = async () => {
       }
     ];
 
-    // Add "Our Brands" dropdown if there are brands
-    if (enabledBrands.length > 0) {
+    // Add "Our Brands" dropdown if there are brands AND brand pages module is visible
+    if (enabledBrands.length > 0 && isBrandPagesVisible) {
       const brandItems = enabledBrands.map(brand => ({
         id: `brand-${brand.brandId || brand.id}`,
         label: brand.name,
@@ -80,8 +87,8 @@ export const generateNavigationFromProducts = async () => {
       });
     }
 
-    // Add "Products" dropdown with categories only (no brands)
-    if (enabledCategories.length > 0) {
+    // Add "Products" dropdown with categories only (no brands) if products module is visible
+    if (enabledCategories.length > 0 && isProductsVisible) {
       const productItems = enabledCategories.map(category => {
         const categorySlug = chipToSlug(category.chip) || category.id;
         // Get brand identifier for the category

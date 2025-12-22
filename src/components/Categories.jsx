@@ -82,19 +82,40 @@ export default function Categories({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Don't show loading - use cached data immediately
-        const [brandsData, categoriesData, productsData] = await Promise.all([
-          getBrands(),
-          getCategories(),
-          getProducts(),
-        ]);
+        // Check module visibility settings
+        const { getModuleVisibility } = await import("../admin/services/moduleVisibilityService");
+        const { MODULES } = await import("../admin/auth/roleConfig");
+        const moduleVisibility = await getModuleVisibility();
+        const isProductsVisible = moduleVisibility[MODULES.PRODUCTS] !== false;
+        const isBrandPagesVisible = moduleVisibility[MODULES.BRAND_PAGES] !== false;
+
+        // Only fetch data if modules are visible
+        const promises = [];
+        if (isBrandPagesVisible) {
+          promises.push(getBrands());
+        } else {
+          promises.push(Promise.resolve([]));
+        }
+        if (isProductsVisible) {
+          promises.push(getCategories());
+          promises.push(getProducts());
+        } else {
+          promises.push(Promise.resolve([]));
+          promises.push(Promise.resolve([]));
+        }
+
+        const [brandsData, categoriesData, productsData] = await Promise.all(promises);
 
         // Filter enabled items only
-        const enabledBrands = brandsData.filter((b) => b.enabled !== false);
-        const enabledCategories = categoriesData.filter(
-          (c) => c.enabled !== false
-        );
-        const enabledProducts = productsData.filter((p) => p.enabled !== false);
+        const enabledBrands = isBrandPagesVisible 
+          ? brandsData.filter((b) => b.enabled !== false)
+          : [];
+        const enabledCategories = isProductsVisible
+          ? categoriesData.filter((c) => c.enabled !== false)
+          : [];
+        const enabledProducts = isProductsVisible
+          ? productsData.filter((p) => p.enabled !== false)
+          : [];
 
         setBrands(enabledBrands);
         setCategories(enabledCategories);
@@ -365,7 +386,6 @@ export default function Categories({
       aria-labelledby="categories-heading"
     >
       <div className="container">
-        <SectionTag label="★ CATEGORIES" />
         <h2 id="categories-heading">
           Explore our finest products
           <br />
@@ -420,6 +440,8 @@ export default function Categories({
           </div>
         )}
 
+        <SectionTag label="★ CATEGORIES" />
+
         {/* Category Filter Buttons */}
         {(
           <div className="categories-buttons-wrapper">
@@ -472,49 +494,6 @@ export default function Categories({
           <div className="products-list-section">
             {/* Show products based on filters */}
             <>
-                {/* Category Header - Show when viewing a specific category */}
-                {active !== "All" && (() => {
-                  const activeCategory = categories.find((c) => c.chip === active);
-                  if (activeCategory) {
-                    return (
-                      <div className="category-header-section" style={{
-                        marginBottom: "2rem",
-                        paddingBottom: "1.5rem",
-                        borderBottom: "1px solid #e5e7eb"
-                      }}>
-                        <SectionTag label={`★ ${activeCategory.chip?.toUpperCase() || 'CATEGORY'}`} />
-                        <h2 className="category-page-title" style={{
-                          fontSize: "2rem",
-                          fontWeight: "700",
-                          marginTop: "0.5rem",
-                          marginBottom: activeCategory.subtitle ? "0.5rem" : "1.5rem",
-                          color: "#1a1a1a"
-                        }}>
-                          {activeCategory.title || activeCategory.chip || active}
-                        </h2>
-                        {activeCategory.subtitle && (
-                          <p className="category-page-subtitle" style={{
-                            fontSize: "1.125rem",
-                            color: "#6B7280",
-                            marginBottom: "1.5rem",
-                            lineHeight: "1.6"
-                          }}>
-                            {activeCategory.subtitle}
-                          </p>
-                        )}
-                        <p className="category-products-count" style={{
-                          fontSize: "0.875rem",
-                          color: "#9CA3AF",
-                          marginTop: "0.5rem"
-                        }}>
-                          {visibleProducts.length} {visibleProducts.length === 1 ? 'product' : 'products'} in this category
-                        </p>
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
-                
                 {/* Products Title - Show when not viewing a specific category */}
                 {active === "All" && (
                   <h3 className="products-list-title">
