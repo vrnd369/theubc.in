@@ -1463,6 +1463,234 @@ function ProductForm({
         }
       }
 
+      // Check if this is a special product type that needs default pillars
+      const productTitle = (cleanItemData.title || '').toLowerCase();
+      const isRoyalBasmatiRice = productTitle.includes('royal basmati');
+      const isSuperBasmatiRice = productTitle.includes('super basmati');
+      const isChilliPowder = productTitle.includes('chilli powder') || productTitle.includes('chili powder');
+      const isTurmericPowder = productTitle.includes('turmeric powder');
+      const isCorianderPowder = productTitle.includes('coriander powder');
+      const isGaramMasala = productTitle.includes('garam masala');
+      const isJeeraPowder = productTitle.includes('jeera powder') || productTitle.includes('cumin powder');
+      const isCulinaryPaste = productTitle.includes('paste');
+      const isAppalam = productTitle.includes('appalam');
+      const isMasalaPowder = productTitle.includes('masala') && !isGaramMasala && !isAppalam;
+      
+      // Get default pillars for special product types
+      let defaultPillars = [];
+      if (isRoyalBasmatiRice) {
+        defaultPillars = [
+          {
+            title: "Authentic Aroma",
+            description: "Naturally fragrant rice that enhances every dish."
+          },
+          {
+            title: "Perfect Grain Length",
+            description: "Extra-long grains that remain separate and fluffy when cooked."
+          },
+          {
+            title: "Carefully Aged",
+            description: "Aged to perfection for superior texture and taste."
+          },
+          {
+            title: "ISO Certified",
+            description: "Certified under ISO 9001:2015 and ISO 22000:2018 standards for quality and food safety."
+          }
+        ];
+      } else if (isSuperBasmatiRice) {
+        defaultPillars = [
+          {
+            title: "Silky & Slender Grains",
+            description: "Premium basmati rice with silky and slender grains for perfect texture."
+          },
+          {
+            title: "Perfectly Aged",
+            description: "Carefully aged to perfection for superior texture and authentic taste."
+          },
+          {
+            title: "Rich Aroma & Flavor",
+            description: "Naturally fragrant rice with distinctive nutty flavor that enhances every dish."
+          },
+          {
+            title: "ISO Certified",
+            description: "Certified under ISO 9001:2015 and ISO 22000:2018 standards for quality and food safety."
+          }
+        ];
+      } else if (isChilliPowder) {
+        defaultPillars = [
+          {
+            title: "Pure & Natural",
+            description: "Made from the finest quality chillies, sourced from premium farms with no artificial additives."
+          },
+          {
+            title: "Advanced Tech",
+            description: "Processed using advanced technology to preserve natural flavor, color, and nutritional value."
+          },
+          {
+            title: "Rich Aroma & Color",
+            description: "Intense aroma and vibrant color that enhances the taste and appearance of your dishes."
+          },
+          {
+            title: "Triple-Layer Protection",
+            description: "Triple-layer packaging ensures freshness, quality, and protection from moisture and contaminants."
+          }
+        ];
+      } else if (isTurmericPowder) {
+        defaultPillars = [
+          {
+            title: "Pure & Natural",
+            description: "Made from the finest quality turmeric, sourced from premium farms with no artificial additives."
+          },
+          {
+            title: "Advanced Tech",
+            description: "Processed using advanced technology to preserve natural flavor, color, and nutritional value."
+          },
+          {
+            title: "High Curcumin",
+            description: "Rich in curcumin content, providing maximum health benefits and vibrant color to your dishes."
+          },
+          {
+            title: "Triple-Layer Protection",
+            description: "Triple-layer packaging ensures freshness, quality, and protection from moisture and contaminants."
+          }
+        ];
+      } else if (isGaramMasala) {
+        defaultPillars = [
+          {
+            title: "Pure & Natural",
+            description: "Made from the finest quality spices, sourced from premium farms with no artificial additives."
+          },
+          {
+            title: "Aroma Locked",
+            description: "Special processing technology locks in the natural aroma and flavor for maximum freshness."
+          },
+          {
+            title: "No Added Preservatives",
+            description: "100% natural with no added preservatives, ensuring pure and authentic taste."
+          },
+          {
+            title: "No Added Colours",
+            description: "No artificial colors added, maintaining the natural appearance and quality of the spices."
+          }
+        ];
+      } else if (isAppalam) {
+        defaultPillars = [
+          {
+            title: "Rich in Protein",
+            description: "Protein-packed for everyday energy in every crispy bite."
+          },
+          {
+            title: "Sun-Dried for Goodness",
+            description: "Traditional sun-drying locks in flavor and light, airy texture."
+          },
+          {
+            title: "Quality Ingredients",
+            description: "Made with carefully selected ingredients for authentic taste."
+          },
+          {
+            title: "Crispy & Light",
+            description: "Delicately crisp and light for a perfect, anytime snack."
+          }
+        ];
+      } else if (isCulinaryPaste) {
+        defaultPillars = [
+          {
+            title: "Thick & Grainy",
+            description: "Rich, thick, and grainy texture for authentic taste."
+          },
+          {
+            title: "Freshness Sealed",
+            description: "Sealed to lock in freshness, aroma, and flavor."
+          },
+          {
+            title: "No Added Colours",
+            description: "No artificial colours added—pure natural goodness."
+          },
+          {
+            title: "No Added Preservatives",
+            description: "Zero added preservatives for clean, honest taste."
+          }
+        ];
+      } else if (isMasalaPowder) {
+        defaultPillars = [
+          {
+            title: "Pure & Natural",
+            description: "Made from the finest quality spices, sourced from premium farms with no artificial additives."
+          },
+          {
+            title: "Aroma Locked",
+            description: "Special processing technology locks in the natural aroma and flavor for maximum freshness."
+          },
+          {
+            title: "No Added Preservatives",
+            description: "100% natural with no added preservatives, ensuring pure and authentic taste."
+          },
+          {
+            title: "No Added Colours",
+            description: "No artificial colors added, maintaining the natural appearance and quality of the spices."
+          }
+        ];
+      } else if (isJeeraPowder) {
+        defaultPillars = [
+          {
+            title: "Pure & Natural",
+            description: "Made from the finest quality jeera (cumin), sourced from premium farms with no artificial additives."
+          },
+          {
+            title: "Advanced Tech",
+            description: "Processed using advanced technology to preserve natural flavor, aroma, and nutritional value."
+          },
+          {
+            title: "Stone-Ground Freshness",
+            description: "Traditional stone-ground method ensures maximum freshness and authentic flavor in every batch."
+          },
+          {
+            title: "Triple-Layer Protection",
+            description: "Triple-layer packaging ensures freshness, quality, and protection from moisture and contaminants."
+          }
+        ];
+      } else if (isCorianderPowder) {
+        defaultPillars = [
+          {
+            title: "Pure & Natural",
+            description: "Made from the finest quality coriander, sourced from premium farms with no artificial additives."
+          },
+          {
+            title: "Advanced Tech",
+            description: "Processed using advanced technology to preserve natural flavor, color, and nutritional value."
+          },
+          {
+            title: "Fresh Aroma & Rich Color",
+            description: "Intense fresh aroma and vibrant color that enhances the taste and appearance of your dishes."
+          },
+          {
+            title: "Triple-Layer Protection",
+            description: "Triple-layer packaging ensures freshness, quality, and protection from moisture and contaminants."
+          }
+        ];
+      }
+      
+      // Merge existing pillars with defaults - ensure we have 4 pillars for special products
+      let mergedPillars = cleanItemData.pillars || [];
+      if ((isRoyalBasmatiRice || isSuperBasmatiRice || isChilliPowder || isTurmericPowder || isCorianderPowder || isGaramMasala || isAppalam || isCulinaryPaste || isMasalaPowder || isJeeraPowder) && defaultPillars.length > 0) {
+        // Ensure we have exactly 4 pillars, filling in defaults where missing
+        const finalPillars = [];
+        for (let i = 0; i < 4; i++) {
+          if (mergedPillars[i]) {
+            // Use existing pillar but fill in defaults if title/description is missing
+            finalPillars.push({
+              ...mergedPillars[i],
+              title: mergedPillars[i].title || defaultPillars[i].title,
+              description: mergedPillars[i].description || defaultPillars[i].description
+            });
+          } else {
+            // Add default pillar if missing
+            finalPillars.push(defaultPillars[i]);
+          }
+        }
+        mergedPillars = finalPillars;
+      }
+
       // Ensure font weight and style values are strings for dropdowns
       // Convert numbers to strings for select inputs
       setFormData({
@@ -1482,6 +1710,8 @@ function ProductForm({
             : "",
         // Ensure titleSub is preserved
         titleSub: cleanItemData.titleSub || "",
+        // Use merged pillars with defaults
+        pillars: mergedPillars,
       });
 
       // Store the document ID separately so we can use it when saving
