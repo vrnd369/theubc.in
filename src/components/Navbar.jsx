@@ -421,6 +421,37 @@ export default function Navbar({ previewHeaderConfig = null }) {
   // Check if current route matches a navigation item
   const isItemActive = (item) => {
     if (item.type === "dropdown") {
+      // First check if the dropdown's own path matches
+      if (item.path) {
+        const itemPathname = item.path.split('?')[0];
+        const pathnameMatch = 
+          location.pathname === itemPathname ||
+          (itemPathname !== "/" && location.pathname.startsWith(itemPathname));
+        
+        if (pathnameMatch) {
+          // If the dropdown path has query params, check if they match
+          if (item.path.includes('?')) {
+            const itemParams = parseQueryParams(item.path);
+            const currentCategory = searchParams.get('category');
+            const currentBrand = searchParams.get('brand');
+            
+            // If item specifies category, it must match
+            if (itemParams.category && currentCategory !== itemParams.category) {
+              // Pathname matches but category doesn't, continue checking sub-items
+            } else if (itemParams.brand && currentBrand !== itemParams.brand) {
+              // Pathname matches but brand doesn't, continue checking sub-items
+            } else {
+              // Pathname matches and query params match (or no query params in item path)
+              return true;
+            }
+          } else {
+            // Pathname matches and no query params in dropdown path - it's active
+            return true;
+          }
+        }
+      }
+      
+      // Then check if any sub-item matches
       return item.items?.some((subItem) => {
         if (subItem.type === "submenu") {
           return subItem.subItems?.some((subSubItem) => {
@@ -1580,11 +1611,11 @@ function EnquiryForm({ config, onClose }) {
       setSubmitStatus("success");
       // Reset form
       setFormData(getInitialFormData());
-      // Close modal after 2 seconds
+      // Close modal after 10 seconds
       setTimeout(() => {
         onClose();
         setSubmitStatus(null);
-      }, 2000);
+      }, 10000);
     } catch (error) {
       console.error("Error submitting form:", error);
       setSubmitStatus("error");

@@ -497,19 +497,23 @@ a.active.nav-link,
 }
 
 /* Add star hover effect to View All Products button (same as enquiry button) */
-.view-all-products-btn::after {
-  content: "★";
-  display: inline-block;
-  opacity: 0;
-  width: 0;
-  margin-left: 0;
-  transition: opacity 0.3s ease, width 0.3s ease, margin-left 0.3s ease;
-  font-size: 18px;
-  line-height: 22.5px;
-  color: #ffffff;
+.view-all-products-btn::after,
+.btn.cta.view-all-products-btn::after,
+.cta.view-all-products-btn::after {
+  content: "★" !important;
+  display: inline-block !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  margin-left: 0 !important;
+  transition: opacity 0.3s ease, width 0.3s ease, margin-left 0.3s ease !important;
+  font-size: 18px !important;
+  line-height: 22.5px !important;
+  color: #ffffff !important;
   vertical-align: baseline;
-  overflow: visible;
-  white-space: nowrap;
+  overflow: visible !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  order: 2 !important; /* Place star after text in flexbox */
 }
 
 .view-all-products-btn:hover {
@@ -533,10 +537,12 @@ a.active.nav-link,
   background: #1C1F52 !important;
 }
 
-.view-all-products-btn:hover::after {
-  opacity: 1;
-  width: 18px;
-  margin-left: 8px;
+.view-all-products-btn:hover::after,
+.btn.cta.view-all-products-btn:hover::after,
+.cta.view-all-products-btn:hover::after {
+  opacity: 1 !important;
+  width: 18px !important;
+  margin-left: 8px !important;
 }
 
 .view-all-products-btn:active {
@@ -575,6 +581,20 @@ a.active.nav-link,
   position: relative !important;
 }
 
+/* Ensure star appears on hover for dropdown menu buttons */
+.dropdown .menu .view-all-products-btn:hover::after,
+.nav-links .dropdown .menu .view-all-products-btn:hover::after,
+.dropdown .menu a.view-all-products-btn:hover::after,
+.nav-links .dropdown .menu a.view-all-products-btn:hover::after,
+.dropdown .menu .btn.cta.view-all-products-btn:hover::after,
+.nav-links .dropdown .menu .btn.cta.view-all-products-btn:hover::after,
+.dropdown .menu a.btn.cta.view-all-products-btn:hover::after,
+.nav-links .dropdown .menu a.btn.cta.view-all-products-btn:hover::after {
+  opacity: 1 !important;
+  width: 18px !important;
+  margin-left: 8px !important;
+}
+
 @media (min-width: 1024px) {
   .view-all-products-btn {
     width: 170px;
@@ -606,6 +626,14 @@ a.active.nav-link,
     transform: translateY(-2px) scale(1.1) !important; /* Enlarge on hover */
     z-index: 10; /* Ensure it appears above other elements */
     position: relative; /* Allow z-index to work */
+  }
+
+  .view-all-products-btn:hover::after,
+  .btn.cta.view-all-products-btn:hover::after,
+  .cta.view-all-products-btn:hover::after {
+    opacity: 1 !important;
+    width: 18px !important;
+    margin-left: 8px !important;
   }
 }
 
@@ -1618,6 +1646,26 @@ a.category-menu-item:hover,
     z-index: 10 !important; /* Ensure it appears above other elements */
     overflow: visible !important;
   }
+
+  /* View All Products button hover state for tablet */
+  .view-all-products-btn:hover {
+    max-width: none !important; /* Allow container to enlarge on hover */
+    width: auto !important; /* Allow container to grow */
+    min-width: 170px; /* Keep minimum width */
+    padding-left: 24px !important; /* Add padding to allow expansion */
+    padding-right: 24px !important; /* Add padding to allow expansion */
+    transform: translateY(-2px) scale(1.1) !important; /* Enlarge on hover */
+    z-index: 10 !important; /* Ensure it appears above other elements */
+    position: relative !important; /* Allow z-index to work */
+  }
+
+  .view-all-products-btn:hover::after,
+  .btn.cta.view-all-products-btn:hover::after,
+  .cta.view-all-products-btn:hover::after {
+    opacity: 1 !important;
+    width: 18px !important;
+    margin-left: 8px !important;
+  }
 }
 
 /* iPad Air specific adjustments (820px - 1023px) - Tablet only */
@@ -1863,6 +1911,7 @@ a.category-menu-item:hover,
   }
 
   .nav-links .dropdown .menu .view-all-products-btn:hover::after {
+    opacity: 1 !important;
     width: 12px;
     margin-left: 5px;
   }
@@ -2565,12 +2614,15 @@ a.category-menu-item:hover,
   padding: 16px;
   border-radius: 12px;
   border: none;
-  background: #1a1a1a;
+  background: #1a1a1a !important;
+  background-color: #1a1a1a !important;
   color: rgba(255, 255, 255, 0.9);
   font-size: 16px;
-  transition: all 0.2s ease;
+  transition: background-color 0.1s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
   width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .enquiry-form input,
@@ -2583,7 +2635,7 @@ a.category-menu-item:hover,
   resize: vertical;
 }
 
-/* Autofill styling - ensure labels remain visible */
+/* Autofill styling - ensure labels remain visible and prevent white flashing */
 .enquiry-form input:-webkit-autofill,
 .enquiry-form input:-webkit-autofill:hover,
 .enquiry-form input:-webkit-autofill:focus,
@@ -2593,14 +2645,61 @@ a.category-menu-item:hover,
   caret-color: rgba(255, 255, 255, 0.9);
   border: none;
   background-color: #1a1a1a !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  -webkit-transition: background-color 5000s ease-in-out 0s !important;
+  animation: none !important;
+}
+
+/* Style autocomplete dropdown suggestions */
+.enquiry-form input::-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px #1a1a1a inset !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: #1a1a1a !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  -webkit-transition: background-color 5000s ease-in-out 0s !important;
+  animation: none !important;
+}
+
+/* Prevent white flashing from autofill dropdown/widgets */
+.enquiry-form input::-webkit-credentials-auto-fill-button {
+  background-color: #1a1a1a !important;
+  filter: brightness(0.8);
+}
+
+.enquiry-form input::-webkit-contacts-auto-fill-button {
+  background-color: #1a1a1a !important;
+  filter: brightness(0.8);
+}
+
+/* Style autofill suggestion list to prevent white background */
+.enquiry-form input::-webkit-list-button,
+.enquiry-form input::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(0.5);
+  opacity: 0.8;
+}
+
+/* Prevent white background in autofill dropdown suggestions list */
+.enquiry-form input::-webkit-autofill-preview {
+  background-color: #1a1a1a !important;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .enquiry-form input:focus,
 .enquiry-form select:focus,
 .enquiry-form textarea:focus {
   outline: none;
-  background: #1f1f1f;
+  background: #1f1f1f !important;
+  background-color: #1f1f1f !important;
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
+  transition: background-color 0.1s ease, box-shadow 0.2s ease;
+}
+
+/* Prevent white flash on click/active state */
+.enquiry-form input:active,
+.enquiry-form select:active,
+.enquiry-form textarea:active {
+  background: #1f1f1f !important;
+  background-color: #1f1f1f !important;
 }
 
 .enquiry-form select {

@@ -254,6 +254,8 @@ body {
   margin: 0 0 32px;
   box-sizing: border-box;
   white-space: nowrap; /* Keep on one line */
+  text-decoration: none;
+  border-bottom: none;
 }
 
 /* grid and text width tuned to match the reference screenshot - scoped to .why section only */
@@ -369,6 +371,8 @@ body {
     width: 100%;
     max-width: 400px;
     height: auto;
+    text-decoration: none;
+    border-bottom: none;
   }
 
   .job-row {
@@ -788,6 +792,8 @@ body {
     height: auto;
     white-space: normal;
     margin: 0 0 24px;
+    text-decoration: none;
+    border-bottom: none;
   }
 
   .job-row {
@@ -993,10 +999,12 @@ body {
   background-color: #1a1a1a !important;
   color: rgba(255, 255, 255, 0.9);
   font-size: 16px;
-  transition: all 0.2s ease;
+  transition: background-color 0.1s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
   width: 100%;
   font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .apply-modal-form input,
@@ -1004,16 +1012,19 @@ body {
   min-height: 79px;
 }
 
-/* Autofill styling - ensure labels remain visible */
+/* Autofill styling - ensure labels remain visible and prevent white flashing */
 .apply-modal-form input:-webkit-autofill,
 .apply-modal-form input:-webkit-autofill:hover,
 .apply-modal-form input:-webkit-autofill:focus,
 .apply-modal-form input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px #1a1a1a inset !important;
+  -webkit-box-shadow: 0 0 0 40px #1a1a1a inset !important;
   -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
   caret-color: rgba(255, 255, 255, 0.9);
   border: none;
   background-color: #1a1a1a !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  -webkit-transition: background-color 5000s ease-in-out 0s !important;
+  animation: none !important;
 }
 
 /* Fix autofill dropdown background - ensure it matches dark theme */
@@ -1027,11 +1038,47 @@ body {
   -webkit-box-shadow: 0 0 0 30px #1a1a1a inset !important;
   -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
   background-color: #1a1a1a !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  -webkit-transition: background-color 5000s ease-in-out 0s !important;
+  animation: none !important;
 }
+
+/* Prevent white flashing from autofill dropdown/widgets */
+.apply-modal-form input::-webkit-credentials-auto-fill-button {
+  background-color: #1a1a1a !important;
+  filter: brightness(0.8);
+}
+
+/* Style autofill suggestion list to prevent white background */
+.apply-modal-form input::-webkit-list-button {
+  background-color: #1a1a1a !important;
+}
+
+/* Prevent white flash on input focus/click - merged with main focus rule below */
 
 /* Ensure modal overlay stays dark when autofill dropdown is open */
 .apply-modal-overlay {
   background: rgba(0, 0, 0, 0.75) !important;
+}
+
+/* Prevent white flashing from browser autofill widgets/dropdowns */
+.apply-modal-content *::-webkit-credentials-auto-fill-button,
+.apply-modal-content *::-webkit-contacts-auto-fill-button {
+  background-color: #1a1a1a !important;
+  filter: brightness(0.8);
+}
+
+/* Style autofill suggestion dropdown to prevent white background */
+.apply-modal-form input::-webkit-list-button,
+.apply-modal-form input::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(0.5);
+  opacity: 0.8;
+}
+
+/* Prevent white background in autofill dropdown suggestions list */
+.apply-modal-form input::-webkit-autofill-preview {
+  background-color: #1a1a1a !important;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* Style for datalist/autocomplete dropdown (if used) */
@@ -1089,8 +1136,18 @@ body {
 .apply-modal-form select:focus,
 .apply-modal-form textarea:focus {
   outline: none;
-  background: #1f1f1f;
+  background: #1f1f1f !important;
+  background-color: #1f1f1f !important;
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
+  transition: background-color 0.1s ease, box-shadow 0.2s ease;
+}
+
+/* Prevent white flash on click/active state */
+.apply-modal-form input:active,
+.apply-modal-form select:active,
+.apply-modal-form textarea:active {
+  background: #1f1f1f !important;
+  background-color: #1f1f1f !important;
 }
 
 .apply-modal-form select {

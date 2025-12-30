@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { parseInlineFormatting } from "../admin/components/BrandPageEditor/InlineFontEditor";
 import { getFooterConfig } from "../admin/services/footerService";
 import { resolveImageUrl } from "../utils/imageUtils";
@@ -8,6 +8,7 @@ import "./Footer.css";
 
 export default function DynamicFooter({ footerData, previewMode = false }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [config, setConfig] = useState(footerData || null);
   const [loading, setLoading] = useState(!footerData);
   const [logoUrl, setLogoUrl] = useState(logo); // Initialize with default logo
@@ -159,6 +160,17 @@ export default function DynamicFooter({ footerData, previewMode = false }) {
     [navigate]
   );
 
+  // Helper function to check if a path is active
+  const isActive = useCallback(
+    (path) => {
+      if (path === "/") {
+        return location.pathname === "/";
+      }
+      return location.pathname.startsWith(path);
+    },
+    [location.pathname]
+  );
+
   if (loading && !config) {
     return (
       <footer
@@ -217,24 +229,38 @@ export default function DynamicFooter({ footerData, previewMode = false }) {
 
             {/* Nav (center column) */}
             <div className="footer-nav">
-              <a href="/" onClick={(e) => handleNavigation("/", e)}>
+              <a
+                href="/"
+                onClick={(e) => handleNavigation("/", e)}
+                className={isActive("/") ? "active" : ""}
+              >
                 Home
               </a>
-              <a href="/about" onClick={(e) => handleNavigation("/about", e)}>
+              <a
+                href="/about"
+                onClick={(e) => handleNavigation("/about", e)}
+                className={isActive("/about") ? "active" : ""}
+              >
                 About
               </a>
-              <a href="/brands" onClick={(e) => handleNavigation("/brands", e)}>
+              <a
+                href="/brands"
+                onClick={(e) => handleNavigation("/brands", e)}
+                className={isActive("/brands") ? "active" : ""}
+              >
                 Our Brands
               </a>
               <a
                 href="/products"
                 onClick={(e) => handleNavigation("/products", e)}
+                className={isActive("/products") ? "active" : ""}
               >
                 Products
               </a>
               <a
                 href="/contact"
                 onClick={(e) => handleNavigation("/contact", e)}
+                className={isActive("/contact") ? "active" : ""}
               >
                 Get in touch
               </a>
@@ -552,33 +578,45 @@ export default function DynamicFooter({ footerData, previewMode = false }) {
                   key={index}
                   href={link.path}
                   onClick={(e) => handleNavigation(link.path, e)}
+                  className={isActive(link.path) ? "active" : ""}
                 >
                   {link.label}
                 </a>
               ))
             ) : (
               <>
-                <a href="/" onClick={(e) => handleNavigation("/", e)}>
+                <a
+                  href="/"
+                  onClick={(e) => handleNavigation("/", e)}
+                  className={isActive("/") ? "active" : ""}
+                >
                   Home
                 </a>
-                <a href="/about" onClick={(e) => handleNavigation("/about", e)}>
+                <a
+                  href="/about"
+                  onClick={(e) => handleNavigation("/about", e)}
+                  className={isActive("/about") ? "active" : ""}
+                >
                   About
                 </a>
                 <a
                   href="/brands"
                   onClick={(e) => handleNavigation("/brands", e)}
+                  className={isActive("/brands") ? "active" : ""}
                 >
                   Our Brands
                 </a>
                 <a
                   href="/products"
                   onClick={(e) => handleNavigation("/products", e)}
+                  className={isActive("/products") ? "active" : ""}
                 >
                   Products
                 </a>
                 <a
                   href="/contact"
                   onClick={(e) => handleNavigation("/contact", e)}
+                  className={isActive("/contact") ? "active" : ""}
                 >
                   Get in touch
                 </a>

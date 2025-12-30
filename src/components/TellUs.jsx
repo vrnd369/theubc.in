@@ -45,7 +45,7 @@ export default function TellUs(){
             <form className="tell-us-form" onSubmit={handleSubmit}>
               <div className="form-group">
                 <div className="input-wrapper">
-                  <label htmlFor="firstName" className="input-label">First Name</label>
+                  <label htmlFor="firstName" className="input-label">First Name <span style={{ color: "#dc2626" }}>*</span></label>
                   <input
                     type="text"
                     id="firstName"
@@ -53,12 +53,13 @@ export default function TellUs(){
                     value={formData.firstName}
                     onChange={handleChange}
                     placeholder="Jonh"
+                    required
                   />
                 </div>
               </div>
               <div className="form-group">
                 <div className="input-wrapper">
-                  <label htmlFor="lastName" className="input-label">Last Name</label>
+                  <label htmlFor="lastName" className="input-label">Last Name <span style={{ color: "#dc2626" }}>*</span></label>
                   <input
                     type="text"
                     id="lastName"
@@ -66,12 +67,13 @@ export default function TellUs(){
                     value={formData.lastName}
                     onChange={handleChange}
                     placeholder="Smith"
+                    required
                   />
                 </div>
               </div>
               <div className="form-group">
                 <div className="input-wrapper">
-                  <label htmlFor="email" className="input-label">Email</label>
+                  <label htmlFor="email" className="input-label">Email <span style={{ color: "#dc2626" }}>*</span></label>
                   <input
                     type="email"
                     id="email"
@@ -79,17 +81,19 @@ export default function TellUs(){
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="John@gmail.com"
+                    required
                   />
                 </div>
               </div>
               <div className="form-group">
                 <div className="input-wrapper">
-                  <label htmlFor="requirement" className="input-label">Requirement</label>
+                  <label htmlFor="requirement" className="input-label">Requirement <span style={{ color: "#dc2626" }}>*</span></label>
                   <select
                     id="requirement"
                     name="requirement"
                     value={formData.requirement}
                     onChange={handleChange}
+                    required
                   >
                     <option value="Traders and distributors">Traders and distributors</option>
                     <option value="Partnership">Partnership</option>

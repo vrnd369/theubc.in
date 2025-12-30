@@ -548,7 +548,7 @@ export default function Careers() {
                       formData.firstName ? "label-filled" : ""
                     }`}
                   >
-                    First Name
+                    First Name <span style={{ color: "#dc2626" }}>*</span>
                   </label>
                   <input
                     type="text"
@@ -570,7 +570,7 @@ export default function Careers() {
                       formData.lastName ? "label-filled" : ""
                     }`}
                   >
-                    Last Name
+                    Last Name <span style={{ color: "#dc2626" }}>*</span>
                   </label>
                   <input
                     type="text"
@@ -592,7 +592,7 @@ export default function Careers() {
                       formData.email ? "label-filled" : ""
                     }`}
                   >
-                    Email
+                    Email <span style={{ color: "#dc2626" }}>*</span>
                   </label>
                   <input
                     type="email"
@@ -614,7 +614,7 @@ export default function Careers() {
                       formData.requirement ? "label-filled" : ""
                     }`}
                   >
-                    {requirementLabel}
+                    {requirementLabel} <span style={{ color: "#dc2626" }}>*</span>
                   </label>
                   <select
                     id="requirement"
@@ -643,7 +643,7 @@ export default function Careers() {
                       formData.message ? "label-filled" : ""
                     }`}
                   >
-                    Message
+                    Message <span style={{ color: "#dc2626" }}>*</span>
                   </label>
                   <textarea
                     id="message"

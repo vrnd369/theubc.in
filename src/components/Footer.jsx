@@ -1,16 +1,28 @@
 import React, { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Footer.css';
 import logo from '../assets/Logo.png';
 
 export default function Footer() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleNavigation = useCallback((path, e) => {
     e.preventDefault();
     e.stopPropagation();
     navigate(path, { replace: false });
   }, [navigate]);
+
+  // Helper function to check if a path is active
+  const isActive = useCallback(
+    (path) => {
+      if (path === "/") {
+        return location.pathname === "/";
+      }
+      return location.pathname.startsWith(path);
+    },
+    [location.pathname]
+  );
 
   return (
     <footer className="footer">
@@ -24,11 +36,41 @@ export default function Footer() {
 
           {/* Nav (center column) */}
           <div className="footer-nav">
-            <a href="/" onClick={(e) => handleNavigation('/', e)}>Home</a>
-            <a href="/about" onClick={(e) => handleNavigation('/about', e)}>About</a>
-            <a href="/brands" onClick={(e) => handleNavigation('/brands', e)}>Our Brands</a>
-            <a href="/products" onClick={(e) => handleNavigation('/products', e)}>Products</a>
-            <a href="/contact" onClick={(e) => handleNavigation('/contact', e)}>Get in touch</a>
+            <a
+              href="/"
+              onClick={(e) => handleNavigation("/", e)}
+              className={isActive("/") ? "active" : ""}
+            >
+              Home
+            </a>
+            <a
+              href="/about"
+              onClick={(e) => handleNavigation("/about", e)}
+              className={isActive("/about") ? "active" : ""}
+            >
+              About
+            </a>
+            <a
+              href="/brands"
+              onClick={(e) => handleNavigation("/brands", e)}
+              className={isActive("/brands") ? "active" : ""}
+            >
+              Our Brands
+            </a>
+            <a
+              href="/products"
+              onClick={(e) => handleNavigation("/products", e)}
+              className={isActive("/products") ? "active" : ""}
+            >
+              Products
+            </a>
+            <a
+              href="/contact"
+              onClick={(e) => handleNavigation("/contact", e)}
+              className={isActive("/contact") ? "active" : ""}
+            >
+              Get in touch
+            </a>
           </div>
 
           {/* Email + Phone (right column) */}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./Categories.css";
 import "../pages/Brands.css";
@@ -77,6 +77,8 @@ export default function Categories({
   const [selectedBrand, setSelectedBrand] = useState(initialBrand);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8; // Number of products per page (2 rows x 4 columns)
+  const productsSectionRef = useRef(null);
+  const isInitialMount = useRef(true);
 
   // Fetch brands, categories, and products from Firebase
   useEffect(() => {
@@ -379,8 +381,40 @@ export default function Categories({
     setCurrentPage(1);
   }, [active, selectedBrand]);
 
+  // Automatically adjust pagination when products increase/decrease
+  useEffect(() => {
+    // If current page exceeds total pages (e.g., products decreased), go to last valid page
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+    // If no products, ensure we're on page 1
+    else if (totalPages === 0 && currentPage !== 1) {
+      setCurrentPage(1);
+    }
+  }, [totalPages, currentPage]);
+
+  // Scroll to top of products section when page changes
+  useEffect(() => {
+    // Skip scroll on initial mount
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    
+    if (productsSectionRef.current) {
+      // Use setTimeout to ensure DOM has updated with new products
+      setTimeout(() => {
+        productsSectionRef.current?.scrollIntoView({ 
+          behavior: "smooth", 
+          block: "start" 
+        });
+      }, 0);
+    }
+  }, [currentPage]);
+
   return (
     <section
+      ref={productsSectionRef}
       id="products"
       className="section categories-section"
       aria-labelledby="categories-heading"
@@ -753,9 +787,9 @@ export default function Categories({
         )}
 
         <div className="center">
-          <a href="/products" className="btn" aria-label="Explore all products">
+          <Link to="/products" className="btn" aria-label="Explore all products">
             Explore Products
-          </a>
+          </Link>
         </div>
       </div>
     </section>

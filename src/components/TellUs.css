@@ -147,12 +147,15 @@
   padding: 32px 16px 14px 16px; /* top space for label */
   border-radius: 12px 8px 8px 12px;
   border: none;
-  background: #1a1a1a;
+  background: #1a1a1a !important;
+  background-color: #1a1a1a !important;
   color: rgba(255, 255, 255, 0.9);
   font-size: 16px;
-  transition: all 0.2s ease;
+  transition: background-color 0.1s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
   width: 100%; /* key for alignment */
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .tell-us-form input,
@@ -175,8 +178,18 @@
 .tell-us-form select:focus,
 .tell-us-form textarea:focus {
   outline: none;
-  background: #1f1f1f;
+  background: #1f1f1f !important;
+  background-color: #1f1f1f !important;
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
+  transition: background-color 0.1s ease, box-shadow 0.2s ease;
+}
+
+/* Prevent white flash on click/active state */
+.tell-us-form input:active,
+.tell-us-form select:active,
+.tell-us-form textarea:active {
+  background: #1f1f1f !important;
+  background-color: #1f1f1f !important;
 }
 
 /* select arrow */
@@ -202,7 +215,7 @@
   resize: vertical;
 }
 
-/* Autofill styling - ensure labels remain visible */
+/* Autofill styling - ensure labels remain visible and prevent white flashing */
 .tell-us-form input:-webkit-autofill,
 .tell-us-form input:-webkit-autofill:hover,
 .tell-us-form input:-webkit-autofill:focus,
@@ -212,6 +225,43 @@
   caret-color: rgba(255, 255, 255, 0.9);
   border: none;
   background-color: #1a1a1a !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  -webkit-transition: background-color 5000s ease-in-out 0s !important;
+  animation: none !important;
+}
+
+/* Style autocomplete dropdown suggestions */
+.tell-us-form input::-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px #1a1a1a inset !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: #1a1a1a !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  -webkit-transition: background-color 5000s ease-in-out 0s !important;
+  animation: none !important;
+}
+
+/* Prevent white flashing from autofill dropdown/widgets */
+.tell-us-form input::-webkit-credentials-auto-fill-button {
+  background-color: #1a1a1a !important;
+  filter: brightness(0.8);
+}
+
+.tell-us-form input::-webkit-contacts-auto-fill-button {
+  background-color: #1a1a1a !important;
+  filter: brightness(0.8);
+}
+
+/* Style autofill suggestion list to prevent white background */
+.tell-us-form input::-webkit-list-button,
+.tell-us-form input::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(0.5);
+  opacity: 0.8;
+}
+
+/* Prevent white background in autofill dropdown suggestions list */
+.tell-us-form input::-webkit-autofill-preview {
+  background-color: #1a1a1a !important;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* ========== SUBMIT BUTTON (PILL) ========== */
