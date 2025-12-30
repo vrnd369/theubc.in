@@ -445,6 +445,9 @@ export default function DynamicFooter({ footerData, previewMode = false }) {
               </div>
             ) : (
               (() => {
+                // Capture logo in local scope for ESLint
+                const defaultLogo = logo;
+                
                 // Ensure we always have a valid image source
                 const imageSrc =
                   logoUrl &&
@@ -452,7 +455,7 @@ export default function DynamicFooter({ footerData, previewMode = false }) {
                     logoUrl.startsWith("http://") ||
                     logoUrl.startsWith("https://"))
                     ? logoUrl
-                    : logo || "";
+                    : defaultLogo || "";
 
                 // Don't render if we don't have a valid src
                 if (!imageSrc) {
@@ -501,13 +504,13 @@ export default function DynamicFooter({ footerData, previewMode = false }) {
 
                       // If image fails to load, fallback to default logo
                       const defaultLogoSrc =
-                        typeof logo === "string" ? logo : logo;
+                        typeof defaultLogo === "string" ? defaultLogo : defaultLogo;
 
                       // Prevent infinite loop - only retry once
                       if (!e.target.dataset.retried) {
                         e.target.dataset.retried = "true";
                         e.target.src = defaultLogoSrc;
-                        setLogoUrl(logo);
+                        setLogoUrl(defaultLogo);
                       } else {
                         // Already retried, hide the broken image
                         console.error("Default logo also failed, hiding image");

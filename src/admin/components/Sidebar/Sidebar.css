@@ -34,6 +34,10 @@
 .admin-sidebar-header {
   padding: var(--admin-spacing-lg) var(--admin-spacing-xl);
   border-bottom: 1px solid var(--admin-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--admin-spacing-md);
 }
 
 .admin-sidebar-logo {
@@ -264,15 +268,75 @@
   flex: 1;
 }
 
+/* Sidebar Close Button for Mobile */
+.admin-sidebar-close {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  font-size: 1.5rem;
+  color: var(--admin-text);
+  cursor: pointer;
+  transition: var(--admin-transition);
+  flex-shrink: 0;
+}
+
+.admin-sidebar-close:hover {
+  background: var(--admin-bg-secondary);
+  color: var(--admin-primary);
+  border-color: var(--admin-primary);
+}
+
+.admin-sidebar-close:active {
+  transform: scale(0.95);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .admin-sidebar {
+    width: 280px; /* Full width when open on mobile */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
   }
-  
-  .admin-sidebar.open {
+
+  .admin-sidebar.mobile.sidebar-open {
     transform: translateX(0);
+  }
+
+  .admin-sidebar.mobile:not(.sidebar-open) {
+    transform: translateX(-100%);
+    pointer-events: none;
+  }
+
+  .admin-sidebar-close {
+    display: flex;
+  }
+
+  .admin-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* Hide toggle note on mobile */
+  .admin-sidebar-toggle-note {
+    display: none;
+  }
+
+  /* Make sidebar items more touch-friendly on mobile */
+  .admin-sidebar-item {
+    min-height: 48px;
+    padding: var(--admin-spacing-md) var(--admin-spacing-lg);
   }
 }
 

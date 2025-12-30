@@ -5,6 +5,7 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager
 } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
 
@@ -62,6 +63,9 @@ try {
   db = getFirestore(app);
 }
 export { db };
+
+// Initialize Auth
+export const auth = getAuth(app);
 
 // Initialize Storage
 export const storage = getStorage(app);

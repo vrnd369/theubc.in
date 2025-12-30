@@ -985,7 +985,7 @@ export default function DynamicBrand() {
                         {categoryImage && (
                           <img
                             src={categoryImage}
-                            alt={category.title || "Product Category"}
+                            alt={category.title || "UBC food product category"}
                           />
                         )}
                       </div>

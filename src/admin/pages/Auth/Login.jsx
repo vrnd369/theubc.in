@@ -1,23 +1,22 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../firebase/config";
 import { useAuth } from "../../auth/useAuth";
-import { ROLE_BASE_PATH } from "../../auth/roleConfig";
-import { authenticateAdminUser } from "../../services/userService";
+import { ROLE_BASE_PATH, ROLE } from "../../auth/roleConfig";
 import "../../styles/admin-global.css";
 import "./Login.css";
-// WikiWakyWoo Logo - Update this import if you have a local logo file
-// Example: import wikiWakyWooLogo from "../../../assets/wikiwakywoo-logo.png";
-// For now using URL - replace with local import if logo file is available
-const wikiWakyWooLogo = "https://www.wikiwakywoo.com/logo.png";
+import theubcLogo from "../../../assets/Logo ubc.png";
+import wwwLogo from "../../../assets/www logo.png";
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
 
   const redirectTo = useMemo(() => {
     const params = new URLSearchParams(location.search);
-    return params.get("redirect") || "/admin";
+    return params.get("redirect");
   }, [location.search]);
 
   const [form, setForm] = useState({
@@ -27,6 +26,48 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Redirect after successful authentication or if already authenticated
+  useEffect(() => {
+    if (authLoading) {
+      // Still checking auth state, don't redirect yet
+      return;
+    }
+
+    if (isAuthenticated && user?.role) {
+      setLoading(false); // Reset loading state when user is authenticated
+      const basePath = ROLE_BASE_PATH[user.role] || ROLE_BASE_PATH[ROLE.ADMIN];
+      const target = redirectTo && redirectTo.startsWith(basePath) 
+        ? redirectTo 
+        : basePath;
+      navigate(target, { replace: true });
+    }
+  }, [isAuthenticated, user, navigate, redirectTo, authLoading]);
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="login-page">
+        <div className="login-bg-shapes">
+          <div className="bg-shape bg-shape-1"></div>
+          <div className="bg-shape bg-shape-2"></div>
+          <div className="bg-shape bg-shape-3"></div>
+          <div className="bg-shape bg-shape-4"></div>
+        </div>
+        <div className="login-card admin-card" style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          flexDirection: 'column',
+          gap: '1rem',
+          minHeight: '400px'
+        }}>
+          <div className="admin-spinner" style={{ width: '40px', height: '40px', borderWidth: '4px' }}></div>
+          <p className="admin-text-sm" style={{ color: '#666' }}>Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,30 +90,34 @@ export default function Login() {
         return;
       }
 
-      // Authenticate against Firestore users only
-      const authResult = await authenticateAdminUser(email, password);
+      // Authenticate with Firebase Auth
+      // The AuthContext will automatically fetch the user's role from Firestore
+      // and update the user state, which will trigger the redirect in useEffect
+      await signInWithEmailAndPassword(auth, email, password);
       
-      if (authResult.success) {
-        // User found in Firestore, use their role
-        const userRole = authResult.user.role;
-        await login(userRole, { 
-          email: authResult.user.email,
-          name: authResult.user.name,
-          id: authResult.user.id,
-        });
-        const basePath = ROLE_BASE_PATH[userRole] || "/admin";
-        const target =
-          redirectTo.startsWith(basePath) || redirectTo === "/"
-            ? redirectTo
-            : basePath;
-        navigate(target, { replace: true });
-      } else {
-        setError(authResult.error || "Invalid email or password.");
-      }
+      // Don't navigate here - let the useEffect handle it after role is fetched
+      // The AuthContext's onAuthStateChanged listener will:
+      // 1. Fetch the user document from Firestore
+      // 2. Extract the role from the document
+      // 3. Update the user state
+      // 4. The useEffect above will then redirect to the correct dashboard
     } catch (err) {
-      console.error("Login error", err);
-      setError("Login failed. Please try again.");
-    } finally {
+      // Generic error message to prevent user enumeration
+      // Only show specific messages for non-security-sensitive errors
+      if (err.code === "auth/invalid-email") {
+        // Email format validation is safe to show
+        setError("Invalid email address format.");
+      } else if (err.code === "auth/too-many-requests") {
+        // Rate limiting message is safe to show
+        setError("Too many failed login attempts. Please try again later.");
+      } else if (err.code === "auth/network-request-failed") {
+        // Network errors are safe to show
+        setError("Network error. Please check your connection and try again.");
+      } else {
+        // Generic message for all authentication failures to prevent user enumeration
+        // This includes: user-not-found, wrong-password, invalid-credential, user-disabled
+        setError("Invalid email or password. Please check your credentials and try again.");
+      }
       setLoading(false);
     }
   };
@@ -89,14 +134,14 @@ export default function Login() {
 
       <div className="login-card admin-card">
         <div className="login-logo-container">
-          <img src={wikiWakyWooLogo} alt="WikiWakyWoo Logo" className="login-logo" onError={(e) => {
+          <img src={theubcLogo} alt="The UBC Logo" className="login-logo" onError={(e) => {
             // Fallback to text if image fails to load
             e.target.style.display = 'none';
             const parent = e.target.parentElement;
             if (!parent.querySelector('.logo-fallback')) {
               const fallback = document.createElement('div');
               fallback.className = 'logo-fallback';
-              fallback.textContent = 'WikiWakyWoo';
+              fallback.textContent = 'The UBC';
               fallback.style.cssText = 'font-size: 24px; font-weight: 700; color: #323790;';
               parent.appendChild(fallback);
             }
@@ -212,21 +257,21 @@ export default function Login() {
           <p className="login-footer-text">
             Your session is protected with industry-standard encryption
           </p>
-          <p className="login-copyright">
-            © {new Date().getFullYear()}{' '}
+          <div className="login-copyright">
+            <span className="login-copyright-text">
+              © {new Date().getFullYear()} All rights reserved.
+            </span>
             <a 
               href="https://www.wikiwakywoo.com/" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="login-copyright-link"
+              className="login-footer-logo-link"
             >
-              WikiWakyWoo
-            </a>{' '}
-            CMS. All rights reserved.
-          </p>
+              <img src={wwwLogo} alt="UBC United Brothers Company logo" className="login-footer-logo" />
+            </a>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-

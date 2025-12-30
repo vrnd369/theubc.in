@@ -213,7 +213,7 @@ export default function AboutSectionCard({
             resolvedImageUrl ? (
               <img
                 src={resolvedImageUrl}
-                alt="Preview"
+                alt="About section preview"
                 onError={(e) => {
                   e.target.style.display = "none";
                   const parent = e.target.parentElement;

@@ -718,7 +718,7 @@ export default function BrandPageEditorWithPreview({
                             {categoryImage && (
                               <img
                                 src={categoryImage}
-                                alt={category.title || "Product Category"}
+                                alt={category.title || "UBC food product category"}
                                 style={{
                                   width:
                                     formData.styles?.products?.imageWidth ||
@@ -801,7 +801,7 @@ export default function BrandPageEditorWithPreview({
                             {productImage && (
                               <img
                                 src={productImage}
-                                alt={product.name || product.title || "Product"}
+                                alt={product.name || product.title || "UBC food product"}
                                 style={{
                                   width:
                                     formData.styles?.products?.imageWidth ||

@@ -140,24 +140,37 @@
 @media (max-width: 767px) {
   .admin-dashboard {
     padding: 0;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   .dashboard-header {
     margin-bottom: var(--admin-spacing-lg);
+    margin-left: 0;
+    padding-left: 0;
+    width: 100%;
   }
   
   .dashboard-header h1 {
     font-size: 1.5rem;
+    margin-left: 0;
   }
   
   .quick-actions-grid {
     grid-template-columns: 1fr;
     gap: var(--admin-spacing-md);
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
   
   .quick-action-card {
     min-height: 160px;
     padding: var(--admin-spacing-md);
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .action-icon {

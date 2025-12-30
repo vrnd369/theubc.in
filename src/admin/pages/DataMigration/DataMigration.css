@@ -187,3 +187,101 @@
   color: #856404;
 }
 
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .data-migration-page {
+    padding: var(--admin-spacing-md);
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .data-migration-page h1 {
+    font-size: 1.5rem;
+    margin-bottom: var(--admin-spacing-md);
+  }
+
+  .migration-description {
+    padding: var(--admin-spacing-md);
+    margin-bottom: var(--admin-spacing-lg);
+    font-size: 0.875rem;
+  }
+
+  .migration-section {
+    padding: var(--admin-spacing-md);
+    margin-bottom: var(--admin-spacing-lg);
+  }
+
+  .migration-section h2 {
+    font-size: 1.125rem;
+  }
+
+  .collections-grid {
+    grid-template-columns: 1fr;
+    gap: var(--admin-spacing-sm);
+  }
+
+  .collection-checkbox {
+    padding: var(--admin-spacing-sm);
+  }
+
+  .migration-actions {
+    margin: var(--admin-spacing-lg) 0;
+  }
+
+  .migrate-button {
+    width: 100%;
+    padding: var(--admin-spacing-md) var(--admin-spacing-lg);
+    font-size: 1rem;
+  }
+
+  .migration-progress,
+  .migration-results,
+  .migration-info {
+    padding: var(--admin-spacing-md);
+    margin: var(--admin-spacing-lg) 0;
+  }
+
+  .migration-progress h2,
+  .migration-results h2 {
+    font-size: 1.125rem;
+  }
+
+  .results-table {
+    font-size: 0.875rem;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .results-table th,
+  .results-table td {
+    padding: var(--admin-spacing-sm);
+    white-space: nowrap;
+  }
+
+  .migration-info h3 {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .data-migration-page {
+    padding: var(--admin-spacing-sm);
+  }
+
+  .data-migration-page h1 {
+    font-size: 1.25rem;
+  }
+
+  .migration-section h2,
+  .migration-progress h2,
+  .migration-results h2 {
+    font-size: 1rem;
+  }
+
+  .results-table {
+    font-size: 0.8125rem;
+  }
+}
+

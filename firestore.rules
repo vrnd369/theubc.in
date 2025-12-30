@@ -10,149 +10,135 @@ service cloud.firestore {
       return request.auth != null;
     }
     
-    // Helper function to check if user is an admin
-    // This checks if the authenticated user's email exists in adminUsers collection
-    // Note: This requires Firebase Auth email to match adminUsers email
-    function isAdmin() {
+    // Helper function to check if user exists in adminUsers collection
+    function userExists() {
       return isAuthenticated() && 
              exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid));
     }
     
-    // Helper function to check if user has specific role
-    // This checks the role field in adminUsers document
-    function hasRole(role) {
-      return isAuthenticated() && 
-             get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == role;
-    }
-    
-    // Helper function to check if user is super admin
-    function isSuperAdmin() {
-      return hasRole('super_admin');
-    }
-    
-    // Helper function to check if user is admin or super admin
-    function isAdminOrSuperAdmin() {
-      return hasRole('admin') || hasRole('super_admin');
-    }
+    // Note: get() can only be used directly in match rules, not in helper functions
+    // So role checks must be done directly in match rules using get()
 
     // Public collections - anyone can read, only authenticated admins can write
-    // TEMPORARY: Allowing writes without Firebase Auth for custom auth system
-    // TODO: Integrate Firebase Auth and change all write rules to: allow write: if isAuthenticated();
+    // Firebase Auth integration complete - all writes now require authentication
     
+    // Helper function for admin/super_admin check (used in write rules)
+    // Note: get() can be used in functions called from match rules
+    function isAdminOrSuperAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid)) &&
+             (get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'admin' ||
+              get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'super_admin');
+    }
+
     // Contact page - public can read, admins can write
     match /contactPage/{document=**} {
       allow read: if true; // Public read access
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
 
     // Navigation - public can read, admins can write
     match /navigation/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
     
     // Navigation icons - public can read, admins can write
     match /navigation-icons/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
     
     // Home sections - public can read, admins can write
     match /homeSections/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
     
     // About sections - public can read, admins can write
     match /aboutSections/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
     
     // Images - public can read, admins can write
-    // TEMPORARY: Allowing writes without Firebase Auth for custom auth system
-    // TODO: Integrate Firebase Auth and change to: allow write: if isAuthenticated();
     match /images/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
     
     // Videos - public can read, admins can write
     match /videos/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
     
     // Brands - public can read, admins can write
     match /brands/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
     
     // Categories - public can read, admins can write
     match /categories/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
     
     // Products - public can read, admins can write
     match /products/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
     
     // Brand pages - public can read, admins can write
     match /brandPages/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
 
     // Careers page - public can read, admins can write
     match /careersPage/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
 
     // Header - public can read, admins can write
     match /header/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
 
     // Footer - public can read, admins can write
     match /footer/{document=**} {
       allow read: if true;
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
 
     // Privacy Policy - public can read, admins can write
     match /privacyPolicy/{document=**} {
       allow read: if true; // Public read access for website visitors
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
 
     // Cookies Policy - public can read, admins can write
     match /cookiesPolicy/{document=**} {
       allow read: if true; // Public read access for website visitors
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
 
     // Form submissions - public can write (submit forms), admins can read/update/delete
-    // TEMPORARY: Allowing read access for custom auth system
-    // TODO: Change to allow read: if isAuthenticated() after Firebase Auth integration
     match /formSubmissions/{document=**} {
-      allow read: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow read: if isAdminOrSuperAdmin();
       allow create: if true; // Public can submit forms
-      allow update, delete: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow update, delete: if isAdminOrSuperAdmin();
     }
 
     // Form submission files - public can write (upload files), admins can read/delete
-    // TEMPORARY: Allowing read access for custom auth system
-    // TODO: Change to allow read: if isAuthenticated() after Firebase Auth integration
     match /formSubmissionFiles/{document=**} {
-      allow read: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow read: if isAdminOrSuperAdmin();
       allow create: if true; // Public can upload files with form submissions
-      allow update, delete: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow update, delete: if isAdminOrSuperAdmin();
     }
 
     // Enquiry form - public can read (form config) and write (submit enquiries), admins can manage
@@ -162,25 +148,64 @@ service cloud.firestore {
       allow update, delete: if isAuthenticated(); // Only authenticated users can update/delete
     }
 
-    // Admin users - only authenticated admins can read, only super admins can write
-    // TEMPORARY: Allowing access for custom auth system
-    match /adminUsers/{document=**} {
-      allow read: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
-      allow write: if true; // TEMPORARY - Change to isSuperAdmin() after Firebase Auth integration
+    // Admin users - authenticated users can read their own document, admins can read all, only super admins can write
+    match /adminUsers/{userId} {
+      // CRITICAL: Allow users to read their own document (needed for login)
+      // This rule MUST come first and be simple to avoid any evaluation issues
+      // Using direct comparison without helper functions for maximum reliability
+      allow read: if request.auth != null && 
+                     request.auth.uid == userId;
+      
+      // Allow admins/super_admins to read all other admin user documents
+      // This also covers list operations (getDocs) for admins
+      // Only check this if it's NOT the user's own document (to avoid circular dependency)
+      allow read: if request.auth != null && 
+                     request.auth.uid != userId &&
+                     exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid)) &&
+                     (get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'admin' ||
+                      get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'super_admin');
+      
+      // CRITICAL: Allow admins/super_admins to query the collection (needed for getAdminUserByEmail)
+      // This allows queries with where clauses (e.g., where('email', '==', email))
+      // The query will only return documents that match the where clause AND pass the read rules above
+      // This is evaluated at query time, so it's safe
+      allow list: if request.auth != null &&
+                    exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid)) &&
+                    (get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'admin' ||
+                     get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'super_admin');
+      
+      // Allow users to create their own document if it doesn't exist (for auto-creation)
+      // Note: The !exists() check ensures the document doesn't already exist
+      // This prevents overwriting existing documents
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == userId &&
+                       !exists(/databases/$(database)/documents/adminUsers/$(userId)) &&
+                       // Ensure required fields are present
+                       request.resource.data.keys().hasAll(['email', 'role', 'isActive']) &&
+                       // Ensure role is valid
+                       request.resource.data.role in ['super_admin', 'admin', 'sub_admin'] &&
+                       // Ensure isActive is boolean
+                       request.resource.data.isActive is bool;
+      
+      // Only super admins can update/delete
+      // Can read caller's own document to check role (first rule allows it)
+      allow update, delete: if isAuthenticated() &&
+                               exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid)) &&
+                               get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'super_admin';
     }
 
-    // Audit logs - only authenticated admins can read/write
-    // TEMPORARY: Allowing access for custom auth system
+    // Audit logs - only admins can read and write (prevents log tampering)
     match /auditLogs/{document=**} {
-      allow read: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow read: if isAdminOrSuperAdmin();
+      // Only admins can write audit logs to prevent tampering
+      // Users are authenticated and have admin role before audit logs are written
+      allow write: if isAdminOrSuperAdmin();
     }
 
     // Module visibility - public can read (for sidebar), admins can write
-    // TEMPORARY: Allowing writes without Firebase Auth for custom auth system
     match /moduleVisibility/{document=**} {
       allow read: if true; // Public read access (needed for sidebar to check visibility)
-      allow write: if true; // TEMPORARY - Change to isAuthenticated() after Firebase Auth integration
+      allow write: if isAdminOrSuperAdmin();
     }
     
     // Default rule: deny all other access

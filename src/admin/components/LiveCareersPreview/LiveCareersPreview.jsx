@@ -159,7 +159,7 @@ export default function LiveCareersPreview({ previewConfig }) {
                   return (
                     <div className="why-card" key={card.id || index}>
                       <div className="why-icon">
-                        <img src={cardIcon} alt="Card icon" />
+                        <img src={cardIcon} alt={`${card.title || 'Career'} feature icon`} />
                       </div>
                       <h3 className="why-head">
                         {titleLines.map((line, i) => (

@@ -682,7 +682,7 @@ function BrandList({ items, onEdit, onDelete, onToggleEnable, canDelete }) {
                 {hasValidIcon && !hasError ? (
                   <img
                     src={iconUrl}
-                    alt={item.name || 'Brand icon'}
+                    alt={item.name || 'UBC brand icon'}
                     onError={(e) => {
                       // Mark this image as failed
                       setImageErrors(prev => ({ ...prev, [item.id]: true }));

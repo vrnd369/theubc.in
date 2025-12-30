@@ -604,7 +604,7 @@ export default function DynamicAbout({
       return (
         <img
           src={iconUrl}
-          alt="Badge icon"
+          alt="UBC quality badge icon"
           className={className}
           style={{
             width: "14px",
@@ -775,7 +775,7 @@ export default function DynamicAbout({
                     return (
                       <img
                         src={imageSrc}
-                        alt="Company building"
+                        alt="United Brothers Company headquarters building"
                         loading="eager"
                         fetchPriority="high"
                         style={{
@@ -1597,7 +1597,7 @@ export default function DynamicAbout({
                                     imageUrls[`${section.id}-cert-${idx}`] ||
                                     cert.logo
                                   }
-                                  alt={`${cert.title} logo`}
+                                  alt={`${cert.title} food safety certification logo`}
                                   loading="lazy"
                                 />
                               )}
@@ -1902,7 +1902,7 @@ export default function DynamicAbout({
                               {imageSrc ? (
                                 <img
                                   src={imageSrc}
-                                  alt={item.title || "News item"}
+                                  alt={item.title || "UBC news and media update"}
                                   loading="lazy"
                                   onError={(e) => {
                                     e.target.style.display = "none";

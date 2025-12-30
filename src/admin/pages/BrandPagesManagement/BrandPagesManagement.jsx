@@ -482,7 +482,7 @@ export default function BrandPagesManagement() {
                           {hasValidIcon && !hasError ? (
                             <img
                               src={iconUrl}
-                              alt={brand.name || 'Brand icon'}
+                              alt={brand.name || 'UBC brand icon'}
                               className="brand-selector-icon"
                               onError={(e) => {
                                 setBrandImageErrors(prev => ({ ...prev, [brand.id]: true }));

@@ -971,7 +971,7 @@ export default function BrandPageEditor({
                             <div className="brand-prod-media">
                               <img
                                 src={imageUrls[`product-${index}`]}
-                                alt={item.title || "Product"}
+                                alt={item.title || "UBC food product"}
                               />
                             </div>
                           )}

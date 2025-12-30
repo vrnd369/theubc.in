@@ -173,17 +173,56 @@
 }
 
 @media (max-width: 768px) {
-  .form-row {
-    grid-template-columns: 1fr;
+  .enquiry-form-management {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .enquiry-form-header {
     flex-direction: column;
+    align-items: flex-start;
+    gap: var(--admin-spacing-md);
+    margin-bottom: var(--admin-spacing-lg);
+    padding: 0;
+  }
+
+  .enquiry-form-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
   }
 
   .enquiry-form-actions {
     width: 100%;
-    justify-content: flex-start;
+    justify-content: stretch;
+    flex-wrap: wrap;
+    gap: var(--admin-spacing-sm);
+  }
+
+  .enquiry-form-actions .admin-btn {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: var(--admin-spacing-md);
+  }
+}
+
+@media (max-width: 479px) {
+  .enquiry-form-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .enquiry-form-actions {
+    flex-direction: column;
+  }
+
+  .enquiry-form-actions .admin-btn {
+    width: 100%;
+    min-width: 100%;
   }
 }
 

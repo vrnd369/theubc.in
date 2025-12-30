@@ -1,89 +1,128 @@
-# Fix: Missing or Insufficient Permissions Error
+# Fix "Missing or insufficient permissions" Error
 
-## Quick Fix (5 minutes)
+## Problem
 
-You're getting this error because Firebase Firestore doesn't have permission rules for the `homeSections` collection yet.
-
-### Steps to Fix:
-
-1. **Open Firebase Console**
-   - Go to: https://console.firebase.google.com/
-   - Select your project: **theubc-e055c**
-
-2. **Navigate to Firestore Rules**
-   - Click on **Firestore Database** in the left sidebar
-   - Click on the **Rules** tab at the top
-
-3. **Update the Rules**
-   - Find the rules editor
-   - Add this rule for `homeSections` collection:
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    
-    // Allow read/write access to navigation collection
-    match /navigation/{document=**} {
-      allow read, write: if true;
-    }
-    
-    // Allow read/write access to navigation-icons collection
-    match /navigation-icons/{document=**} {
-      allow read, write: if true;
-    }
-    
-    // ✅ ADD THIS - Allow read/write access to homeSections collection
-    match /homeSections/{document=**} {
-      allow read, write: if true;
-    }
-    
-    // Default rule: deny all other access
-    match /{document=**} {
-      allow read, write: if false;
-    }
-  }
-}
+You're getting this error when trying to log in:
+```
+Error fetching user data: FirebaseError: Missing or insufficient permissions.
 ```
 
-4. **Publish the Rules**
-   - Click the **Publish** button
-   - Wait a few seconds for rules to update
+## Root Cause
 
-5. **Try Again**
-   - Go back to your app
-   - Click "Import from Live Website" again
-   - It should work now! ✅
+This happens when:
+1. ✅ User successfully authenticates with Firebase Auth
+2. ❌ But the user document doesn't exist in Firestore `adminUsers` collection
+3. ❌ OR the document ID doesn't match the Firebase Auth UID
 
-## Visual Guide
+## Solution
 
+### Step 1: Verify User Exists in Firebase Auth
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Navigate to **Authentication** → **Users**
+3. Find your user by email
+4. **Copy the UID** (it's shown next to the email)
+
+### Step 2: Check Firestore `adminUsers` Collection
+
+1. Go to **Firestore Database** → **Data**
+2. Open the `adminUsers` collection
+3. Check if a document exists with the **document ID = Firebase Auth UID**
+
+### Step 3: Fix the Document
+
+**Option A: Document doesn't exist**
+1. Click "Add document" in `adminUsers` collection
+2. **Document ID**: Paste the Firebase Auth UID (from Step 1)
+3. Add these fields:
+   ```
+   email: "user@example.com" (string)
+   role: "admin" or "super_admin" or "sub_admin" (string)
+   name: "User Name" (string)
+   isActive: true (boolean)
+   createdAt: (timestamp - use Firestore timestamp)
+   ```
+4. Click "Save"
+
+**Option B: Document exists but wrong ID**
+1. Find the document (might be using old ID or email as ID)
+2. Note down all the field values
+3. Delete the old document
+4. Create a new document with:
+   - **Document ID** = Firebase Auth UID
+   - Same field values as before
+
+**Option C: Use Migration Script (Recommended for Multiple Users)**
+
+Run the migration script to automatically fix all users:
+
+```bash
+# Install dependencies
+npm install firebase-admin
+
+# Download service account key from Firebase Console
+# Save as service-account-key.json
+
+# Run migration
+node scripts/migrate-to-firebase-auth.js
 ```
-Firebase Console
-  └── Project: theubc-e055c
-      └── Firestore Database
-          └── Rules (tab)
-              └── [Paste the rules above]
-                  └── Publish
-```
 
-## What This Does
+## Quick Verification
 
-- Allows reading and writing to the `homeSections` collection
-- This is needed for:
-  - Importing sections from live website
-  - Creating new sections
-  - Editing existing sections
-  - Deleting sections
+After fixing, verify the setup:
 
-## Security Note
+1. **Firebase Auth**: User exists with email/password ✅
+2. **Firestore**: Document exists in `adminUsers` with:
+   - Document ID = Firebase Auth UID ✅
+   - Fields: email, role, name, isActive ✅
+3. **Firestore Rules**: Deployed and allow reading own document ✅
 
-⚠️ These rules allow **anyone** to read/write. For production, you should add authentication checks. See `FIRESTORE_RULES.md` for production-ready rules.
+## Test
 
-## Still Having Issues?
+1. Try logging in again
+2. Should work now! ✅
 
-1. Make sure you clicked **Publish** (not just Save)
-2. Wait 10-15 seconds after publishing
-3. Refresh your browser
-4. Check browser console for other errors
-5. Verify you're using the correct Firebase project
+## Still Not Working?
 
+### Check Firestore Rules
+
+1. Go to **Firestore Database** → **Rules**
+2. Verify this rule exists:
+   ```
+   match /adminUsers/{userId} {
+     allow read: if isAuthenticated() && request.auth.uid == userId;
+     ...
+   }
+   ```
+3. If not, deploy the rules:
+   ```bash
+   firebase deploy --only firestore:rules
+   ```
+
+### Check Browser Console
+
+Look for more detailed error messages that might indicate:
+- Specific permission denied reasons
+- Network errors
+- Auth token issues
+
+### Common Issues
+
+**Issue**: "Document doesn't exist"
+- **Fix**: Create the document as described in Step 3
+
+**Issue**: "Document ID mismatch"
+- **Fix**: Update document ID to match Firebase Auth UID
+
+**Issue**: "Rules not deployed"
+- **Fix**: Deploy rules: `firebase deploy --only firestore:rules`
+
+**Issue**: "User not authenticated"
+- **Fix**: Make sure Firebase Auth login succeeded first
+
+## Prevention
+
+To avoid this in the future:
+1. Always use the migration script when setting up Firebase Auth
+2. When creating new users, use Cloud Functions (they create both Auth user and Firestore document)
+3. Never manually create Firebase Auth users without creating corresponding Firestore documents

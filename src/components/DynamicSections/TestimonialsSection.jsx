@@ -36,7 +36,7 @@ const TestimonialCard = ({ testimonial, index, styles = {} }) => {
       <div className="t-author">
         <div className="avatar">
           {imageUrl ? (
-            <img src={imageUrl} alt={testimonial.name || 'Testimonial'} />
+            <img src={imageUrl} alt={testimonial.name ? `${testimonial.name} testimonial` : 'UBC customer testimonial'} />
           ) : (
             <div style={{ 
               width: '100%', 

@@ -638,7 +638,7 @@ export default function BrandPagePreview({ pageData, onClose }) {
                             {imageUrls[`product-${index}`] && (
                               <img
                                 src={imageUrls[`product-${index}`]}
-                                alt={item.title || "Product"}
+                                alt={item.title || "UBC food product"}
                                 style={{
                                   width:
                                     pageData.products?.styles?.imageWidth ||

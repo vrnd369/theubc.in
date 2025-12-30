@@ -1504,7 +1504,7 @@ export default function ProductDetail() {
                               {hasCustomIcon ? (
                                 <img 
                                   src={resolvedImages.pillarIcons[index] || pillar.icon} 
-                                  alt={enhancedPillar.title || `Pillar ${index + 1}`} 
+                                  alt={enhancedPillar.title || `UBC quality pillar ${index + 1}`} 
                                 />
                               ) : riceIcon ? (
                                 riceIcon

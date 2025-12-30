@@ -1,5 +1,5 @@
 import { collection, addDoc, query, orderBy, getDocs, limit } from "firebase/firestore";
-import { db } from "../../firebase/config";
+import { auth, db } from "../../firebase/config";
 
 const COLLECTION_NAME = "auditLogs";
 
@@ -8,6 +8,13 @@ const COLLECTION_NAME = "auditLogs";
  */
 export async function logAuditEvent(eventData) {
   try {
+    // Check if user is authenticated before logging
+    // This prevents permission errors when logging events
+    if (!auth.currentUser) {
+      console.warn("Cannot log audit event: user not authenticated");
+      return false;
+    }
+
     const logEntry = {
       ...eventData,
       timestamp: new Date(),
@@ -17,7 +24,12 @@ export async function logAuditEvent(eventData) {
     await addDoc(collection(db, COLLECTION_NAME), logEntry);
     return true;
   } catch (error) {
-    console.error("Error logging audit event:", error);
+    // Only log errors that aren't permission-related (those are expected in some cases)
+    if (error.code !== 'permission-denied') {
+      console.error("Error logging audit event:", error);
+    } else {
+      console.warn("Permission denied when logging audit event (this may be expected):", error.message);
+    }
     // Don't throw - audit logging shouldn't break the app
     return false;
   }

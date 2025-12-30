@@ -93,7 +93,7 @@ export default function OverviewSection({ content, styles = {} }) {
             <div className="overview-logo">
               <img 
                 src={logo} 
-                alt="Logo" 
+                alt="UBC United Brothers Company logo" 
                 // Dimensions handled by CSS - no inline styles
               />
             </div>

@@ -52,17 +52,56 @@
 }
 
 @media (max-width: 768px) {
+  .about-management {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
   .about-management-header {
     flex-direction: column;
+    align-items: flex-start;
+    gap: var(--admin-spacing-md);
+    margin-bottom: var(--admin-spacing-lg);
+    padding: 0;
+  }
+
+  .about-management-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
   }
 
   .header-actions {
     width: 100%;
-    justify-content: flex-end;
+    justify-content: stretch;
+    flex-wrap: wrap;
+    gap: var(--admin-spacing-sm);
+  }
+
+  .header-actions .admin-btn {
+    flex: 1;
+    min-width: 120px;
   }
 
   .about-sections-grid {
     grid-template-columns: 1fr;
+    gap: var(--admin-spacing-md);
+  }
+}
+
+@media (max-width: 479px) {
+  .about-management-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .header-actions {
+    flex-direction: column;
+  }
+
+  .header-actions .admin-btn {
+    width: 100%;
+    min-width: 100%;
   }
 }
 

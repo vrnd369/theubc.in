@@ -266,7 +266,7 @@ export default function Wellness() {
                     {categoryImage && (
                       <img 
                         src={categoryImage} 
-                        alt={category.title || 'Product Category'}
+                        alt={category.title || 'UBC wellness product category'}
                       />
                     )}
                   </div>

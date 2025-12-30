@@ -142,7 +142,7 @@ export default function HomeSectionCard({
           <div className="preview-image">
             <img
               src={resolvedImageUrl}
-              alt="Preview"
+              alt="Home section preview"
               onError={(e) => {
                 console.error(
                   "Preview image failed to load:",

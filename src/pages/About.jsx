@@ -142,7 +142,7 @@ function StaticAbout() {
       {/* Hero */}
       <section className="about-hero">
         <div className="about-hero-image">
-          <img src={buildingImg} alt="Company building" />
+          <img src={buildingImg} alt="United Brothers Company headquarters building" />
         </div>
       </section>
 
@@ -431,7 +431,7 @@ function StaticAbout() {
                 {CERTS.map((c, i) => (
                   <div key={c.id} className="cert-item">
                     <div className="cert-logo">
-                      <img src={c.logo} alt={`${c.title} logo`} />
+                      <img src={c.logo} alt={`${c.title} food safety certification logo`} />
                     </div>
                     <div className="cert-info">
                       <h3 className="cert-title">{c.title}</h3>

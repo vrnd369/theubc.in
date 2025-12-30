@@ -257,3 +257,197 @@
 .admin-gap-md { gap: var(--admin-spacing-md); }
 .admin-gap-lg { gap: var(--admin-spacing-lg); }
 
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+
+/* Responsive Display Utilities */
+@media (max-width: 768px) {
+  .admin-hide-mobile {
+    display: none !important;
+  }
+
+  .admin-show-mobile {
+    display: block !important;
+  }
+
+  .admin-show-mobile-flex {
+    display: flex !important;
+  }
+
+  .admin-flex-mobile-col {
+    flex-direction: column !important;
+  }
+
+  .admin-full-width-mobile {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Make buttons full width on mobile */
+  .admin-btn-mobile-full {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+}
+
+/* Responsive Tables */
+.admin-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  .admin-table-responsive {
+    display: block;
+  }
+
+  .admin-table-responsive table {
+    min-width: 600px;
+    width: 100%;
+  }
+
+  .admin-table-responsive th,
+  .admin-table-responsive td {
+    padding: var(--admin-spacing-sm);
+    font-size: 0.8125rem;
+  }
+}
+
+/* Responsive Forms */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-row .form-group {
+    min-width: 100%;
+    width: 100%;
+  }
+
+  /* Stack form actions on mobile */
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: var(--admin-spacing-sm);
+  }
+
+  .form-actions .admin-btn {
+    width: 100%;
+  }
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  .admin-heading-1 {
+    font-size: 1.5rem;
+  }
+
+  .admin-heading-2 {
+    font-size: 1.25rem;
+  }
+
+  .admin-heading-3 {
+    font-size: 1.125rem;
+  }
+
+  .admin-text {
+    font-size: 0.9375rem;
+  }
+
+  .admin-text-sm {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Responsive Cards */
+@media (max-width: 768px) {
+  .admin-card {
+    padding: var(--admin-spacing-md);
+  }
+}
+
+/* Touch-friendly targets (minimum 44x44px) */
+@media (max-width: 768px) {
+  .admin-btn,
+  .admin-sidebar-item,
+  button,
+  a[role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Prevent horizontal scroll on mobile */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  .admin-content {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  /* Ensure no left gaps - content starts from edge */
+  .admin-layout {
+    margin: 0;
+    padding: 0;
+  }
+
+  .admin-main-content {
+    margin-left: 0 !important;
+    padding: 0;
+  }
+
+  .admin-header {
+    margin-left: 0 !important;
+    padding-left: var(--admin-spacing-md);
+    padding-right: var(--admin-spacing-md);
+  }
+
+  .admin-header-content {
+    margin: 0;
+    padding: 0;
+  }
+
+  .admin-header-left {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  .admin-header-left h1 {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+}
+
+/* Responsive Grid Patterns */
+@media (max-width: 768px) {
+  .admin-grid-responsive {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-grid-2-col {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-grid-3-col {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Tablet Styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .admin-hide-tablet {
+    display: none !important;
+  }
+
+  .admin-grid-3-col {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+

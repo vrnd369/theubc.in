@@ -78,24 +78,207 @@
   max-width: 100%;
 }
 
+/* Mobile Menu Toggle Button */
+.mobile-menu-toggle {
+  display: none;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: var(--admin-text);
+  transition: var(--admin-transition);
+  min-width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--admin-spacing-md);
+  flex-shrink: 0;
+}
+
+.mobile-menu-toggle:hover {
+  background: var(--admin-bg-secondary);
+  color: var(--admin-primary);
+  border-color: var(--admin-primary);
+}
+
+.mobile-menu-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Header Left Section */
+.admin-header-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-header-left h1 {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sidebar Overlay for Mobile */
+.admin-sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Button Text Wrapper for Mobile */
+.admin-btn-text {
+  display: inline;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
+  .admin-layout.mobile .admin-sidebar-overlay {
+    display: block;
+  }
+
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
   .admin-main-content {
-    margin-left: 0;
+    margin-left: 0 !important;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .admin-layout.mobile.sidebar-closed .admin-main-content,
+  .admin-layout.mobile.sidebar-open .admin-main-content {
+    margin-left: 0 !important;
   }
   
   .admin-content {
     padding: var(--admin-spacing-md);
+    padding-left: var(--admin-spacing-md);
+    padding-right: var(--admin-spacing-md);
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   .admin-header {
     padding: var(--admin-spacing-md);
+    padding-left: var(--admin-spacing-md);
+    padding-right: var(--admin-spacing-md);
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .admin-header-content {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-wrap: wrap;
     gap: var(--admin-spacing-md);
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  .admin-header-left {
+    width: 100%;
+    margin-bottom: var(--admin-spacing-sm);
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .admin-header-left h1 {
+    font-size: 1.125rem;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    margin-left: 0;
+  }
+
+  .admin-header-actions {
+    width: 100%;
+    display: flex;
+    gap: var(--admin-spacing-sm);
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+  }
+
+  .admin-header-actions .admin-btn {
+    font-size: 0.8125rem;
+    padding: 0.5rem 1rem;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .admin-header-actions .admin-btn-text {
+    display: inline;
+  }
+}
+
+/* Tablet improvements */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .admin-main-content {
+    margin-left: 70px; /* Keep sidebar collapsed by default on tablet */
+  }
+
+  .admin-layout.sidebar-open .admin-main-content {
+    margin-left: 280px;
+  }
+}
+
+/* Small Mobile (below 480px) */
+@media (max-width: 479px) {
+  .admin-header {
+    padding: var(--admin-spacing-sm);
+    padding-left: var(--admin-spacing-sm);
+    padding-right: var(--admin-spacing-sm);
+    margin: 0;
+  }
+
+  .admin-header-left {
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .admin-header-left h1 {
+    font-size: 1rem;
+    margin-left: 0;
+  }
+
+  .admin-header-actions {
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+
+  .admin-header-actions .admin-btn {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .admin-content {
+    padding: var(--admin-spacing-sm);
+    padding-left: var(--admin-spacing-sm);
+    padding-right: var(--admin-spacing-sm);
+    margin: 0;
   }
 }
 

@@ -10,12 +10,21 @@ export default function Sidebar({
   isOpen = true,
   onToggle,
   basePath = "/admin",
+  isMobile = false,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const role = user?.role;
   const [moduleVisibility, setModuleVisibility] = useState({});
+
+  // Close sidebar on mobile when navigating
+  const handleNavigation = (path) => {
+    navigate(path);
+    if (isMobile) {
+      onToggle();
+    }
+  };
 
   // Load module visibility settings
   useEffect(() => {
@@ -172,16 +181,25 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`admin-sidebar ${isOpen ? "sidebar-open" : "sidebar-closed"}`}
+      className={`admin-sidebar ${isOpen ? "sidebar-open" : "sidebar-closed"} ${isMobile ? "mobile" : ""}`}
     >
       <div className="admin-sidebar-header">
         <h2 className="admin-sidebar-logo">{isOpen ? "CMS Admin" : "CMS"}</h2>
+        {isMobile && isOpen && (
+          <button
+            className="admin-sidebar-close"
+            onClick={onToggle}
+            aria-label="Close menu"
+          >
+            ✕
+          </button>
+        )}
       </div>
       <nav className="admin-sidebar-nav">
         {menuItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => navigate(item.path)}
+            onClick={() => handleNavigation(item.path)}
             className={`admin-sidebar-item ${
               isActive(item.path) ? "active" : ""
             }`}
