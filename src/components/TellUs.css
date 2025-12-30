@@ -147,7 +147,6 @@
   padding: 32px 16px 14px 16px; /* top space for label */
   border-radius: 12px 8px 8px 12px;
   border: none;
-  background: #1a1a1a !important;
   background-color: #1a1a1a !important;
   color: rgba(255, 255, 255, 0.9);
   font-size: 16px;
@@ -196,12 +195,23 @@
 .tell-us-form select {
   cursor: pointer;
   appearance: none;
-  background-color: #1a1a1a;
-  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L12 15L18 9' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #1a1a1a !important;
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L12 15L18 9' stroke='%23FFFFFF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.9'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 16px center !important;
+  background-size: 20px 20px !important;
   padding-right: 48px;
   color: rgba(255, 255, 255, 0.8);
+}
+
+.tell-us-form select:hover {
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L12 15L18 9' stroke='%23FFFFFF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' opacity='1'/%3E%3C/svg%3E") !important;
+}
+
+.tell-us-form select:focus {
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L12 15L18 9' stroke='%23FFFFFF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' opacity='1'/%3E%3C/svg%3E") !important;
 }
 
 .tell-us-form select option {
@@ -377,6 +387,12 @@
     min-height: 48px;
   }
 
+  .tell-us-form select {
+    background-position: right 14px center;
+    background-size: 18px 18px;
+    padding-right: 44px;
+  }
+
   .tell-us-submit-btn {
     font-size: 15px;
   }
@@ -415,6 +431,12 @@
     min-height: 44px;
   }
 
+  .tell-us-form select {
+    background-position: right 12px center;
+    background-size: 16px 16px;
+    padding-right: 40px;
+  }
+
   .tell-us-form textarea {
     min-height: 100px;
   }
@@ -445,6 +467,12 @@
   .tell-us-form input,
   .tell-us-form select {
     min-height: 40px;
+  }
+
+  .tell-us-form select {
+    background-position: right 11px center;
+    background-size: 14px 14px;
+    padding-right: 36px;
   }
 
   .tell-us-submit-btn {
