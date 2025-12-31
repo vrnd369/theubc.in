@@ -142,6 +142,22 @@ export default function Careers() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Check file type - only allow .doc, .docx, and .pdf
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ];
+      const allowedExtensions = ['.pdf', '.doc', '.docx'];
+      const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+      
+      if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+        setFileError("Please upload a resume in PDF, DOC, or DOCX format only");
+        setSelectedFile(null);
+        e.target.value = ""; // Clear the input
+        return;
+      }
+      
       // Check file size (5MB = 5 * 1024 * 1024 bytes)
       const maxSize = 5 * 1024 * 1024;
       if (file.size > maxSize) {
@@ -162,9 +178,9 @@ export default function Careers() {
     e.preventDefault();
     if (!selectedJob) return;
 
-    // Validate that a file is uploaded (required)
+    // Validate that a resume is uploaded (required)
     if (!selectedFile) {
-      setFileError("Please upload a file (resume/CV) to submit your application.");
+      setFileError("Please upload a resume to submit your application.");
       // Scroll to file input to show error
       const fileInput = document.getElementById("fileUpload");
       if (fileInput) {
@@ -660,14 +676,14 @@ export default function Careers() {
               <div className="form-group">
                 <div className="input-wrapper">
                   <label htmlFor="fileUpload" className="input-label">
-                    Upload File (Max 5MB) <span style={{ color: "#dc2626" }}>*</span>
+                    Upload Resume (Max 5MB) <span style={{ color: "#dc2626" }}>*</span>
                   </label>
                   <input
                     type="file"
                     id="fileUpload"
                     name="fileUpload"
                     onChange={handleFileChange}
-                    accept="*/*"
+                    accept=".doc,.docx,.pdf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     className="file-input"
                     required
                   />
@@ -683,7 +699,7 @@ export default function Careers() {
                       color: "#6b7280", 
                       marginTop: "4px" 
                     }}>
-                      Please upload your resume or CV (required)
+                      Please upload your resume in PDF, DOC, or DOCX format (required)
                     </p>
                   )}
                 </div>

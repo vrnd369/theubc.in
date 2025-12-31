@@ -251,6 +251,14 @@ export default function Login() {
         </form>
 
         <div className="login-footer">
+          <a 
+            href="https://www.wikiwakywoo.com/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="login-footer-logo-link"
+          >
+            <img src={wwwLogo} alt="UBC United Brothers Company logo" className="login-footer-logo" />
+          </a>
           <div className="login-footer-divider">
             <span>Secure Login</span>
           </div>
@@ -261,14 +269,6 @@ export default function Login() {
             <span className="login-copyright-text">
               © {new Date().getFullYear()} All rights reserved.
             </span>
-            <a 
-              href="https://www.wikiwakywoo.com/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="login-footer-logo-link"
-            >
-              <img src={wwwLogo} alt="UBC United Brothers Company logo" className="login-footer-logo" />
-            </a>
           </div>
         </div>
       </div>
