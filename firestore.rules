@@ -31,6 +31,16 @@ service cloud.firestore {
               get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'super_admin');
     }
 
+    // Helper function for admin/super_admin/sub_admin check (used for product management and content)
+    // Sub-admins can manage products, brands, categories, brand pages, home/about sections, and policies
+    function isAdminOrSuperAdminOrSubAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid)) &&
+             (get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'admin' ||
+              get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'super_admin' ||
+              get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'sub_admin');
+    }
+
     // Contact page - public can read, admins can write
     match /contactPage/{document=**} {
       allow read: if true; // Public read access
@@ -49,16 +59,16 @@ service cloud.firestore {
       allow write: if isAdminOrSuperAdmin();
     }
     
-    // Home sections - public can read, admins can write
+    // Home sections - public can read, admins and sub-admins can write
     match /homeSections/{document=**} {
       allow read: if true;
-      allow write: if isAdminOrSuperAdmin();
+      allow write: if isAdminOrSuperAdminOrSubAdmin();
     }
     
-    // About sections - public can read, admins can write
+    // About sections - public can read, admins and sub-admins can write
     match /aboutSections/{document=**} {
       allow read: if true;
-      allow write: if isAdminOrSuperAdmin();
+      allow write: if isAdminOrSuperAdminOrSubAdmin();
     }
     
     // Images - public can read, admins can write
@@ -73,28 +83,28 @@ service cloud.firestore {
       allow write: if isAdminOrSuperAdmin();
     }
     
-    // Brands - public can read, admins can write
+    // Brands - public can read, admins and sub-admins can write
     match /brands/{document=**} {
       allow read: if true;
-      allow write: if isAdminOrSuperAdmin();
+      allow write: if isAdminOrSuperAdminOrSubAdmin();
     }
     
-    // Categories - public can read, admins can write
+    // Categories - public can read, admins and sub-admins can write
     match /categories/{document=**} {
       allow read: if true;
-      allow write: if isAdminOrSuperAdmin();
+      allow write: if isAdminOrSuperAdminOrSubAdmin();
     }
     
-    // Products - public can read, admins can write
+    // Products - public can read, admins and sub-admins can write
     match /products/{document=**} {
       allow read: if true;
-      allow write: if isAdminOrSuperAdmin();
+      allow write: if isAdminOrSuperAdminOrSubAdmin();
     }
     
-    // Brand pages - public can read, admins can write
+    // Brand pages - public can read, admins and sub-admins can write
     match /brandPages/{document=**} {
       allow read: if true;
-      allow write: if isAdminOrSuperAdmin();
+      allow write: if isAdminOrSuperAdminOrSubAdmin();
     }
 
     // Careers page - public can read, admins can write
@@ -115,23 +125,23 @@ service cloud.firestore {
       allow write: if isAdminOrSuperAdmin();
     }
 
-    // Privacy Policy - public can read, admins can write
+    // Privacy Policy - public can read, admins and sub-admins can write
     match /privacyPolicy/{document=**} {
       allow read: if true; // Public read access for website visitors
-      allow write: if isAdminOrSuperAdmin();
+      allow write: if isAdminOrSuperAdminOrSubAdmin();
     }
 
-    // Cookies Policy - public can read, admins can write
+    // Cookies Policy - public can read, admins and sub-admins can write
     match /cookiesPolicy/{document=**} {
       allow read: if true; // Public read access for website visitors
-      allow write: if isAdminOrSuperAdmin();
+      allow write: if isAdminOrSuperAdminOrSubAdmin();
     }
 
-    // Form submissions - public can write (submit forms), admins can read/update/delete
+    // Form submissions - public can write (submit forms), admins and sub-admins can read/update/delete
     match /formSubmissions/{document=**} {
-      allow read: if isAdminOrSuperAdmin();
+      allow read: if isAdminOrSuperAdminOrSubAdmin();
       allow create: if true; // Public can submit forms
-      allow update, delete: if isAdminOrSuperAdmin();
+      allow update, delete: if isAdminOrSuperAdminOrSubAdmin();
     }
 
     // Form submission files - public can write (upload files), admins can read/delete

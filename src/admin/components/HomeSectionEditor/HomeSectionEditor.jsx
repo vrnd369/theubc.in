@@ -2107,7 +2107,7 @@ Add as many options as you need..."
       <form onSubmit={handleSubmit} className="editor-form">
         <div className="form-section">
           <div className="section-header-with-actions">
-            <h3 className="section-title">Basic Information</h3>
+            <h5 className="section-title">Basic Information</h5>
             <div className="section-actions">
               <button type="submit" className="admin-btn admin-btn-primary">
                 {section ? "Update Section" : "Create Section"}

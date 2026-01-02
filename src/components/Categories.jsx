@@ -393,11 +393,16 @@ export default function Categories({
     }
   }, [totalPages, currentPage]);
 
-  // Scroll to top of products section when page changes
+  // Scroll to top of products section when page changes (only on Products page)
   useEffect(() => {
     // Skip scroll on initial mount
     if (isInitialMount.current) {
       isInitialMount.current = false;
+      return;
+    }
+    
+    // Only scroll on Products page, not on Home page preview
+    if (!isProductsPage) {
       return;
     }
     
@@ -410,7 +415,7 @@ export default function Categories({
         });
       }, 0);
     }
-  }, [currentPage]);
+  }, [currentPage, isProductsPage]);
 
   return (
     <section

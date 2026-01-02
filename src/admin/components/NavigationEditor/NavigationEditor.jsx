@@ -417,6 +417,17 @@ export default function NavigationEditor({ item, onSave, onCancel }) {
               <label className="admin-label">
                 Order <span className="required">*</span>
               </label>
+              <input
+                type="number"
+                name="order"
+                value={formData.order}
+                onChange={handleChange}
+                className={`admin-input ${errors.order ? 'input-error' : ''}`}
+                min="0"
+                max="7"
+                required
+              />
+              {errors.order && <span className="error-message">{errors.order}</span>}
               <small className="form-hint">Lower numbers appear first (maximum: 7)</small>
               <div
                 className="admin-alert admin-alert-warning"
@@ -435,23 +446,12 @@ export default function NavigationEditor({ item, onSave, onCancel }) {
                     Display Limit Notice
                   </strong>
                   <span className="admin-text-sm" style={{ display: "block" }}>
-                    Only the first <strong>10 navigation items</strong> are displayed in the
+                    Only the first <strong>7 navigation items</strong> are displayed in the
                     management list. Use filters or search to find specific items
-                    if you have more than 10.
+                    if you have more than 7.
                   </span>
                 </div>
               </div>
-              <input
-                type="number"
-                name="order"
-                value={formData.order}
-                onChange={handleChange}
-                className={`admin-input ${errors.order ? 'input-error' : ''}`}
-                min="0"
-                max="7"
-                required
-              />
-              {errors.order && <span className="error-message">{errors.order}</span>}
             </div>
           </div>
         </div>
